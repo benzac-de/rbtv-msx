@@ -2,7 +2,7 @@ import $ from "jquery";
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
 import { createMenu } from "./menu";
 import { loadContent, executeContent, loadVideo } from "./content";
-import { callCallback, checkVersion } from "./tools";
+import { callCallback } from "./tools";
 import { ContentController } from "./content-controller";
 import { loadImage } from "./bockdrop";
 

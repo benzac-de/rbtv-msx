@@ -46,4 +46,4 @@ export function checkVersion(data: tvx.MSXAttachedInfo): boolean {
         return tvx.Tools.checkVersion(data.info.application.version, MIN_APP_VERSION);
     }
     return false;
-};
+}
