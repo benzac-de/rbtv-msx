@@ -1,0 +1,81 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    font-family: sans-serif;
+    color: white;
+}
+
+div,
+label,
+img,
+input,
+span,
+i,
+b,
+p,
+video,
+audio,
+object,
+h1,
+h2,
+h3,
+pre,
+canvas,
+iframe {
+    position: absolute;
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+}
+
+.fullscreen {
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+}
+
+.content-wrapper {
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.background {
+    background-image: -o-linear-gradient(top, rgb(77, 77, 77), rgb(0, 0, 0));
+    background-image: -moz-linear-gradient(top, rgb(77, 77, 77), rgb(0, 0, 0));
+    background-image: -webkit-linear-gradient(top, rgb(77, 77, 77), rgb(0, 0, 0));
+    background-image: linear-gradient(to bottom, rgb(77, 77, 77), rgb(0, 0, 0));
+}
+
+.backdrop-image {
+    top: 0px;
+    right: 0px;
+    width: 25%;
+    height: auto;
+    -webkit-mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-image: url(../images/backdrop-mask.png);
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    mask-image: url(../images/backdrop-mask.png);
+}
+
+.tvx-transform,
+.tvx-transform-zero,
+.tvx-transform-3d,
+.tvx-transform-3d-zero {
+    /*Avoid flickering in webkit browsers*/
+    -webkit-backface-visibility: hidden;
+}
+
+.tvx-transform-zero {
+    /*Avoid flickering in webkit browsers*/
+    -webkit-transform: translate(0, 0);
+}
+
+.tvx-transform-3d-zero {
+    /*Avoid flickering in webkit browsers*/
+    -webkit-transform: translate3d(0, 0, 0);
+}
