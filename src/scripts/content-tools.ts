@@ -277,7 +277,12 @@ export function getReleaseDuration(item: any, timestamp: number): string {
                         return "vor " + (days == 1 ? "einem Tag" : days + " Tagen");
                     } else {
                         let hours: number = Math.floor(duration / 3600);
-                        return "vor " + (hours == 1 ? "einer Stunde" : hours + " Stunden");
+                        if (hours > 0) {
+                            return "vor " + (hours == 1 ? "einer Stunde" : hours + " Stunden");
+                        } else {
+                            let minutes: number = Math.floor(duration / 60);
+                            return "vor " + (minutes <= 1 ? "einer Minute" : minutes + " Minuten");
+                        }
                     }
                 }
             }
