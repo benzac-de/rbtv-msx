@@ -8,7 +8,7 @@
     "build": "parcel build",
     "clean-build": "npm run clean && npm run build"
   },
-  "browserslist": "> 0.1% and not ie <= 11",
+  "browserslist": "> 0.1% and ie 11",
   "targets": {
     "default": {
       "publicUrl": ".",
