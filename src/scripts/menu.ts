@@ -1,9 +1,11 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { getImageUrl, appendKeepRatioSuffix, NAME } from "./tools";
+import { NAME, VERSION, getImageUrl, appendKeepRatioSuffix } from "./tools";
 import { createContentRequest } from "./content-tools";
 
 export function createMenu(): tvx.MSXMenuRoot {
     return {
+        name: NAME,
+        version: VERSION,
         headline: NAME,
         logo: getImageUrl("logo"),
         logoSize: "small",
