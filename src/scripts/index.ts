@@ -4,7 +4,7 @@ import { createMenu } from "./menu";
 import { loadContent, executeContent, loadVideo } from "./content";
 import { callCallback } from "./tools";
 import { ContentController } from "./content-controller";
-import { loadImage } from "./bockdrop";
+import { loadImage } from "./backdrop";
 
 class RbtvHandler implements tvx.TVXInteractionPluginHandler {
     private contentController: ContentController = new ContentController();
