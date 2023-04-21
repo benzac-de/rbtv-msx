@@ -61,21 +61,3 @@ iframe {
     mask-repeat: no-repeat;
     mask-image: url(../images/backdrop-mask.png);
 }
-
-.tvx-transform,
-.tvx-transform-zero,
-.tvx-transform-3d,
-.tvx-transform-3d-zero {
-    /*Avoid flickering in webkit browsers*/
-    -webkit-backface-visibility: hidden;
-}
-
-.tvx-transform-zero {
-    /*Avoid flickering in webkit browsers*/
-    -webkit-transform: translate(0, 0);
-}
-
-.tvx-transform-3d-zero {
-    /*Avoid flickering in webkit browsers*/
-    -webkit-transform: translate3d(0, 0, 0);
-}
