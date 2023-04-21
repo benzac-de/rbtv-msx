@@ -1,5 +1,5 @@
 {
     "name": "RBTV MSX",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "parameter": "menu:request:interaction:init@{PREFIX}{SERVER}/index.html"
 }

@@ -35,13 +35,8 @@ export function createMenu(): tvx.MSXMenuRoot {
             label: "Alle Shows",
             data: createContentRequest("shows")
         }, {
-            display: false,
-            icon: "mic",
-            label: "Podcasts",
-            data: createContentRequest("podcasts")
-        }, {
             icon: "people",
-            label: "Bohnen",
+            label: "Alle Bohnen",
             data: createContentRequest("beans")
         }, {
             type: "separator"

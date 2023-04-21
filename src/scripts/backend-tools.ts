@@ -49,6 +49,20 @@ function concatData(originData: any, moreData: any, extendable: boolean): any {
     return moreData;
 }
 
+function mergeData(originData: any, moreData: any): any {
+    if (originData != null) {
+        if (moreData != null) {
+            for (let id in moreData) {
+                if (originData[id] == null) {
+                    originData[id] = moreData[id];
+                }
+            }
+        }
+        return originData;
+    }
+    return moreData;
+}
+
 function createParameter(name: string, value: string | number): string {
     if (tvx.Tools.isFullStr(name) && (tvx.Tools.isFullStr(value) || tvx.Tools.isNum(value))) {
         return encodeURIComponent(name) + "=" + (tvx.Tools.isNum(value) ? value : encodeURIComponent(value));
@@ -152,7 +166,7 @@ export function extendList(list: any, data: any): void {
         if (data.data != null && data.data.episodes != null) {
             //Episodes request
             list.data = concatData(list.data, data.data.episodes, list.extendable);
-            list.bohnen = data.data.bohnen;
+            list.bohnen = mergeData(list.bohnen, data.data.bohnen);
         } else {
             //Shows request
             list.data = concatData(list.data, data.data, list.extendable);

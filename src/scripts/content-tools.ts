@@ -13,7 +13,7 @@ const YOUTUBE_PREFIX_1: string = "https://youtu.be/";
 const YOUTUBE_PREFIX_2: string = "https://www.youtube.com/watch?v=";
 
 export const EXTENDED_SHOW_DESCRIPTION_LENGHT: number = 380;
-export const MAX_SEASON_NAME_LENGHT: number = 40;
+export const MAX_SEASON_NAME_LENGHT: number = 50;
 
 function tryApplyToken(item: any, type: string): boolean {
     if (item != null) {
@@ -29,10 +29,11 @@ function tryApplyToken(item: any, type: string): boolean {
 
 function applyToken(item: any): void {
     if (item != null && item.msxToken == null) {
-        if (!tryApplyToken(item, "youtube")) {
-            if (!tryApplyToken(item, "twitch")) {
-                tryApplyToken(item, "soundcloud");
-            }
+        if (!tryApplyToken(item, "youtube") &&
+            !tryApplyToken(item, "twitch") &&
+            !tryApplyToken(item, "soundcloud")) {
+            item.msxToken = "none";
+            item.msxTokenType = "none";
         }
     }
 }
@@ -169,6 +170,8 @@ export function getTokenPrefix(item: any): string {
             return "{ico:" + TWITCH_COLOR + ":videogame-asset}";
         } else if (item.msxTokenType == "soundcloud") {
             return "{ico:" + SOUNDCLOUD_COLOR + ":mic}";
+        } else if (item.msxTokenType == "none") {
+            return "{ico:msx-yellow:warning}";
         }
     }
     return null;
@@ -284,7 +287,7 @@ export function getReleaseDuration(item: any, timestamp: number): string {
 }
 
 export function getTotalItems(data: any, pagination: any): any {
-    return pagination != null ? pagination.total : data.length;
+    return pagination != null ? pagination.total : (data != null ? data.length : -1);
 }
 
 export function getListNumber(index: number): string {

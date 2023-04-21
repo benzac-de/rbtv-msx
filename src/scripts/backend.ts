@@ -1,5 +1,5 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { callCallback } from "./tools";
+import { EVENT_SHOW_ID, callCallback } from "./tools";
 import {
     sortBeans,
     appendParameter,
@@ -76,12 +76,12 @@ export function loadShow(id: string, callback?: (data: any) => void): void {
     }
 }
 
-export function loadShows(offset?: number, limit?: number, order?: string, filter?: string, callback?: (data: any) => void): void {
+export function loadShows(offset?: number, limit?: number, order?: string, filter?: string, callback?: (data: any) => void, useCache?: boolean): void {
     let query = appendParameter(null, "offset", offset);
     query = appendParameter(query, "limit", limit);
     query = appendParameter(query, "sortby", order);
     query = appendParameter(query, "only", filter);
-    loadContent(SHOWS_PATH, query, callback);
+    loadContent(SHOWS_PATH, query, callback, useCache);
 }
 
 export function loadShowList(order?: string, filter?: string, callback?: (data: any) => void, extend?: boolean): boolean {
@@ -111,12 +111,12 @@ export function extendShowList(callback?: (data: any) => void): boolean {
     return showList != null ? loadShowList(showList.order, showList.filter, callback, true) : false;
 }
 
-export function loadShowEpisodes(id: string, offset?: number, limit?: number, order?: string, callback?: (data: any) => void): void {
+export function loadShowEpisodes(id: string, offset?: number, limit?: number, order?: string, callback?: (data: any) => void, useCache?: boolean): void {
     if (checkId(id, callback)) {
         let query = appendParameter(null, "offset", offset);
         query = appendParameter(query, "limit", limit);
         query = appendParameter(query, "order", order);
-        loadContent(createIdPath(SHOW_EPISODES_PATH, id), query, callback);
+        loadContent(createIdPath(SHOW_EPISODES_PATH, id), query, callback, useCache);
     }
 }
 
@@ -147,12 +147,12 @@ export function extendShowEpisodeList(callback?: (data: any) => void): boolean {
     return episodeList != null ? loadShowEpisodeList(episodeList.id, episodeList.order, callback, true) : false;
 }
 
-export function loadSeasonEpisodes(id: string, offset?: number, limit?: number, order?: string, callback?: (data: any) => void): void {
+export function loadSeasonEpisodes(id: string, offset?: number, limit?: number, order?: string, callback?: (data: any) => void, useCache?: boolean): void {
     if (checkId(id, callback)) {
         let query = appendParameter(null, "offset", offset);
         query = appendParameter(query, "limit", limit);
         query = appendParameter(query, "order", order);
-        loadContent(createIdPath(SEASON_EPISODES_PATH, id), query, callback);
+        loadContent(createIdPath(SEASON_EPISODES_PATH, id), query, callback, useCache);
     }
 }
 
@@ -219,11 +219,11 @@ export function extendShowWithEpisodeList(seasonId?: string, callback?: (data: a
     }
 }
 
-export function loadNewEpisodes(offset?: number, limit?: number, order?: string, callback?: (data: any) => void): void {
+export function loadNewEpisodes(offset?: number, limit?: number, order?: string, callback?: (data: any) => void, useCache?: boolean): void {
     let query = appendParameter(null, "offset", offset);
     query = appendParameter(query, "limit", limit);
     query = appendParameter(query, "order", order);
-    loadContent(NEW_EPISODES_PATH, query, callback);
+    loadContent(NEW_EPISODES_PATH, query, callback, useCache);
 }
 
 export function loadNewEpisodeList(order?: string, callback?: (data: any) => void, extend?: boolean): boolean {
@@ -266,12 +266,12 @@ export function loadBeans(order?: string, callback?: (data: any) => void): void 
     }, true);
 }
 
-export function loadBeanEpisodes(id: string, offset?: number, limit?: number, order?: string, callback?: (data: any) => void): void {
+export function loadBeanEpisodes(id: string, offset?: number, limit?: number, order?: string, callback?: (data: any) => void, useCache?: boolean): void {
     if (checkId(id, callback)) {
         let query = appendParameter(null, "offset", offset);
         query = appendParameter(query, "limit", limit);
         query = appendParameter(query, "order", order);
-        loadContent(createIdPath(BEAN_EPISODES_PATH, id), query, callback);
+        loadContent(createIdPath(BEAN_EPISODES_PATH, id), query, callback, useCache);
     }
 }
 
@@ -327,4 +327,37 @@ export function loadEpisode(id: string, callback?: (data: any) => void): void {
     if (checkId(id, callback)) {
         loadContent(createIdPath(EPISODE_PATH, id), null, callback);
     }
+}
+
+export function loadOverview(callback?: (newEpisodesData: any, eventEpisodesData: any, currentShowsData: any, currentPodcastsData: any) => void): void {
+    let requestService: tvx.BusyService = new tvx.BusyService();
+    let newEpisodesData: any = null;
+    let eventEpisodesData: any = null;
+    let currentShowsData: any = null;
+    let currentPodcastsData: any = null;
+    requestService.start();
+    loadNewEpisodes(0, 4, "DESC", (data: any) => {
+        newEpisodesData = data;
+        requestService.stop();
+    }, true);
+    requestService.start();
+    loadShowEpisodes(EVENT_SHOW_ID, 0, 4, "DESC", (data: any) => {
+        eventEpisodesData = data;
+        requestService.stop();
+    }, true);
+    requestService.start();
+    loadShows(0, 6, "LastEpisode", null, (data: any) => {
+        currentShowsData = data;
+        requestService.stop();
+    }), true;
+    requestService.start();
+    loadShows(0, 6, "LastEpisode", "podcast", (data: any) => {
+        currentPodcastsData = data;
+        requestService.stop();
+    }, true);
+    if (callback != null && typeof callback == "function") {
+        requestService.onReady(() => {
+            callback(newEpisodesData, eventEpisodesData, currentShowsData, currentPodcastsData);
+        });
+    };
 }

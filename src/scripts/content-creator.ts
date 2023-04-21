@@ -1,5 +1,5 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { NAME, VERSION, MIN_APP_VERSION, getImageUrl, objToBase64 } from "./tools";
+import { EVENT_SHOW_ID, NAME, VERSION, MIN_APP_VERSION, getImageUrl, objToBase64 } from "./tools";
 import {
     EXTENDED_SHOW_DESCRIPTION_LENGHT,
     getTokenUrl,
@@ -139,12 +139,14 @@ function createEpisodesSeasonPanel(flag: string, activeSeason: any, seasons: any
             items.push(createEpisodesSeasonItem(flag, i, seasons.length, seasons[i], activeSeason, contentId, order));
         }
     }
+    let compress: boolean = items.length > 6;
     return {
+        compress: compress,
         headline: "Staffel",
         template: {
             enumerate: false,
             type: "control",
-            layout: "0,0,8,1"
+            layout: compress ? "0,0,10,1" : "0,0,8,1"
         },
         items: items
     };
@@ -175,7 +177,7 @@ function createEpisodeTemplate(data: any, pagination: any): tvx.MSXContentItem {
             }
         },
         properties: {
-            "resume:key": "id"
+            "resume:key": "url"
         }
     };
 }
@@ -183,7 +185,7 @@ function createEpisodeTemplate(data: any, pagination: any): tvx.MSXContentItem {
 function createEpisodeItems(data: any, extendable: boolean, contentId: string): tvx.MSXContentItem[] {
     let items: tvx.MSXContentItem[] = [];
     let timestamp: number = tvx.DateTools.getTimestamp();
-    if (data.length > 0) {
+    if (data != null && data.length > 0) {
         for (let i: number = 0; i < data.length; i++) {
             let item: any = data[i];
             items.push({
@@ -220,7 +222,7 @@ function createShowTemplate(data: any, pagination: any): tvx.MSXContentItem {
 
 function createShowItems(data: any, extendable: boolean): tvx.MSXContentItem[] {
     let items: tvx.MSXContentItem[] = [];
-    if (data.length > 0) {
+    if (data != null && data.length > 0) {
         for (let i: number = 0; i < data.length; i++) {
             let item: any = data[i];
             items.push({
@@ -419,7 +421,7 @@ function createBeanTemplate(data: any): tvx.MSXContentItem {
         type: "default",
         layout: "0,0,4,2",
         enumerate: false,
-        selection: createListSelection(data.length),
+        selection: createListSelection(data != null ? data.length : -1),
         imageFiller: "height-right",
         imageOverlay: 0
     };
@@ -427,7 +429,7 @@ function createBeanTemplate(data: any): tvx.MSXContentItem {
 
 function createBeanItems(data: any): tvx.MSXContentItem[] {
     let items: tvx.MSXContentItem[] = [];
-    if (data.length > 0) {
+    if (data != null && data.length > 0) {
         for (let i: number = 0; i < data.length; i++) {
             let item: any = data[i];
             items.push({
@@ -550,6 +552,234 @@ function createVideoPanel(beansData: any, episodeData: any): tvx.MSXContentRoot 
     };
 }
 
+function createPanelCloseButton(): tvx.MSXContentItem {
+    return {
+        type: "button",
+        layout: "7,0,1,1",
+        offset: "0,0,-1,-1",
+        action: "back"
+    };
+}
+
+function createOverviewHeader(): tvx.MSXContentPage {
+    return {
+        offset: "0,0,0,0.5",
+        items: [{
+            type: "teaser",
+            layout: "1,0,11,3",
+            offset: "-1,0,1,0",
+            imagePreload: true,
+            image: "https://rocketbeans.de/wordpress/wp-content/themes/rocketbeans/img/fotos/gruppenbild_2.jpg",
+            imageFiller: "width-center",
+            title: "Willkommen bei Rocket Beans TV",
+            titleFooter: "Rocket Beans ist Content Creator, Produktionsfirma, Plattform, Kreativschmiede und Publisher für verspielte, popkulturelle Bewegtbild-Inhalte.",
+            action: "panel:data",
+            data: {
+                pages: [{
+                    headline: "Wir sind die Rocket Beans",
+                    offset: "0,0,0,0.5",
+                    items: [{
+                        type: "space",
+                        layout: "0,0,8,3",
+                        headline: "Moin moin und hallo!",
+                        text: [
+                            "Im Herzen Hamburgs bauen wir – digital und analog – den bedeutendsten Raum für Spiel- und Popkultur-Begeisterte, in dem frei experimentiert werden kann. ",
+                            "Hier entwickeln wir nach unseren eigenen Spielregeln Ideen und schaffen inspirierende Unterhaltung. ",
+                            "Aus einer Produktionsfirma mit 25 Angestellten ist mittlerweile ein Medienunternehmen mit einem breitgefächerten Content-Portfolio geworden. ",
+                            "Mit rund 100 Mitarbeitern produzieren wir Bewegtbild für unsere eigene Plattform rocketbeans.tv und verschiedene Auftraggeber. "
+                        ]
+                    }, createPanelCloseButton()
+                    ]
+                }, {
+                    headline: "Die BEANS",
+                    items: [{
+                        type: "space",
+                        layout: "0,0,8,3",
+                        imagePreload: true,
+                        imageFiller: "width-center",
+                        image: "https://rocketbeans.de/wordpress/wp-content/themes/rocketbeans/img/fotos/BEANS_Gruppenbild_2.jpg"
+                    }, {
+                        type: "space",
+                        layout: "0,3,8,3",
+                        offset: "0,0,0,0.25",
+                        text: [
+                            "Die fünf Gründer von Rocket Beans: Budi, Etienne, Arno, Nils und Simon. ",
+                            "Die Anfangsbuchstaben ihrer Vornamen ergeben zusammen übrigens „BEANS“. ",
+                            "Zufälle gibt's. ",
+                            "Gemeinsam haben die Fünf die Medienlandschaft geprägt und gehören zu den einflussreichsten Moderatoren und Produzenten Deutschlands im Gaming-Bereich. ",
+                            "Zunächst bei NBC Giga, dann als Köpfe von MTV Game One. ",
+                            "Gemeinsam mit dem Rocket-Beans-Team haben sie über 300 Folgen Game One produziert und anschließend den Sender Rocket Beans TV gegründet. "
+                        ]
+                    }, createPanelCloseButton()]
+                }, {
+                    headline: "Kontakt",
+                    items: [{
+                        type: "space",
+                        layout: "0,0,8,6",
+                        text: [
+                            "Rocket Beans Entertainment GmbH{br}",
+                            "Heinrichstraße 09 – 11{br}",
+                            "22769 Hamburg – Germany{br}{br}",
+                            "Tel.: +49 (0)40 – 52 47 39 160{br}",
+                            "Fax: +49 (0)40 – 43 09 75 55{br}{br}",
+                            "Web: https://rocketbeans.de"
+                        ]
+                    }, createPanelCloseButton()]
+                }]
+            }
+        }]
+    };
+}
+
+function createOverviewHeadline(headline: string, count: string): tvx.MSXContentItem {
+    return {
+        type: "space",
+        layout: "1,0,11,1",
+        offset: "-1,0,1,-0.5",
+        headline: headline + " {txt:msx-white-soft:(" + count + ")}"
+    };
+}
+
+function createOverviewMoreButton(name: string, action: string): tvx.MSXContentItem {
+    return {
+        type: "button",
+        layout: "11,0,1,1",
+        offset: "0,0,0,-0.5",
+        icon: "more-horiz",
+        iconSize: "small",
+        selection: {
+            headline: name
+        },
+        action: action
+    };
+}
+
+function createOverviewEpisode(item: any, index: number, timestamp: number): tvx.MSXContentItem {
+    //Note: Do not set ID, because the same episodes can be listed in different sections
+    return {
+        type: "default",
+        layout: (index * 3) + ",0," + (index == 3 ? 2 : 3) + ",3",
+        offset: "0,0.5," + (index == 3 ? 1 : 0) + ",0",
+        imageHeight: 1.6,
+        imageBoundary: true,
+        wrapperColor: "msx-black",
+        truncation: "titleHeader|titleFooter",
+        imageFiller: "height-center",
+        titleHeader: addTextPrefix("{col:msx-white}", item.title),
+        titleFooter: getEpisodeFooter(item, timestamp),
+        image: getThumbnail(item, "small"),
+        stamp: getDuration(item),
+        progressColor: getTokenColor(item),
+        action: createEpisodeAction(item, false),
+        progress: -1,
+        live: {
+            type: "playback",
+            action: "player:show",
+            stamp: getDuration(item),
+            running: {
+                stamp: getLiveDuration(item)
+            }
+        },
+        properties: {
+            "resume:key": "url"
+        }
+    };
+}
+
+function createOverviewShow(item: any, index: number): tvx.MSXContentItem {
+    //Note: Do not set ID, because the same shows can be listed in different sections
+    return {
+        type: "separate",
+        layout: (index * 2) + ",0," + (index == 5 ? 1 : 2) + ",4",
+        offset: "0,0.5," + (index == 5 ? 1 : 0) + ",0",
+        imageFiller: "height-center",
+        title: getShowTitle(item),
+        titleFooter: getShowFooter(item),
+        image: getThumbnail(item, "large"),
+        action: createShowAction(item)
+    };
+}
+
+function createOverviewEpisodes(data: any, timestamp: number): tvx.MSXContentItem[] {
+    let items: tvx.MSXContentItem[] = [];
+    if (data != null && data.length > 0) {
+        for (let i: number = 0; i < data.length; i++) {
+            items.push(createOverviewEpisode(data[i], i, timestamp));
+            if (i == 4) {
+                break;
+            }
+        }
+    }
+    return items;
+}
+
+function createOverviewShows(data: any): tvx.MSXContentItem[] {
+    let items: tvx.MSXContentItem[] = [];
+    if (data != null && data.length > 0) {
+        for (let i: number = 0; i < data.length; i++) {
+            items.push(createOverviewShow(data[i], i));
+            if (i == 6) {
+                break;
+            }
+        }
+    }
+    return items;
+}
+
+function createGenericEpisodesOverview(headline: string, moreButtonName: string, moreButtonAction: string, data: any, pagination: any, timestamp: number): tvx.MSXContentPage {
+    let items: tvx.MSXContentItem[] = createOverviewEpisodes(data, timestamp);
+    let total: number = getTotalItems(data, pagination);
+    if (items.length > 0) {
+        items.push(createOverviewHeadline(headline, getEpisodesCount(total)));
+        if (total > 4) {
+            items.push(createOverviewMoreButton(moreButtonName, moreButtonAction));
+        }
+        return {
+            offset: "0,0,0,1",
+            items: items
+        };
+    }
+    return {
+        display: false,
+        items: []
+    };
+}
+
+function createGenericShowsOverview(headline: string, moreButtonName: string, moreButtonAction: string, data: any, pagination: any): tvx.MSXContentPage {
+    let items: tvx.MSXContentItem[] = createOverviewShows(data);
+    let total: number = getTotalItems(data, pagination);
+    if (items.length > 0) {
+        items.push(createOverviewHeadline(headline, getShowsCount(total)));
+        if (total > 6) {
+            items.push(createOverviewMoreButton(moreButtonName, moreButtonAction));
+        }
+        return {
+            offset: "0,0,0,0.5",
+            items: items
+        };
+    }
+    return {
+        display: false,
+        items: []
+    };
+}
+
+function createNewEpisodesOverview(data: any, pagination: any, timestamp: number): tvx.MSXContentPage {
+    return createGenericEpisodesOverview("Neue Videos", "Zeige alle neuen Videos", "content:" + createContentRequest("new"), data, pagination, timestamp);
+}
+
+function createEventEpisodesOverview(data: any, pagination: any, timestamp: number): tvx.MSXContentPage {
+    return createGenericEpisodesOverview("Aktuelle Events", "Zeige alle Events", "content:" + createContentRequest("show:" + EVENT_SHOW_ID), data, pagination, timestamp);
+}
+
+function createCurrentShowsOverview(data: any, pagination: any): tvx.MSXContentPage {
+    return createGenericShowsOverview("Alle Shows", "Zeige alle Shows", "content:" + createContentRequest("shows"), data, pagination);
+}
+
+function createCurrentPodcastsOverview(data: any, pagination: any): tvx.MSXContentPage {
+    return createGenericShowsOverview("Alle Podcasts", "Zeige alle Podcasts", "content:" + createContentRequest("shows::podcast"), data, pagination);
+}
+
 export function createVersionNotSupported(): tvx.MSXContentRoot {
     return {
         type: "pages",
@@ -629,63 +859,75 @@ export function createCredits(): tvx.MSXContentRoot {
     };
 }
 
-export function createOverview(): tvx.MSXContentRoot {
-    //TODO
-    return null;
+export function createOverview(newEpisodesData: any, eventEpisodesData: any, currentShowsData: any, currentPodcastsData: any): tvx.MSXContentRoot {
+    let timestamp: number = tvx.DateTools.getTimestamp();
+    return {
+        type: "list",
+        preload: "next",
+        headline: "Übersicht",
+        ready: createBackdrop(null),
+        pages: [
+            createOverviewHeader(),
+            createNewEpisodesOverview(newEpisodesData.data.episodes, newEpisodesData.pagination, timestamp),
+            createEventEpisodesOverview(eventEpisodesData.data.episodes, eventEpisodesData.pagination, timestamp),
+            createCurrentShowsOverview(currentShowsData.data, currentShowsData.pagination),
+            createCurrentPodcastsOverview(currentPodcastsData.data, currentPodcastsData.pagination)
+        ]
+    };
 }
 
-export function createNewEpisodes(data: any, pagination: any, extendable: boolean): tvx.MSXContentRoot {
+export function createNewEpisodes(data: any): tvx.MSXContentRoot {
     return {
         type: "list",
         preload: "next",
         headline: "Neue Videos",
         ready: createBackdrop(null),
-        template: createEpisodeTemplate(data, pagination),
-        items: createEpisodeItems(data, extendable, "new"),
+        template: createEpisodeTemplate(data.data, data.pagination),
+        items: createEpisodeItems(data.data, data.extendable, "new"),
         options: createListOptions()
     };
 }
 
-export function createShow(showData: any, seasonId: string, episodesOrder: string, episodesData: any, episodesPagination: any, episodesExtendable: boolean): tvx.MSXContentRoot {
-    let backdrop: string = getThumbnail(showData, "large");
+export function createShow(showData: any, seasonId: string, episodesOrder: string, episodesData: any): tvx.MSXContentRoot {
+    let backdrop: string = getThumbnail(showData.data, "large");
     return {
         flag: "show",
         type: "list",
         preload: "next",
-        headline: getShowTitle(showData),
-        header: createShowHeader(showData, seasonId, episodesOrder, episodesData, episodesPagination),
+        headline: getShowTitle(showData.data),
+        header: createShowHeader(showData.data, seasonId, episodesOrder, episodesData.data, episodesData.pagination),
         ready: createBackdrop(backdrop),
         transparent: tvx.Tools.isFullStr(backdrop) ? 2 : 0,
-        template: createEpisodeTemplate(episodesData, episodesPagination),
-        items: createEpisodeItems(episodesData, episodesExtendable, tvx.Tools.isFullStr(seasonId) ? "show:" + seasonId : "show"),
+        template: createEpisodeTemplate(episodesData.data, episodesData.pagination),
+        items: createEpisodeItems(episodesData.data, episodesData.extendable, tvx.Tools.isFullStr(seasonId) ? "show:" + seasonId : "show"),
         options: createListOptions()
     };
 }
 
-export function createShows(order: string, filter: string, data: any, pagination: any, extendable: boolean): tvx.MSXContentRoot {
+export function createShows(order: string, filter: string, data: any): tvx.MSXContentRoot {
     return {
         flag: "shows",
         type: "list",
         preload: "next",
         headline: "Alle Shows",
-        header: createShowsHeader(order, filter, data, pagination),
+        header: createShowsHeader(order, filter, data.data, data.pagination),
         ready: createBackdrop(null),
-        template: createShowTemplate(data, pagination),
-        items: createShowItems(data, extendable),
+        template: createShowTemplate(data.data, data.pagination),
+        items: createShowItems(data.data, data.extendable),
         options: createListOptions()
     };
 }
 
-export function createBean(beanData: any, episodesOrder: string, episodesData: any, episodesPagination: any, episodesExtendable: boolean): tvx.MSXContentRoot {
+export function createBean(beanData: any, episodesOrder: string, episodesData: any): tvx.MSXContentRoot {
     return {
         flag: "bean",
         type: "list",
         preload: "next",
-        headline: getBeanFullName(beanData),
-        header: createBeanHeader(beanData, episodesOrder, episodesData, episodesPagination),
+        headline: getBeanFullName(beanData.data),
+        header: createBeanHeader(beanData.data, episodesOrder, episodesData.data, episodesData.pagination),
         ready: createBackdrop(null),
-        template: createEpisodeTemplate(episodesData, episodesPagination),
-        items: createEpisodeItems(episodesData, episodesExtendable, "bean"),
+        template: createEpisodeTemplate(episodesData.data, episodesData.pagination),
+        items: createEpisodeItems(episodesData.data, episodesData.extendable, "bean"),
         options: createListOptions()
     };
 }
@@ -695,18 +937,19 @@ export function createBeans(order: string, data: any): tvx.MSXContentRoot {
         flag: "beans",
         type: "list",
         preload: "next",
-        headline: "Bohnen",
-        header: createBeansHeader(order, data.length),
+        headline: "Alle Bohnen",
+        header: createBeansHeader(order, data.data.length),
         ready: createBackdrop(null),
-        template: createBeanTemplate(data),
-        items: createBeanItems(data),
+        template: createBeanTemplate(data.data),
+        items: createBeanItems(data.data),
         options: createListOptions()
     };
 }
 
 export function createVideo(videoId: string, data: any): any {
-    if (data.episodes != null && data.episodes.length > 0) {
-        let episode: any = data.episodes[0];
+    if (data.data.episodes != null && data.data.episodes.length > 0) {
+        let beans: any = data.data.bohnen;
+        let episode: any = data.data.episodes[0];
         let url: string = getTokenUrl(episode);
         if (tvx.Tools.isFullStr(url)) {
             return {
@@ -721,7 +964,7 @@ export function createVideo(videoId: string, data: any): any {
                     "trigger:complete": episode.next != null ? "[player:button:next:execute|resume:position:none]" : "player:eject",
                     "trigger:back": "player:eject",
                     "button:content:icon": "info",
-                    "button:content:action": "panel:json:" + objToBase64(createVideoPanel(data.bohnen, episode)),
+                    "button:content:action": "panel:json:" + objToBase64(createVideoPanel(beans, episode)),
                     "button:next:icon": "default",
                     "button:next:action": createEpisodeAction(episode.next, true),
                     "button:next:key": "channel_up",
