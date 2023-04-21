@@ -1,5 +1,5 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { EVENT_SHOW_ID, NAME, VERSION, MIN_APP_VERSION, getImageUrl, objToBase64 } from "./tools";
+import { EVENT_SHOW_ID, NAME, VERSION, MIN_APP_VERSION, getImageUrl, objToBase64, appendKeepRatioSuffix } from "./tools";
 import {
     EXTENDED_SHOW_DESCRIPTION_LENGHT,
     getTokenUrl,
@@ -577,7 +577,6 @@ function createOverviewHeader(): tvx.MSXContentPage {
             data: {
                 pages: [{
                     headline: "Wir sind die Rocket Beans",
-                    offset: "0,0,0,0.5",
                     items: [{
                         type: "space",
                         layout: "0,0,8,3",
@@ -601,7 +600,7 @@ function createOverviewHeader(): tvx.MSXContentPage {
                     }, {
                         type: "space",
                         layout: "0,3,8,3",
-                        offset: "0,0,0,0.25",
+                        offset: "0,0.5,0,0",
                         text: [
                             "Die fünf Gründer von Rocket Beans: Budi, Etienne, Arno, Nils und Simon. ",
                             "Die Anfangsbuchstaben ihrer Vornamen ergeben zusammen übrigens „BEANS“. ",
@@ -865,6 +864,7 @@ export function createOverview(newEpisodesData: any, eventEpisodesData: any, cur
         type: "list",
         preload: "next",
         headline: "Übersicht",
+        background: appendKeepRatioSuffix(getImageUrl("background")),
         ready: createBackdrop(null),
         pages: [
             createOverviewHeader(),
@@ -881,6 +881,7 @@ export function createNewEpisodes(data: any): tvx.MSXContentRoot {
         type: "list",
         preload: "next",
         headline: "Neue Videos",
+        background: appendKeepRatioSuffix(getImageUrl("background")),
         ready: createBackdrop(null),
         template: createEpisodeTemplate(data.data, data.pagination),
         items: createEpisodeItems(data.data, data.extendable, "new"),
@@ -896,6 +897,7 @@ export function createShow(showData: any, seasonId: string, episodesOrder: strin
         preload: "next",
         headline: getShowTitle(showData.data),
         header: createShowHeader(showData.data, seasonId, episodesOrder, episodesData.data, episodesData.pagination),
+        background: appendKeepRatioSuffix(getImageUrl("background")),
         ready: createBackdrop(backdrop),
         transparent: tvx.Tools.isFullStr(backdrop) ? 2 : 0,
         template: createEpisodeTemplate(episodesData.data, episodesData.pagination),
@@ -911,6 +913,7 @@ export function createShows(order: string, filter: string, data: any): tvx.MSXCo
         preload: "next",
         headline: "Alle Shows",
         header: createShowsHeader(order, filter, data.data, data.pagination),
+        background: appendKeepRatioSuffix(getImageUrl("background")),
         ready: createBackdrop(null),
         template: createShowTemplate(data.data, data.pagination),
         items: createShowItems(data.data, data.extendable),
@@ -939,6 +942,7 @@ export function createBeans(order: string, data: any): tvx.MSXContentRoot {
         preload: "next",
         headline: "Alle Bohnen",
         header: createBeansHeader(order, data.data.length),
+        background: appendKeepRatioSuffix(getImageUrl("background")),
         ready: createBackdrop(null),
         template: createBeanTemplate(data.data),
         items: createBeanItems(data.data),

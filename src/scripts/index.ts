@@ -86,3 +86,8 @@ tvx.PluginTools.onReady(() => {
     tvx.InteractionPlugin.setupHandler(new RbtvHandler());
     tvx.InteractionPlugin.init();
 });
+
+//Add Symbol fix
+if (typeof Symbol == "undefined") {
+    window.Symbol = undefined;
+}
