@@ -142,8 +142,8 @@ function createEpisodesSeasonPanelHeader(flag: string, activeSeason: any, total:
     allEpisodesItem.layout = compress ? "0,0,10,1" : "0,0,8,1";
     allEpisodesItem.offset = compress ? "0,0,0,0.333" : null;
     return {
-        offset: compress ? "0,0,0,1" : "0,0,0,0.5",
         compress: false,
+        offset: compress ? "0,0,0,1" : "0,0,0,0.5",
         items: [allEpisodesItem, {
             display: total > 0,
             type: "space",
@@ -162,7 +162,7 @@ function createEpisodesSeasonPanel(flag: string, activeSeason: any, seasons: any
             items.push(createEpisodesSeasonItem(flag, i, total, seasons[i], activeSeason, contentId, order));
         }
     }
-    let compress: boolean = total > 5;
+    let compress: boolean = total > 6;
     return {
         compress: compress,
         headline: "Staffel",
@@ -546,13 +546,16 @@ function createVideoPanel(beansData: any, episodeData: any): tvx.MSXContentRoot 
                 });
             }
         }
+        for (let i: number = 0; i < items.length; i++) {
+            items[i].selection = createItemSelection(i, items.length);
+        }
     }
     let shrink: boolean = items.length > 6;
     let compress: boolean = items.length > 12;
     if (tvx.Tools.isNum(episodeData.showId) && tvx.Tools.isFullStr(episodeData.showName)) {
         header = {
             compress: false,
-            offset: compress ? "0,0,0,0.666" : "0,0,0,0.25",
+            offset: compress ? "0,0,0,1" : "0,0,0,0.5",
             items: [{
                 type: "control",
                 layout: compress ? "0,0,10,1" : "0,0,8,1",
@@ -560,12 +563,18 @@ function createVideoPanel(beansData: any, episodeData: any): tvx.MSXContentRoot 
                 icon: "local-movies",
                 label: episodeData.showName,
                 action: "player:content:" + createContentRequest("show:" + episodeData.showId + (tvx.Tools.isNum(episodeData.seasonId) ? ":" + episodeData.seasonId : ""))
+            }, {
+                display: items.length > 0,
+                type: "space",
+                layout: compress ? "1,0,9,1" : "1,0,7,1",
+                offset: compress ? "-1,1.37,1,0" : "-1,1.03,1,0",
+                text: getBeansCount(items.length)
             }]
         };
     }
     return {
         compress: compress,
-        headline: getVideoTitle(episodeData),
+        headline: "Show & Bohnen",
         header: header,
         template: {
             enumerate: false,
