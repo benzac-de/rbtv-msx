@@ -1,15 +1,15 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { NAME, VERSION, getImageUrl, appendKeepRatioSuffix } from "./tools";
-import { createContentRequest } from "./content-tools";
+import { NAME, VERSION } from "./tools";
+import { createLogoUrl, createBackgroundUrl, createContentRequest } from "./content-tools";
 
 export function createMenu(): tvx.MSXMenuRoot {
     return {
         name: NAME,
         version: VERSION,
         headline: NAME,
-        logo: getImageUrl("logo"),
+        logo: createLogoUrl(),
         logoSize: "small",
-        background: appendKeepRatioSuffix(getImageUrl("background")),
+        background: createBackgroundUrl(),
         style: "flat-separator",
         menu: [{
             type: "separator",

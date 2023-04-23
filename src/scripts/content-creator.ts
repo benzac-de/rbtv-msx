@@ -15,6 +15,7 @@ import {
     getEpisodesSeasonLabel,
     getImage,
     getListNumber,
+    getSeasonsCount,
     getShowDescription,
     getShowFooter,
     getShowTitle,
@@ -33,7 +34,10 @@ import {
     getBeanId,
     getShowId,
     getEpisodeId,
-    getShowreelAction
+    getShowreelAction,
+    createHeaderUrl,
+    createShadowUrl,
+    createBackgroundUrl
 } from "./content-tools";
 
 function completeError(error: string): string {
@@ -132,14 +136,33 @@ function createEpisodesSeasonItem(flag: string, index: number, total: number, cu
     };
 }
 
+function createEpisodesSeasonPanelHeader(flag: string, activeSeason: any, total: number, contentId: string, order: string, compress: boolean): tvx.MSXContentPage {
+    let allEpisodesItem: tvx.MSXContentItem = createEpisodesSeasonItem(flag, -1, -1, null, activeSeason, contentId, order);
+    allEpisodesItem.type = "control";
+    allEpisodesItem.layout = compress ? "0,0,10,1" : "0,0,8,1";
+    allEpisodesItem.offset = compress ? "0,0,0,0.333" : null;
+    return {
+        offset: compress ? "0,0,0,1" : "0,0,0,0.5",
+        compress: false,
+        items: [allEpisodesItem, {
+            display: total > 0,
+            type: "space",
+            layout: compress ? "1,0,9,1" : "1,0,7,1",
+            offset: compress ? "-1,1.37,1,0" : "-1,1.03,1,0",
+            text: getSeasonsCount(total)
+        }]
+    };
+}
+
 function createEpisodesSeasonPanel(flag: string, activeSeason: any, seasons: any, contentId: string, order: string): tvx.MSXContentRoot {
-    let items: any = [createEpisodesSeasonItem(flag, -1, -1, null, activeSeason, contentId, order)];
-    if (seasons != null && seasons.length > 0) {
-        for (let i: number = 0; i < seasons.length; i++) {
-            items.push(createEpisodesSeasonItem(flag, i, seasons.length, seasons[i], activeSeason, contentId, order));
+    let items: tvx.MSXContentItem[] = [];
+    let total: number = seasons != null ? seasons.length : -1;
+    if (total > 0) {
+        for (let i: number = 0; i < total; i++) {
+            items.push(createEpisodesSeasonItem(flag, i, total, seasons[i], activeSeason, contentId, order));
         }
     }
-    let compress: boolean = items.length > 6;
+    let compress: boolean = total > 5;
     return {
         compress: compress,
         headline: "Staffel",
@@ -148,6 +171,7 @@ function createEpisodesSeasonPanel(flag: string, activeSeason: any, seasons: any
             type: "control",
             layout: compress ? "0,0,10,1" : "0,0,8,1"
         },
+        header: createEpisodesSeasonPanelHeader(flag, activeSeason, total, contentId, order, compress),
         items: items
     };
 }
@@ -455,7 +479,7 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
             offset: "-1.25,-1,2,1",
             color: "msx-black",
             imagePreload: true,
-            image: getImageUrl("header"),
+            image: createHeaderUrl(),
             imageFiller: "width-center",
             imageOverlay: 4
         }, {
@@ -463,7 +487,7 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
             layout: "0,2,12,1",
             offset: "-1.25,-0.166,2,-0.666",
             imagePreload: true,
-            image: getImageUrl("shadow")
+            image: createShadowUrl()
         }, {
             type: "space",
             layout: "6,0,6,2",
@@ -864,7 +888,7 @@ export function createOverview(newEpisodesData: any, eventEpisodesData: any, cur
         type: "list",
         preload: "next",
         headline: "Übersicht",
-        background: appendKeepRatioSuffix(getImageUrl("background")),
+        background: createBackgroundUrl(),
         ready: createBackdrop(null),
         pages: [
             createOverviewHeader(),
@@ -881,7 +905,7 @@ export function createNewEpisodes(data: any): tvx.MSXContentRoot {
         type: "list",
         preload: "next",
         headline: "Neue Videos",
-        background: appendKeepRatioSuffix(getImageUrl("background")),
+        background: createBackgroundUrl(),
         ready: createBackdrop(null),
         template: createEpisodeTemplate(data.data, data.pagination),
         items: createEpisodeItems(data.data, data.extendable, "new"),
@@ -897,7 +921,7 @@ export function createShow(showData: any, seasonId: string, episodesOrder: strin
         preload: "next",
         headline: getShowTitle(showData.data),
         header: createShowHeader(showData.data, seasonId, episodesOrder, episodesData.data, episodesData.pagination),
-        background: appendKeepRatioSuffix(getImageUrl("background")),
+        background: createBackgroundUrl(),
         ready: createBackdrop(backdrop),
         transparent: tvx.Tools.isFullStr(backdrop) ? 2 : 0,
         template: createEpisodeTemplate(episodesData.data, episodesData.pagination),
@@ -913,7 +937,7 @@ export function createShows(order: string, filter: string, data: any): tvx.MSXCo
         preload: "next",
         headline: "Alle Shows",
         header: createShowsHeader(order, filter, data.data, data.pagination),
-        background: appendKeepRatioSuffix(getImageUrl("background")),
+        background: createBackgroundUrl(),
         ready: createBackdrop(null),
         template: createShowTemplate(data.data, data.pagination),
         items: createShowItems(data.data, data.extendable),
@@ -928,6 +952,7 @@ export function createBean(beanData: any, episodesOrder: string, episodesData: a
         preload: "next",
         headline: getBeanFullName(beanData.data),
         header: createBeanHeader(beanData.data, episodesOrder, episodesData.data, episodesData.pagination),
+        background: createBackgroundUrl(),
         ready: createBackdrop(null),
         template: createEpisodeTemplate(episodesData.data, episodesData.pagination),
         items: createEpisodeItems(episodesData.data, episodesData.extendable, "bean"),
@@ -942,7 +967,7 @@ export function createBeans(order: string, data: any): tvx.MSXContentRoot {
         preload: "next",
         headline: "Alle Bohnen",
         header: createBeansHeader(order, data.data.length),
-        background: appendKeepRatioSuffix(getImageUrl("background")),
+        background: createBackgroundUrl(),
         ready: createBackdrop(null),
         template: createBeanTemplate(data.data),
         items: createBeanItems(data.data),

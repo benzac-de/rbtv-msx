@@ -1,22 +1,25 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
+import { polyfix } from "./parcel-polyfix";
+
+polyfix();
 
 const KEEP_RATIO_SUFFIX: string = "#msx-keep-ratio";
 const INTERACTION_REF_SUFFIX: string = "@" + window.location.href;
 const IMAGE_URLS: any = {
     //@ts-ignore
-    "logo": new URL("../images/logo.png", import.meta.url).toString(),
+    "logo": new URL("../images/logo.png", import.meta.url).href,
     //@ts-ignore
-    "background": new URL("../images/background.jpg", import.meta.url).toString(),
+    "background": new URL("../images/background.jpg", import.meta.url).href,
     //@ts-ignore
-    "header": new URL("../images/header.jpg", import.meta.url).toString(),
+    "header": new URL("../images/header.jpg", import.meta.url).href,
     //@ts-ignore
-    "shadow": new URL("../images/shadow.png", import.meta.url).toString(),
+    "shadow": new URL("../images/shadow.png", import.meta.url).href,
     //@ts-ignore
-    "backdrop-mask": new URL("../images/backdrop-mask.png", import.meta.url).toString()
+    "backdrop-mask": new URL("../images/backdrop-mask.png", import.meta.url).href
 };
 
 export const NAME: string = "RBTV MSX";
-export const VERSION: string = "1.0.2";
+export const VERSION: string = "1.0.3";
 export const MIN_APP_VERSION: string = "0.1.150";
 export const EVENT_SHOW_ID: string = "405";
 

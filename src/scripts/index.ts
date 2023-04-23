@@ -5,6 +5,9 @@ import { loadContent, executeContent, loadVideo } from "./content";
 import { callCallback } from "./tools";
 import { ContentController } from "./content-controller";
 import { loadImage } from "./backdrop";
+import { polyfix } from "./parcel-polyfix";
+
+polyfix();
 
 class RbtvHandler implements tvx.TVXInteractionPluginHandler {
     private contentController: ContentController = new ContentController();
@@ -86,8 +89,3 @@ tvx.PluginTools.onReady(() => {
     tvx.InteractionPlugin.setupHandler(new RbtvHandler());
     tvx.InteractionPlugin.init();
 });
-
-//Add Symbol fix
-if (typeof Symbol == "undefined") {
-    window.Symbol = undefined;
-}

@@ -1,6 +1,6 @@
 {
   "name": "rbtv-msx",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "RBTV MSX",
   "scripts": {
     "clean": "rimraf dist/*.*",
@@ -8,7 +8,7 @@
     "build": "parcel build",
     "clean-build": "npm run clean && npm run build"
   },
-  "browserslist": "> 0.1% and ie 11",
+  "browserslist": "since 2010",
   "targets": {
     "default": {
       "publicUrl": ".",

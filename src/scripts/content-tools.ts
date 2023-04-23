@@ -1,5 +1,5 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { appendInteractionRefSuffix } from "./tools";
+import { appendInteractionRefSuffix, appendKeepRatioSuffix, getImageUrl } from "./tools";
 
 const YOUTUBE_COLOR: string = "#ff0000";
 const TWITCH_COLOR: string = "#643fa6";
@@ -311,6 +311,10 @@ export function getBeansCount(total: number): string {
     return total == 1 ? "Eine Bohne" : total + " Bohnen";
 }
 
+export function getSeasonsCount(total: number): string {
+    return total == 1 ? "Eine Staffel" : total + " Staffeln";
+}
+
 export function getEpisodeFooter(item: any, timestamp: number): string {
     let footer: string = null;
     if (item != null) {
@@ -416,4 +420,20 @@ export function createContentRequest(contentId: string): string {
 
 export function createVideoRequest(videoId: string): string {
     return appendInteractionRefSuffix("request:interaction:video:" + videoId);
+}
+
+export function createLogoUrl(): string {
+    return getImageUrl("logo");
+}
+
+export function createHeaderUrl(): string {
+    return getImageUrl("header");
+}
+
+export function createShadowUrl(): string {
+    return getImageUrl("shadow");
+}
+
+export function createBackgroundUrl(): string {
+    return appendKeepRatioSuffix(getImageUrl("background"));
 }
