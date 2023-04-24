@@ -69,15 +69,15 @@ function createListOptions(): tvx.MSXContentPage {
     };
 }
 
-function createListSelection(total: number): tvx.MSXSelection {
+function createListSelection(context: string, total: number): tvx.MSXSelection {
     return {
-        headline: "{context:number}/" + total
+        headline: addTextPrefix(context, "{context:number}/" + total, " ")
     };
 }
 
-function createItemSelection(index: number, total: number): tvx.MSXSelection {
+function createItemSelection(context: string, index: number, total: number): tvx.MSXSelection {
     return {
-        headline: (index + 1) + "/" + total
+        headline: addTextPrefix(context, (index + 1) + "/" + total, " ")
     };
 }
 
@@ -131,7 +131,7 @@ function createEpisodesSeasonItem(flag: string, index: number, total: number, cu
         focus: active,
         label: getEpisodesSeasonLabel(currentSeason, true),
         extensionIcon: active ? "check" : "blank",
-        selection: index >= 0 ? createItemSelection(index, total) : null,
+        selection: index >= 0 ? createItemSelection("Staffel", index, total) : null,
         action: active ? "back" : "[back|invalidate:content|replace:content:" + flag + ":" + createContentRequest(contentId + ":" + (currentSeason != null ? currentSeason.id : "") + ":" + order) + "]"
     };
 }
@@ -165,7 +165,7 @@ function createEpisodesSeasonPanel(flag: string, activeSeason: any, seasons: any
     let compress: boolean = total > 6;
     return {
         compress: compress,
-        headline: "Staffel",
+        headline: "Folgenauswahl",
         template: {
             enumerate: false,
             type: "control",
@@ -189,7 +189,7 @@ function createEpisodeTemplate(data: any, pagination: any): tvx.MSXContentItem {
         wrapperColor: "msx-black",
         truncation: "titleHeader|titleFooter",
         enumerate: false,
-        selection: createListSelection(getTotalItems(data, pagination)),
+        selection: createListSelection("Folge", getTotalItems(data, pagination)),
         imageFiller: "height-center",
         progress: -1,
         live: {
@@ -239,7 +239,7 @@ function createShowTemplate(data: any, pagination: any): tvx.MSXContentItem {
         type: "separate",
         layout: "0,0,2,4",
         enumerate: false,
-        selection: createListSelection(getTotalItems(data, pagination)),
+        selection: createListSelection("Show", getTotalItems(data, pagination)),
         imageFiller: "height-center"
     };
 }
@@ -370,7 +370,7 @@ function createShowHeader(showData: any, seasonId: string, episodesOrder: string
             type: "control",
             layout: "0," + (hasDescription ? descriptionHeight + 1 : 1) + ",9,1",
             icon: "filter-list",
-            label: "Staffel",
+            label: "Folgenauswahl",
             extensionLabel: getEpisodesSeasonLabel(activeSeason, false),
             action: "panel:data",
             data: createEpisodesSeasonPanel("show", activeSeason, showData.seasons, "show:" + showData.id, episodesOrder)
@@ -445,7 +445,7 @@ function createBeanTemplate(data: any): tvx.MSXContentItem {
         type: "default",
         layout: "0,0,4,2",
         enumerate: false,
-        selection: createListSelection(data != null ? data.length : -1),
+        selection: createListSelection("Bohne", data != null ? data.length : -1),
         imageFiller: "height-right",
         imageOverlay: 0
     };
@@ -547,7 +547,7 @@ function createVideoPanel(beansData: any, episodeData: any): tvx.MSXContentRoot 
             }
         }
         for (let i: number = 0; i < items.length; i++) {
-            items[i].selection = createItemSelection(i, items.length);
+            items[i].selection = createItemSelection("Bohne", i, items.length);
         }
     }
     let shrink: boolean = items.length > 6;

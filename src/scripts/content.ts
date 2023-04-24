@@ -73,11 +73,11 @@ function getContentToken(contentToken: string, first: boolean): string {
 }
 
 export function loadContent(contentId: string, callback: (data: any) => void): void {
-    tvx.InteractionPlugin.onValidatedSettings((data: tvx.MSXAttachedInfo) => {
+    tvx.InteractionPlugin.onValidatedSettings((infoData: tvx.MSXAttachedInfo) => {
         if (tvx.Tools.isFullStr(contentId)) {
             if (contentId == "credits") {
                 callCallback(createCredits(), callback);
-            } else if (checkVersion(data)) {
+            } else if (checkVersion(infoData)) {
                 if (contentId == "overview") {
                     loadOverview((newEpisodesData: any, eventEpisodesData: any, currentShowsData: any, currentPodcastsData: any) => {
                         if (!handleContentLoadError(contentId + ":new", newEpisodesData, callback) &&
@@ -91,9 +91,9 @@ export function loadContent(contentId: string, callback: (data: any) => void): v
                     let contentToken: string = contentId.indexOf("shows:") == 0 ? contentId.substring(6) : null;
                     let order: string = tvx.Tools.strFullCheck(getContentToken(contentToken, true), "default");
                     let filter: string = tvx.Tools.strFullCheck(getContentToken(contentToken, false), "default");
-                    loadShowList(getShowsOrderParameter(order), getShowsFilterParameter(filter), (data: any) => {
-                        if (!handleContentLoadError(contentId, data, callback)) {
-                            callCallback(createShows(order, filter, data), callback);
+                    loadShowList(getShowsOrderParameter(order), getShowsFilterParameter(filter), (showsData: any) => {
+                        if (!handleContentLoadError(contentId, showsData, callback)) {
+                            callCallback(createShows(order, filter, showsData), callback);
                         }
                     });
                 } else if (contentId.indexOf("show:") == 0) {
@@ -108,17 +108,17 @@ export function loadContent(contentId: string, callback: (data: any) => void): v
                         }
                     });
                 } else if (contentId == "new") {
-                    loadNewEpisodeList(getEpisodesOrderParameter("default"), (data: any) => {
-                        if (!handleContentLoadError(contentId, data, callback)) {
-                            callCallback(createNewEpisodes(data), callback);
+                    loadNewEpisodeList(getEpisodesOrderParameter("default"), (episodesData: any) => {
+                        if (!handleContentLoadError(contentId, episodesData, callback)) {
+                            callCallback(createNewEpisodes(episodesData), callback);
                         }
                     });
                 } else if (contentId == "beans" || contentId.indexOf("beans:") == 0) {
                     let contentToken: string = contentId.indexOf("beans:") == 0 ? contentId.substring(6) : null;
                     let order: string = tvx.Tools.strFullCheck(getContentToken(contentToken, true), "default");
-                    loadBeans(order, (data: any) => {
-                        if (!handleContentLoadError(contentId, data, callback)) {
-                            callCallback(createBeans(order, data), callback);
+                    loadBeans(order, (beansData: any) => {
+                        if (!handleContentLoadError(contentId, beansData, callback)) {
+                            callCallback(createBeans(order, beansData), callback);
                         }
                     });
                 } else if (contentId.indexOf("bean:") == 0) {

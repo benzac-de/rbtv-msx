@@ -23,16 +23,6 @@ export function createMenu(): tvx.MSXMenuRoot {
             label: "Neue Videos",
             data: createContentRequest("new")
         }, {
-            display: false,
-            icon: "event",
-            label: "Zukünftige Videos",
-            data: createContentRequest("schedule")
-        }, {
-            display: false,
-            icon: "recent-actors",
-            label: "Team Rocket Beans",
-            data: createContentRequest("team")
-        }, {
             icon: "local-movies",
             label: "Alle Shows",
             data: createContentRequest("shows")
