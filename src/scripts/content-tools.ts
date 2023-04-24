@@ -13,7 +13,7 @@ const YOUTUBE_PREFIX_1: string = "https://youtu.be/";
 const YOUTUBE_PREFIX_2: string = "https://www.youtube.com/watch?v=";
 
 export const EXTENDED_SHOW_DESCRIPTION_LENGHT: number = 380;
-export const MAX_SEASON_NAME_LENGHT: number = 50;
+export const MAX_SEASON_NAME_LENGHT: number = 45;
 
 function tryApplyToken(item: any, type: string): boolean {
     if (item != null) {
