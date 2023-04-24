@@ -1,6 +1,10 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
 import { callCallback } from "./tools";
 
+const CACHE_EXPIRATION: number = 3600000;//1 hour
+
+const cache: any = {};
+
 function compareBeanIndex(bean1: any, bean2: any): number {
     return bean1.msxIndex - bean2.msxIndex;
 }
@@ -66,6 +70,32 @@ function mergeData(originData: any, moreData: any): any {
 function createParameter(name: string, value: string | number): string {
     if (tvx.Tools.isFullStr(name) && (tvx.Tools.isFullStr(value) || tvx.Tools.isNum(value))) {
         return encodeURIComponent(name) + "=" + (tvx.Tools.isNum(value) ? value : encodeURIComponent(value));
+    }
+    return null;
+}
+
+function validateCache() {
+    let timestamp: number = tvx.DateTools.getTimestamp();
+    for (let id in cache) {
+        if (timestamp - cache[id].timestamp > CACHE_EXPIRATION) {
+            delete cache[id];
+        }
+    }
+}
+
+export function storeData(id: string, data: any): void {
+    if (tvx.Tools.isFullStr(id) && data != null) {
+        cache[id] = {
+            data: data,
+            timestamp: tvx.DateTools.getTimestamp()
+        };
+    }
+}
+
+export function restoreData(id: string): any {
+    if (tvx.Tools.isFullStr(id)) {
+        validateCache();
+        return cache[id] != null ? cache[id].data : null;
     }
     return null;
 }

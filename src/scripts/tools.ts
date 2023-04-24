@@ -3,6 +3,7 @@ import { polyfix } from "./parcel-polyfix";
 
 polyfix();
 
+const PROXY_URL: string = tvx.Tools.getPrefixUrl("rbtv.msx.benzac.de/services/proxy.php?id={ID}");
 const KEEP_RATIO_SUFFIX: string = "#msx-keep-ratio";
 const INTERACTION_REF_SUFFIX: string = "@" + window.location.href;
 const IMAGE_URLS: any = {
@@ -19,9 +20,12 @@ const IMAGE_URLS: any = {
 };
 
 export const NAME: string = "RBTV MSX";
-export const VERSION: string = "1.0.3";
+export const VERSION: string = "1.0.4";
 export const MIN_APP_VERSION: string = "0.1.150";
 export const EVENT_SHOW_ID: string = "405";
+export const INFO: any = {
+    localContext: false
+};
 
 export function getImageUrl(name: string): string {
     return tvx.Tools.isFullStr(name) ? IMAGE_URLS[name] : null;
@@ -50,4 +54,17 @@ export function checkVersion(data: tvx.MSXAttachedInfo): boolean {
         return tvx.Tools.checkVersion(data.info.application.version, MIN_APP_VERSION);
     }
     return false;
+}
+
+export function proxyImage(url: string): string {
+    if (tvx.Tools.isFullStr(url) && url.indexOf("//") == 0) {
+        url = (tvx.Tools.isSecureContext() ? "https:" : "http:") + url;
+    }
+    return tvx.Tools.isHttpUrl(url) ? tvx.Tools.strReplace(PROXY_URL, "{ID}", tvx.Tools.base64EncodeId(url)) : null;
+}
+
+export function proxyImageForLocalContext(url: string): string {
+    //Note: Currently, some images from the RBTV backend cannot be served for an unknown origin (e.g. within a local context)
+    //Therefore, we need to load them through a proxy (hopefully, this workaround is only needed temporarily)
+    return INFO.localContext ? proxyImage(url) : url;
 }

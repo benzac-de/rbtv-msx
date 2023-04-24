@@ -2,7 +2,7 @@ import $ from "jquery";
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
 import { createMenu } from "./menu";
 import { loadContent, executeContent, loadVideo } from "./content";
-import { callCallback } from "./tools";
+import { INFO, callCallback } from "./tools";
 import { ContentController } from "./content-controller";
 import { loadImage } from "./backdrop";
 import { polyfix } from "./parcel-polyfix";
@@ -51,7 +51,9 @@ class RbtvHandler implements tvx.TVXInteractionPluginHandler {
     }
 
     public ready(): void {
-        tvx.InteractionPlugin.validateSettings();
+        tvx.InteractionPlugin.validateSettings((data: tvx.MSXAttachedInfo) => {
+            INFO.localContext = data.info != null && data.info.host === "local";
+        });
         this.contentController.validate();
     }
 

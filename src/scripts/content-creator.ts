@@ -1,5 +1,5 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { EVENT_SHOW_ID, NAME, VERSION, MIN_APP_VERSION, getImageUrl, objToBase64, appendKeepRatioSuffix } from "./tools";
+import { EVENT_SHOW_ID, NAME, VERSION, MIN_APP_VERSION, objToBase64, proxyImageForLocalContext } from "./tools";
 import {
     EXTENDED_SHOW_DESCRIPTION_LENGHT,
     getTokenUrl,
@@ -461,7 +461,7 @@ function createBeanItems(data: any): tvx.MSXContentItem[] {
                 number: getListNumber(i),
                 title: getBeanName(item),
                 titleFooter: item.episodeCount > 0 ? "{ico:video-collection} " + item.episodeCount : null,
-                image: getImage(item, "large"),
+                image: proxyImageForLocalContext(getImage(item, "large")),
                 action: createBeanAction(item)
             });
         }
@@ -493,7 +493,7 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
             layout: "6,0,6,2",
             offset: "0,-1,0,1",
             imagePreload: true,
-            image: getPotraitImage(beanData, "large"),
+            image: proxyImageForLocalContext(getPotraitImage(beanData, "large")),
             imageFiller: "height-right"
         }, {
             type: "control",
@@ -538,7 +538,7 @@ function createVideoPanel(beansData: any, episodeData: any): tvx.MSXContentRoot 
             if (tvx.Tools.isNum(beanId)) {
                 let bean: any = beansData[beanId];
                 items.push({
-                    image: getImage(bean, "small"),
+                    image: proxyImageForLocalContext(getImage(bean, "small")),
                     imageFiller: "width-center",
                     imagePreload: true,
                     label: getBeanName(bean),
@@ -595,6 +595,7 @@ function createPanelCloseButton(): tvx.MSXContentItem {
 }
 
 function createOverviewHeader(): tvx.MSXContentPage {
+    //Note: Texts and images for this header come from this website: https://rocketbeans.de/wer-wir-sind/
     return {
         offset: "0,0,0,0.5",
         items: [{

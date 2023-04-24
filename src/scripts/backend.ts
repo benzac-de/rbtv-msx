@@ -12,7 +12,9 @@ import {
     getListLimit,
     shoudlLoadList,
     startLoadList,
-    stopLoadList
+    stopLoadList,
+    restoreData,
+    storeData
 } from "./backend-tools";
 
 const SERVER_ROOT: string = "https://api.rocketbeans.tv/v1";
@@ -26,23 +28,22 @@ const BEANS_PATH: string = "/bohne/portrait/all";
 const BEAN_EPISODES_PATH: string = "/media/episode/bybohne/{ID}";
 const EPISODE_PATH: string = "/media/episode/{ID}";
 
-const cache: any = {};
-
 let showList: any = null;
 let episodeList: any = null;
 
 function loadContent(path: string, query: string, callback?: (data: any) => void, useCache?: boolean): void {
     if (tvx.Tools.isFullStr(path)) {
         let url: string = appendQuery(SERVER_ROOT + path, query);
-        if (useCache === true && cache[url] != null) {
-            callCallback(cache[url], callback);
+        let cachedData: any = useCache === true ? restoreData(url) : null;
+        if (cachedData != null) {
+            callCallback(cachedData, callback);
         } else {
             tvx.Services.ajax.get(url, {
                 success(data: any) {
                     if (data.success === true) {
                         if (data.data != null) {
                             if (useCache === true) {
-                                cache[url] = data;
+                                storeData(url, data);
                             }
                             callCallback(data, callback);
                         } else {

@@ -1,6 +1,7 @@
 let polyfixed: boolean = false;
 
 export function polyfix(): void {
+    //Note: This function is called polyfix (instead of polyfill), because it just fixes some TV-related parcel issues (instead of providing a fulfilled implementation)
     if (!polyfixed) {
         polyfixed = true;
         //Add Symbol fix
