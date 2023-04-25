@@ -2,13 +2,13 @@
 This is a **Rocket Beans TV (RBTV)** portal for the **Media Station X (MSX)** application that allows you to consume RBTV content on your Smart TV. It uses the [Rocket Beans TV API](https://github.com/rocketbeans/rbtv-apidoc) to browse and play RBTV content. You can simply set it up by installing MSX on your Smart TV (please see [Platform Support](https://msx.benzac.de/info/?tab=PlatformSupport) for corresponding application stores), launching it, and entering `rbtv.msx.benzac.de` as start parameter. You can also launch the portal directly in your browser by opening this link: [RBTV MSX](https://msx.benzac.de/?start=menu:request:interaction:init@https://rbtv.msx.benzac.de).
 
 ## Features
-* Minimalistic, fast, and responsive UI (optimized for Smart TVs)
+* Clean, minimalistic, fast, and responsive UI (optimized for Smart TVs)
 * Automatic list expansion (continuous scrolling)
 * Extensive video information (related episodes, related show, involved people, etc.)
 * Resume functions (show progress and resume content from last position)
 
 ## Screenshots
-TODO
+![Interaction Plugin Test](https://rbtv.msx.benzac.de/assets/screens.png)
 
 ## Related Links
 * Rocket Beans TV: https://rocketbeans.tv/
@@ -16,7 +16,8 @@ TODO
 
 ## Possible Extensions
 * User login/logout
-* User related content
+* User related content (manage playlists, show subscribed shows/beans, etc.)
+* Add/remove favorite shows/beans to main menu
 
 ## For Developers
 ### Installing
