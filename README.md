@@ -8,7 +8,7 @@ This is a **Rocket Beans TV (RBTV)** portal for the **Media Station X (MSX)** ap
 * Resume functions (show progress and resume content from last position)
 
 ## Screenshots
-![Interaction Plugin Test](https://rbtv.msx.benzac.de/assets/screens.png)
+![RBTV MSX](https://rbtv.msx.benzac.de/assets/screens.png)
 
 ## Related Links
 * Rocket Beans TV: https://rocketbeans.tv/
