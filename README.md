@@ -4,7 +4,7 @@ This is a **Rocket Beans TV (RBTV)** portal for the **Media Station X (MSX)** ap
 ## Features
 * Clean, minimalistic, fast, and responsive UI (optimized for Smart TVs)
 * Automatic list expansion (continuous scrolling)
-* Extensive video information (related episodes, related show, involved people, etc.)
+* Extensive video information (related episodes, related show, involved beans, etc.)
 * Resume functions (show progress and resume content from last position)
 
 ## Screenshots
