@@ -15,6 +15,7 @@ This is a **Rocket Beans TV (RBTV)** portal for the **Media Station X (MSX)** ap
 * Media Station X: https://msx.benzac.de/info/
 
 ## Possible Extensions
+* Search for shows/episodes
 * User login/logout
 * User related content (manage playlists, show subscribed shows/beans, etc.)
 * Add/remove favorite shows/beans to main menu
