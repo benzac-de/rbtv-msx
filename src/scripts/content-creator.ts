@@ -872,6 +872,8 @@ export function createCredits(): tvx.MSXContentRoot {
     return {
         type: "pages",
         headline: "Credits",
+        background: createBackgroundUrl(),
+        ready: createBackdrop(null),
         pages: [{
             items: [{
                 type: "default",
