@@ -33,6 +33,12 @@ export function createMenu(): tvx.MSXMenuRoot {
         }, {
             type: "separator"
         }, {
+            icon: "settings",
+            label: "Einstellungen",
+            data: createContentRequest("settings")
+        }, {
+            type: "separator"
+        }, {
             icon: "info",
             label: "Credits",
             data: createContentRequest("credits")

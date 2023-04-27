@@ -1,4 +1,6 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
+import { Info } from "./info";
+import { Settings } from "./settings";
 import { polyfix } from "./parcel-polyfix";
 
 polyfix();
@@ -20,12 +22,11 @@ const IMAGE_URLS: any = {
 };
 
 export const NAME: string = "RBTV MSX";
-export const VERSION: string = "1.0.5";
+export const VERSION: string = "1.0.6";
 export const MIN_APP_VERSION: string = "0.1.150";
 export const EVENT_SHOW_ID: string = "405";
-export const INFO: any = {
-    localContext: false
-};
+export const INFO: Info = new Info();
+export const SETTINGS: Settings = new Settings();
 
 export function getImageUrl(name: string): string {
     return tvx.Tools.isFullStr(name) ? IMAGE_URLS[name] : null;
@@ -60,7 +61,7 @@ export function proxyImage(url: string): string {
     if (tvx.Tools.isFullStr(url) && url.indexOf("//") == 0) {
         url = (tvx.Tools.isSecureContext() ? "https:" : "http:") + url;
     }
-    return tvx.Tools.isHttpUrl(url) ? tvx.Tools.strReplace(PROXY_URL, "{ID}", tvx.Tools.base64EncodeId(url)) : null;
+    return tvx.Tools.isHttpUrl(url) ? PROXY_URL.replace("{ID}", tvx.Tools.base64EncodeId(url)) : null;
 }
 
 export function proxyImageForLocalContext(url: string): string {

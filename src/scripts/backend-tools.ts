@@ -35,17 +35,15 @@ function preloadData(data: any): void {
     if (data != null && data.length > 0) {
         for (let i: number = 0; i < data.length; i++) {
             data[i].preload = true;
+            data[i].preloadOffset = data.length - 1 - i;
         }
     }
 }
 
-function concatData(originData: any, moreData: any, extendable: boolean): any {
+function concatData(originData: any, moreData: any): any {
     if (originData != null && originData.length > 0) {
         if (moreData != null && moreData.length > 0) {
             preloadData(originData);
-            if (!extendable) {
-                preloadData(moreData);
-            }
             return originData.concat(moreData);
         }
         return originData;
@@ -195,11 +193,11 @@ export function extendList(list: any, data: any): void {
         list.extendable = canExtendList(list);
         if (data.data != null && data.data.episodes != null) {
             //Episodes request
-            list.data = concatData(list.data, data.data.episodes, list.extendable);
+            list.data = concatData(list.data, data.data.episodes);
             list.bohnen = mergeData(list.bohnen, data.data.bohnen);
         } else {
             //Shows request
-            list.data = concatData(list.data, data.data, list.extendable);
+            list.data = concatData(list.data, data.data);
         }
     }
 }

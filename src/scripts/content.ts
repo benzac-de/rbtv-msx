@@ -1,5 +1,5 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { callCallback, checkVersion } from "./tools";
+import { callCallback, checkVersion, SETTINGS } from "./tools";
 import { getEpisodesOrderParameter, getShowsFilterParameter, getShowsOrderParameter } from "./content-tools";
 import {
     createContentLoadError,
@@ -13,7 +13,8 @@ import {
     createBean,
     createCredits,
     createVideo,
-    createOverview
+    createOverview,
+    createSettings
 } from "./content-creator";
 import {
     loadNewEpisodeList,
@@ -29,6 +30,10 @@ import {
     loadEpisode,
     loadOverview
 } from "./backend";
+
+function reloadContent(): void {
+    tvx.InteractionPlugin.executeAction("reload:content");
+}
 
 function handleContentLoadError(contentId: string, data: any, callback: (data: any) => void): boolean {
     if (data != null && tvx.Tools.isFullStr(data.error)) {
@@ -46,7 +51,7 @@ function handleContentExtendResult(data: any): void {
     if (tvx.Tools.isFullStr(data.error)) {
         tvx.InteractionPlugin.error(data.error);
     }
-    tvx.InteractionPlugin.executeAction("reload:content");
+    reloadContent();
 }
 
 function handleVideoLoadError(videoId: string, data: any, callback: (data: any) => void): boolean {
@@ -131,6 +136,8 @@ export function loadContent(contentId: string, callback: (data: any) => void): v
                             callCallback(createBean(beanData, episodesOrder, episodesData), callback);
                         }
                     });
+                } else if (contentId == "settings") {
+                    callCallback(createSettings(), callback);
                 } else {
                     callCallback(createContentNotFound(contentId), callback);
                 }
@@ -161,6 +168,15 @@ export function executeContent(action: string): void {
             } else {
                 tvx.InteractionPlugin.stopLoading();
             }
+        } else if (action.indexOf("settings:") == 0) {
+            let settingsAction: string = action.substring(9);
+            if (SETTINGS.handleMessage(settingsAction)) {
+                reloadContent();
+            } else {
+                tvx.InteractionPlugin.warn("Unknown settings action: '" + settingsAction + "'");
+            }
+        } else {
+            tvx.InteractionPlugin.warn("Unknown content action: '" + action + "'");
         }
     }
 }

@@ -1,8 +1,9 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { EVENT_SHOW_ID, NAME, VERSION, MIN_APP_VERSION, objToBase64, proxyImageForLocalContext } from "./tools";
+import { SETTINGS, EVENT_SHOW_ID, NAME, VERSION, MIN_APP_VERSION, objToBase64, proxyImageForLocalContext } from "./tools";
 import {
     EXTENDED_SHOW_DESCRIPTION_LENGHT,
     getTokenUrl,
+    getTokenOptionsAction,
     addTextPrefix,
     getBeanName,
     getBeanFullName,
@@ -35,10 +36,13 @@ import {
     getShowId,
     getEpisodeId,
     getShowreelAction,
+    getShowreelOptionsAction,
     createHeaderUrl,
     createShadowUrl,
-    createBackgroundUrl
+    createBackgroundUrl,
+    getYouTubeQualityLabel
 } from "./content-tools";
+import { nodeName } from "jquery";
 
 function completeError(error: string): string {
     if (tvx.Tools.isFullStr(error)) {
@@ -212,16 +216,22 @@ function createEpisodeItems(data: any, extendable: boolean, contentId: string): 
     if (data != null && data.length > 0) {
         for (let i: number = 0; i < data.length; i++) {
             let item: any = data[i];
+            let extensionPage: boolean = extendable === true && data.length - i <= 8;
+            let preloadPage: boolean = item.preload === true && item.preloadOffset >= 8 && item.preloadOffset < 16;
+            if (item.preload === true) {
+                item.preload = false;
+            }
             items.push({
                 id: getEpisodeId(item),
                 number: getListNumber(i),
                 titleHeader: addTextPrefix("{col:msx-white}", item.title),
                 titleFooter: getEpisodeFooter(item, timestamp),
-                image: getThumbnail(item, "small"),
+                image: extensionPage ? null : getThumbnail(item, "small"),
+                icon: extensionPage ? "msx-white-soft:more-horiz" : null,
                 stamp: getDuration(item),
                 liveStamp: getLiveDuration(item),
                 progressColor: getTokenColor(item),
-                imagePreload: item.preload === true,
+                imagePreload: preloadPage,
                 live: extendable === true ? createListLiveExtension(item, i, data.length, contentId) : null,
                 action: createEpisodeAction(item, false)
             });
@@ -249,13 +259,19 @@ function createShowItems(data: any, extendable: boolean): tvx.MSXContentItem[] {
     if (data != null && data.length > 0) {
         for (let i: number = 0; i < data.length; i++) {
             let item: any = data[i];
+            let extensionPage: boolean = extendable === true && data.length - i <= 6;
+            let preloadPage: boolean = item.preload === true && item.preloadOffset >= 6 && item.preloadOffset < 18;
+            if (item.preload === true) {
+                item.preload = false;
+            }
             items.push({
                 id: getShowId(item),
                 number: getListNumber(i),
                 title: getShowTitle(item),
                 titleFooter: getShowFooter(item),
-                image: getThumbnail(item, "large"),
-                imagePreload: item.preload === true,
+                image: extensionPage ? null : getThumbnail(item, "large"),
+                icon: extensionPage ? "msx-white-soft:more-horiz" : null,
+                imagePreload: preloadPage,
                 action: createShowAction(item),
                 live: extendable === true ? createListLiveExtension(item, i, data.length, "shows") : null
             });
@@ -519,7 +535,9 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
                 "trigger:back": "player:eject",
                 "button:content:icon": "info",
                 "button:content:action": "[]",
-                "button:content:enable": false
+                "button:content:enable": false,
+                "button:speed:icon": "settings",
+                "button:speed:action": getShowreelOptionsAction()
             }
         }, {
             type: "space",
@@ -813,6 +831,16 @@ function createCurrentPodcastsOverview(data: any, pagination: any): tvx.MSXConte
     return createGenericShowsOverview("Alle Podcasts", "Zeige alle Podcasts", "content:" + createContentRequest("shows::podcast"), data, pagination);
 }
 
+function createYouTubeQualityItem(currentQuality: string, activeQuality: string): tvx.MSXContentItem {
+    var active = currentQuality == activeQuality;
+    return {
+        focus: active,
+        label: getYouTubeQualityLabel(currentQuality),
+        extensionIcon: active ? "check" : "blank",
+        action: active ? "back" : "[back|interaction:commit:message:content:settings:youtube_quality:" + currentQuality + "]"
+    };
+}
+
 export function createVersionNotSupported(): tvx.MSXContentRoot {
     return {
         type: "pages",
@@ -898,7 +926,7 @@ export function createOverview(newEpisodesData: any, eventEpisodesData: any, cur
     let timestamp: number = tvx.DateTools.getTimestamp();
     return {
         type: "list",
-        preload: "next",
+        preload: SETTINGS.preloadPages ? "next" : null,
         headline: "Übersicht",
         background: createBackgroundUrl(),
         ready: createBackdrop(null),
@@ -915,7 +943,7 @@ export function createOverview(newEpisodesData: any, eventEpisodesData: any, cur
 export function createNewEpisodes(data: any): tvx.MSXContentRoot {
     return {
         type: "list",
-        preload: "next",
+        preload: SETTINGS.preloadPages ? "next" : null,
         headline: "Neue Videos",
         background: createBackgroundUrl(),
         ready: createBackdrop(null),
@@ -930,7 +958,7 @@ export function createShow(showData: any, seasonId: string, episodesOrder: strin
     return {
         flag: "show",
         type: "list",
-        preload: "next",
+        preload: SETTINGS.preloadPages ? "next" : null,
         headline: getShowTitle(showData.data),
         header: createShowHeader(showData.data, seasonId, episodesOrder, episodesData.data, episodesData.pagination),
         background: createBackgroundUrl(),
@@ -946,7 +974,7 @@ export function createShows(order: string, filter: string, data: any): tvx.MSXCo
     return {
         flag: "shows",
         type: "list",
-        preload: "next",
+        preload: SETTINGS.preloadPages ? "next" : null,
         headline: "Alle Shows",
         header: createShowsHeader(order, filter, data.data, data.pagination),
         background: createBackgroundUrl(),
@@ -961,7 +989,7 @@ export function createBean(beanData: any, episodesOrder: string, episodesData: a
     return {
         flag: "bean",
         type: "list",
-        preload: "next",
+        preload: SETTINGS.preloadPages ? "next" : null,
         headline: getBeanFullName(beanData.data),
         header: createBeanHeader(beanData.data, episodesOrder, episodesData.data, episodesData.pagination),
         background: createBackgroundUrl(),
@@ -976,7 +1004,7 @@ export function createBeans(order: string, data: any): tvx.MSXContentRoot {
     return {
         flag: "beans",
         type: "list",
-        preload: "next",
+        preload: SETTINGS.preloadPages ? "next" : null,
         headline: "Alle Bohnen",
         header: createBeansHeader(order, data.data.length),
         background: createBackgroundUrl(),
@@ -984,6 +1012,77 @@ export function createBeans(order: string, data: any): tvx.MSXContentRoot {
         template: createBeanTemplate(data.data),
         items: createBeanItems(data.data),
         options: createListOptions()
+    };
+}
+
+export function createSettings(): tvx.MSXContentRoot {
+    //Note: It is not possible anymore to change or preselect the YouTube quality for embedded players (please see update "October 24, 2019" on this page: https://developers.google.com/youtube/iframe_api_reference)
+    //However, since this was a great feature (and might be reactivated in the future), we are keeping this setting available (and only hiding it).
+    return {
+        type: "list",
+        headline: "Einstellungen",
+        background: createBackgroundUrl(),
+        ready: createBackdrop(null),
+        overlay: {
+            items: [{
+                id: "description",
+                type: "space",
+                layout: "6,0,6,6",
+                offset: "0.25,0,-0.25,0",
+                text: ""
+            }]
+        },
+        template: {
+            enumerate: false,
+            type: "control",
+            layout: "0,0,6,1",
+            area: "0,0,6,6",
+            selection: {
+                action: "update:content:overlay:description",
+                data: {
+                    text: "{ico:msx-blue:info} {context:description}"
+                }
+            }
+        },
+        items: [{
+            icon: "downloading",
+            label: "Seiten vorladen",
+            extensionIcon: SETTINGS.preloadPages ? "msx-white:check-box" : "check-box-outline-blank",
+            description: [
+                "Wenn Seiten vorgeladen werden, sind die Bilder beim Scrollen schneller sichtbar.",
+                "Allerdings kann sich das auf einigen Geräten negativ auf die Scroll-Performance auswirken.",
+                "Solltest du Probleme mit der Performance haben, kannst du das Vorladen deaktivieren."
+            ].join(" "),
+            action: "interaction:commit:message:content:settings:preload_pages:" + (SETTINGS.preloadPages ? "false" : "true")
+        }, {
+            display: false,
+            icon: "smart-display",
+            label: "YouTube Qualität",
+            extensionLabel: getYouTubeQualityLabel(SETTINGS.youtubeQuality),
+            description: [
+                "Die gewünschte YouTube Qualität.",
+                "Bitte beachte, dass die hier ausgewählte Qualität nur dann angewendet wird, wenn das Video dies unterstützt.",
+                "Sollte die ausgewählte Qualität für ein Video nicht unterstützt werden, wird die nächstgeringere verfügbare Qualität verwendet.",
+                "Standardmäßig wird {txt:msx-white:" + getYouTubeQualityLabel("default") + "} verwendet, womit YouTube die geeignete Qualität auswählt."
+            ].join(" "),
+            action: "panel:data",
+            data: {
+                headline: "YouTube Qualität",
+                template: {
+                    enumerate: false,
+                    type: "control",
+                    layout: "0,0,8,1",
+                },
+                items: [
+                    createYouTubeQualityItem("default", SETTINGS.youtubeQuality),
+                    createYouTubeQualityItem("2160p", SETTINGS.youtubeQuality),
+                    createYouTubeQualityItem("1080p", SETTINGS.youtubeQuality),
+                    createYouTubeQualityItem("720p", SETTINGS.youtubeQuality),
+                    createYouTubeQualityItem("480p", SETTINGS.youtubeQuality),
+                    createYouTubeQualityItem("360p", SETTINGS.youtubeQuality)
+                ]
+            }
+        }]
     };
 }
 
@@ -1011,7 +1110,9 @@ export function createVideo(videoId: string, data: any): any {
                     "button:next:key": "channel_up",
                     "button:prev:icon": "default",
                     "button:prev:action": createEpisodeAction(episode.prev, true),
-                    "button:prev:key": "channel_down"
+                    "button:prev:key": "channel_down",
+                    "button:speed:icon": "settings",
+                    "button:speed:action": getTokenOptionsAction(episode)
                 }
             };
         }

@@ -1,11 +1,11 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { appendInteractionRefSuffix, appendKeepRatioSuffix, getImageUrl } from "./tools";
+import { SETTINGS, appendInteractionRefSuffix, appendKeepRatioSuffix, getImageUrl } from "./tools";
 
 const YOUTUBE_COLOR: string = "#ff0000";
 const TWITCH_COLOR: string = "#643fa6";
 const SOUNDCLOUD_COLOR: string = "#ff5500";
 
-const YOUTUBE_PLUGIN: string = "http://msx.benzac.de/plugins/youtube.html?id={ID}";
+const YOUTUBE_PLUGIN: string = "http://msx.benzac.de/plugins/youtube.html?id={ID}&quality={QUALITY}";
 const TWITCH_PLUGIN: string = "http://msx.benzac.de/plugins/twitch.html?id={ID}";
 const SOUNDCLOUD_PLUGIN: string = "http://msx.benzac.de/plugins/soundcloud.html?id={ID}";
 
@@ -121,7 +121,11 @@ export function getShowreelId(item: any): string {
 
 export function getShowreelAction(item: any): string {
     let showreelId: string = getShowreelId(item);
-    return tvx.Tools.isFullStr(showreelId) ? "video:plugin:" + YOUTUBE_PLUGIN.replace("{ID}", showreelId) : null;
+    return tvx.Tools.isFullStr(showreelId) ? "video:plugin:" + YOUTUBE_PLUGIN.replace("{ID}", showreelId).replace("{QUALITY}", SETTINGS.youtubeQuality) : null;
+}
+
+export function getShowreelOptionsAction(): string {
+    return "panel:request:player:options";
 }
 
 export function getThumbnail(item: any, name: string): string {
@@ -181,11 +185,21 @@ export function getTokenUrl(item: any): string {
     if (item != null) {
         applyToken(item);
         if (item.msxTokenType == "youtube") {
-            return "plugin:" + YOUTUBE_PLUGIN.replace("{ID}", item.msxToken);
+            return "plugin:" + YOUTUBE_PLUGIN.replace("{ID}", item.msxToken).replace("{QUALITY}", SETTINGS.youtubeQuality);
         } else if (item.msxTokenType == "twitch") {
             return "plugin:" + TWITCH_PLUGIN.replace("{ID}", item.msxToken);
         } else if (item.msxTokenType == "soundcloud") {
             return "plugin:" + SOUNDCLOUD_PLUGIN.replace("{ID}", item.msxToken);
+        }
+    }
+    return null;
+}
+
+export function getTokenOptionsAction(item: any): string {
+    if (item != null) {
+        applyToken(item);
+        if (item.msxTokenType == "youtube" || item.msxTokenType == "twitch") {
+            return "[release:panel|panel:request:player:options]";
         }
     }
     return null;
@@ -412,6 +426,10 @@ export function getEpisodesOrderLabel(order: string): string {
         return "Älteste Folgen zuerst";
     }
     return "Unbekannt (" + order + ")";
+}
+
+export function getYouTubeQualityLabel(quality: string): string {
+    return quality == "default" ? "Auto" : quality;
 }
 
 export function createContentRequest(contentId: string): string {
