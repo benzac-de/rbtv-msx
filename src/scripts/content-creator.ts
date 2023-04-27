@@ -590,6 +590,17 @@ function createVideoPanel(beansData: any, episodeData: any): tvx.MSXContentRoot 
             }]
         };
     }
+    if (header == null && items.length == 0) {
+        header = {
+            items: [{
+                type: "default",
+                layout: "0,0,8,6",
+                headline: "{ico:msx-blue:info} Keine zugehörigen Inhalte verfügbar",
+                text: "Dieses Video gehört zu keiner Show und keine Bohne kommt darin vor.",
+                action: "back"
+            }]
+        };
+    }
     return {
         compress: compress,
         headline: "Show & Bohnen",
@@ -844,16 +855,16 @@ function createYouTubeQualityItem(currentQuality: string, activeQuality: string)
 export function createVersionNotSupported(): tvx.MSXContentRoot {
     return {
         type: "pages",
-        headline: "Warning",
+        headline: "Warnung",
         pages: [{
             items: [{
                 type: "default",
                 layout: "0,0,12,6",
-                headline: "{ico:msx-yellow:warning} Version Not Supported",
+                headline: "{ico:msx-yellow:warning} Version wird nicht unterstützt",
                 text: [
-                    "Media Station X version {txt:msx-white:" + MIN_APP_VERSION + "} or higher is needed for this service.",
+                    "Media Station X version {txt:msx-white:" + MIN_APP_VERSION + "} oder höher wird für diesen Dienst benötigt.",
                     "{br}{br}",
-                    "Please update Media Station X and try it again."
+                    "Bitte aktualisiere Media Station X und versuche es erneut."
                 ]
             }]
         }]
@@ -863,13 +874,13 @@ export function createVersionNotSupported(): tvx.MSXContentRoot {
 export function createContentNotFound(contentId: string): tvx.MSXContentRoot {
     return {
         type: "pages",
-        headline: "Warning",
+        headline: "Warnung",
         pages: [{
             items: [{
                 type: "default",
                 layout: "0,0,12,6",
-                headline: "{ico:msx-yellow:warning} Content Not Found",
-                text: "Content with ID '" + contentId + "' could not be found."
+                headline: "{ico:msx-yellow:warning} Inhalt nicht gefunden",
+                text: "Der Inhalt mit der ID '" + contentId + "' konnte nicht gefunden werden."
             }]
         }]
     };
@@ -878,13 +889,13 @@ export function createContentNotFound(contentId: string): tvx.MSXContentRoot {
 export function createContentLoadError(contentId: string, error: string): tvx.MSXContentRoot {
     return {
         type: "pages",
-        headline: "Error",
+        headline: "Fehler",
         pages: [{
             items: [{
                 type: "default",
                 layout: "0,0,12,6",
-                headline: "{ico:msx-red:error} Content Load Error",
-                text: "Content with ID '" + contentId + "' could not be loaded.{br}{br}" + completeError(error)
+                headline: "{ico:msx-red:error} Inhalt konnte nicht geladen werden",
+                text: "Der Inhalt mit der ID '" + contentId + "' konnte nicht geladen werden.{br}{br}" + completeError(error)
             }]
         }]
     };
@@ -892,7 +903,7 @@ export function createContentLoadError(contentId: string, error: string): tvx.MS
 
 export function createVideoLoadError(videoId: string, error: string): any {
     return {
-        error: "Video with ID '" + videoId + "' could not be loaded.{br}" + completeError(error)
+        error: "Das Video mit der ID '" + videoId + "' konnte nicht geladen werden.{br}" + completeError(error)
     };
 }
 
@@ -1116,7 +1127,7 @@ export function createVideo(videoId: string, data: any): any {
                 }
             };
         }
-        return createVideoLoadError(videoId, "No supported token found");
+        return createVideoLoadError(videoId, "Kein unterstütztes Token gefunden");
     }
-    return createVideoLoadError(videoId, "No episodes found");
+    return createVideoLoadError(videoId, "Keine Folgen gefunden");
 }
