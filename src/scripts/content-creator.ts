@@ -1111,6 +1111,7 @@ export function createVideo(videoId: string, data: any): any {
                 url: url,
                 label: getVideoTitle(episode),
                 properties: {
+                    "resume:key": "url",
                     "control:type": "extended",
                     "info:size": "large",
                     "info:overlay": "full",
