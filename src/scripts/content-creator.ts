@@ -42,7 +42,6 @@ import {
     createBackgroundUrl,
     getYouTubeQualityLabel
 } from "./content-tools";
-import { nodeName } from "jquery";
 
 function completeError(error: string): string {
     if (tvx.Tools.isFullStr(error)) {
@@ -232,7 +231,7 @@ function createEpisodeItems(data: any, extendable: boolean, contentId: string): 
                 liveStamp: getLiveDuration(item),
                 progressColor: getTokenColor(item),
                 imagePreload: preloadPage,
-                live: extendable === true ? createListLiveExtension(item, i, data.length, contentId) : null,
+                live: extendable === true ? createListLiveExtension(item, i, data.length, contentId) : (extensionPage ? {} : null),
                 action: createEpisodeAction(item, false)
             });
         }
@@ -1028,7 +1027,7 @@ export function createBeans(order: string, data: any): tvx.MSXContentRoot {
 
 export function createSettings(): tvx.MSXContentRoot {
     //Note: It is not possible anymore to change or preselect the YouTube quality for embedded players (please see update "October 24, 2019" on this page: https://developers.google.com/youtube/iframe_api_reference)
-    //However, since this was a great feature (and might be reactivated in the future), we are keeping this setting available (and only hiding it).
+    //However, since this was a great feature (and might be reactivated in the future), we are keeping this setting available.
     return {
         type: "list",
         headline: "Einstellungen",
@@ -1049,6 +1048,7 @@ export function createSettings(): tvx.MSXContentRoot {
             layout: "0,0,6,1",
             area: "0,0,6,6",
             selection: {
+                important: true,
                 action: "update:content:overlay:description",
                 data: {
                     text: "{ico:msx-blue:info} {context:description}"
@@ -1066,7 +1066,6 @@ export function createSettings(): tvx.MSXContentRoot {
             ].join(" "),
             action: "interaction:commit:message:content:settings:preload_pages:" + (SETTINGS.preloadPages ? "false" : "true")
         }, {
-            display: false,
             icon: "smart-display",
             label: "YouTube Qualität",
             extensionLabel: getYouTubeQualityLabel(SETTINGS.youtubeQuality),
@@ -1074,7 +1073,11 @@ export function createSettings(): tvx.MSXContentRoot {
                 "Die gewünschte YouTube Qualität.",
                 "Bitte beachte, dass die hier ausgewählte Qualität nur dann angewendet wird, wenn das Video dies unterstützt.",
                 "Sollte die ausgewählte Qualität für ein Video nicht unterstützt werden, wird die nächstgeringere verfügbare Qualität verwendet.",
-                "Standardmäßig wird {txt:msx-white:" + getYouTubeQualityLabel("default") + "} verwendet, womit YouTube die geeignete Qualität auswählt."
+                "Standardmäßig wird {txt:msx-white:" + getYouTubeQualityLabel("default") + "} verwendet, womit YouTube die geeignete Qualität auswählt.",
+                "{br}{br}{ico:msx-yellow:warning}",
+                "Derzeit ist diese Funtiokn von YouTube deaktiviert.",
+                "Egal welche Einstellung hier vorgenommen wird, wird {txt:msx-white:" + getYouTubeQualityLabel("default") + "} verwendet.",
+                "Um eine zukünftige Reaktivierung dieser Funktion zu unterstützen, bleibt die Einstellung verfügbar."
             ].join(" "),
             action: "panel:data",
             data: {

@@ -15,6 +15,10 @@ const YOUTUBE_PREFIX_2: string = "https://www.youtube.com/watch?v=";
 export const EXTENDED_SHOW_DESCRIPTION_LENGHT: number = 380;
 export const MAX_SEASON_NAME_LENGHT: number = 45;
 
+function getPlayerOptionsAction(): string {
+    return "[release:panel|panel:request:player:options]";
+}
+
 function tryApplyToken(item: any, type: string): boolean {
     if (item != null) {
         let token: string = getToken(item, type);
@@ -125,7 +129,7 @@ export function getShowreelAction(item: any): string {
 }
 
 export function getShowreelOptionsAction(): string {
-    return "panel:request:player:options";
+    return getPlayerOptionsAction();
 }
 
 export function getThumbnail(item: any, name: string): string {
@@ -199,7 +203,7 @@ export function getTokenOptionsAction(item: any): string {
     if (item != null) {
         applyToken(item);
         if (item.msxTokenType == "youtube" || item.msxTokenType == "twitch") {
-            return "[release:panel|panel:request:player:options]";
+            return getPlayerOptionsAction();
         }
     }
     return null;
