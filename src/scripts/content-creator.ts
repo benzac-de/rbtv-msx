@@ -1076,9 +1076,9 @@ export function createSettings(): tvx.MSXContentRoot {
                 "Sollte die ausgewählte Qualität für ein Video nicht unterstützt werden, wird die nächstgeringere verfügbare Qualität verwendet.",
                 "Standardmäßig wird {txt:msx-white:" + getYouTubeQualityLabel("default") + "} verwendet, womit YouTube die geeignete Qualität auswählt.",
                 "{br}{br}{ico:msx-yellow:warning}",
-                "Derzeit ist diese Funtiokn von YouTube deaktiviert.",
+                "Derzeit ist diese Funktion von YouTube deaktiviert.",
                 "Egal welche Einstellung hier vorgenommen wird, wird {txt:msx-white:" + getYouTubeQualityLabel("default") + "} verwendet.",
-                "Um eine zukünftige Reaktivierung dieser Funktion zu unterstützen, bleibt die Einstellung verfügbar."
+                "Um eine mögliche zukünftige Reaktivierung dieser Funktion zu unterstützen, bleibt diese Einstellung verfügbar."
             ].join(" "),
             action: "panel:data",
             data: {
