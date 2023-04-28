@@ -53,11 +53,12 @@ function completeError(error: string): string {
     return "";
 }
 
-function createListLiveExtension(item: any, index: number, length: number, contentId: string): tvx.MSXLive {
+function createListLiveExtension(item: any, index: number, length: number, extensionPage: boolean, contentId: string): tvx.MSXLive {
+    //Note: Return an empty live object for an extension page to override a possible template live object
     return item != null && index == length - 1 ? {
         type: "setup",
         action: "interaction:commit:message:content:extend:" + contentId
-    } : null;
+    } : (extensionPage ? {} : null);
 }
 
 function createListOptions(): tvx.MSXContentPage {
@@ -231,7 +232,7 @@ function createEpisodeItems(data: any, extendable: boolean, contentId: string): 
                 liveStamp: getLiveDuration(item),
                 progressColor: getTokenColor(item),
                 imagePreload: preloadPage,
-                live: extendable === true ? createListLiveExtension(item, i, data.length, contentId) : (extensionPage ? {} : null),
+                live: extendable === true ? createListLiveExtension(item, i, data.length, extensionPage, contentId) : null,
                 action: createEpisodeAction(item, false)
             });
         }
@@ -272,7 +273,7 @@ function createShowItems(data: any, extendable: boolean): tvx.MSXContentItem[] {
                 icon: extensionPage ? "msx-white-soft:more-horiz" : null,
                 imagePreload: preloadPage,
                 action: createShowAction(item),
-                live: extendable === true ? createListLiveExtension(item, i, data.length, "shows") : null
+                live: extendable === true ? createListLiveExtension(item, i, data.length, extensionPage, "shows") : null
             });
         }
     }
