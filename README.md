@@ -18,7 +18,7 @@ This is a **Rocket Beans TV (RBTV)** portal for the **Media Station X (MSX)** ap
 * Search for shows/episodes
 * User login/logout
 * User related content (manage playlists, show subscribed shows/beans, etc.)
-* Add/remove favorite shows/beans to main menu
+* Add/remove favorite shows/beans to/from main menu
 
 ## For Developers
 ### Installing
