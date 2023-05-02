@@ -219,6 +219,7 @@ function createEpisodeItems(data: any, extendable: boolean, contentId: string): 
                 item.preload = false;
             }
             items.push({
+                id: "episode" + i + "_" + item.id,
                 number: getListNumber(i),
                 titleHeader: addTextPrefix("{col:msx-white}", item.title),
                 titleFooter: getEpisodeFooter(item, timestamp),
@@ -261,6 +262,7 @@ function createShowItems(data: any, extendable: boolean): tvx.MSXContentItem[] {
                 item.preload = false;
             }
             items.push({
+                id: "show" + i + "_" + item.id,
                 number: getListNumber(i),
                 title: getShowTitle(item),
                 titleFooter: getShowFooter(item),
@@ -468,6 +470,7 @@ function createBeanItems(data: any): tvx.MSXContentItem[] {
         for (let i: number = 0; i < data.length; i++) {
             let item: any = data[i];
             items.push({
+                id: "bean" + i + "_" + item.mgmtid,
                 number: getListNumber(i),
                 title: getBeanName(item),
                 titleFooter: item.episodeCount > 0 ? "{ico:video-collection} " + item.episodeCount : null,
@@ -742,7 +745,6 @@ function createOverviewEpisode(item: any, index: number, timestamp: number): tvx
 }
 
 function createOverviewShow(item: any, index: number): tvx.MSXContentItem {
-    //Note: Do not set ID, because the same shows can be listed in different sections
     return {
         type: "separate",
         layout: (index * 2) + ",0," + (index == 5 ? 1 : 2) + ",4",

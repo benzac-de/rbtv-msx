@@ -158,7 +158,13 @@ export function getListLimit(list: any): number {
 }
 
 export function validateList(list: any, type: string, id: string, order: string, filter: string): any {
-    if (list == null || list.type !== type || list.id !== id || list.order !== order || list.filter !== filter) {
+    let timestamp: number = tvx.DateTools.getTimestamp();
+    if (list == null ||
+        list.type !== type ||
+        list.id !== id ||
+        list.order !== order ||
+        list.filter !== filter ||
+        timestamp - list.timestamp > CACHE_EXPIRATION) {
         list = {
             type: type,
             id: id,
@@ -172,7 +178,8 @@ export function validateList(list: any, type: string, id: string, order: string,
             data: null,
             extendable: false,
             counter: 0,
-            hash: 0
+            hash: 0,
+            timestamp: timestamp
         };
     } else {
         list.counter++;

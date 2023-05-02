@@ -22,7 +22,7 @@ const IMAGE_URLS: any = {
 };
 
 export const NAME: string = "RBTV MSX";
-export const VERSION: string = "1.0.7";
+export const VERSION: string = "1.0.8";
 export const MIN_APP_VERSION: string = "0.1.150";
 export const EVENT_SHOW_ID: string = "405";
 export const INFO: Info = new Info();
