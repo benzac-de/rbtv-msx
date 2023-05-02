@@ -100,18 +100,6 @@ export function strToTimestamp(str: string): number {
     return -1;
 }
 
-export function getBeanId(item: any): string {
-    return item != null && tvx.Tools.isNum(item.mgmtid) ? "bean" + item.mgmtid : null;
-}
-
-export function getShowId(item: any): string {
-    return item != null && tvx.Tools.isNum(item.id) ? "show" + item.id : null;
-}
-
-export function getEpisodeId(item: any): string {
-    return item != null && tvx.Tools.isNum(item.id) ? "episode" + item.id : null;
-}
-
 export function getShowreelId(item: any): string {
     if (item != null && tvx.Tools.isFullStr(item.showreelURL)) {
         if (item.showreelURL.indexOf(YOUTUBE_PREFIX_1) == 0) {
