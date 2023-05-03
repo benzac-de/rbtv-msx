@@ -647,8 +647,7 @@ function createOverviewHeader(): tvx.MSXContentPage {
                             "Aus einer Produktionsfirma mit 25 Angestellten ist mittlerweile ein Medienunternehmen mit einem breitgefächerten Content-Portfolio geworden. ",
                             "Mit rund 100 Mitarbeitern produzieren wir Bewegtbild für unsere eigene Plattform rocketbeans.tv und verschiedene Auftraggeber. "
                         ]
-                    }, createPanelCloseButton()
-                    ]
+                    }, createPanelCloseButton()]
                 }, {
                     headline: "Die BEANS",
                     items: [{
