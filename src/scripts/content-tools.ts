@@ -217,6 +217,9 @@ export function getShowTitle(item: any): string {
 
 export function getPodcastHint(item: any): string {
     if (item != null) {
+        if (item.isTruePodcast === true) {
+            return "{ico:rss-feed}";
+        }
         return item.hasPodcast === true || (item.podcast != null && tvx.Tools.isFullStr(item.podcast.soundcloudId)) ? "{ico:mic}" : null;
     }
     return null;

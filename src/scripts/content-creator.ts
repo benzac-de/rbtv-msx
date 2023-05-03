@@ -238,7 +238,14 @@ function createEpisodeItems(data: any, extendable: boolean, contentId: string): 
 }
 
 function createShowAction(item: any): string {
-    return item != null && tvx.Tools.isNum(item.id) ? "content:" + createContentRequest("show:" + item.id) : null;
+    if (item != null && tvx.Tools.isNum(item.id)) {
+        if (item.isTruePodcast === true) {
+            return "info:Diese Show ist nur als Podcast verfügbar und kann zur Zeit nicht über das " + NAME + " Portal wiedergegeben werden.";
+        } else {
+            return "content:" + createContentRequest("show:" + item.id);
+        }
+    }
+    return null;
 }
 
 function createShowTemplate(data: any, pagination: any): tvx.MSXContentItem {
