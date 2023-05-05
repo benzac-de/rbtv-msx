@@ -1277,6 +1277,7 @@ export function createSearch(expression: string, data: any, searching: boolean):
         compress: true,
         important: true,
         type: "list",
+        preload: SETTINGS.preloadPages ? "next" : null,
         headline: "{ico:search} " + (tvx.Tools.isFullStr(expression) ? "\"" + expression + "\"" : "{col:msx-white-soft}Suche nach Shows oder Videos"),
         background: createBackgroundUrl(),
         ready: createBackdrop(null),
