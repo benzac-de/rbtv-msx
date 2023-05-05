@@ -18,11 +18,13 @@ const IMAGE_URLS: any = {
     //@ts-ignore
     "shadow": new URL("../images/shadow.png", import.meta.url).href,
     //@ts-ignore
-    "backdrop-mask": new URL("../images/backdrop-mask.png", import.meta.url).href
+    "backdrop-mask": new URL("../images/backdrop-mask.png", import.meta.url).href,
+    //@ts-ignore
+    "placeholder": new URL("../images/placeholder.svg", import.meta.url).href
 };
 
 export const NAME: string = "RBTV MSX";
-export const VERSION: string = "1.0.9";
+export const VERSION: string = "1.0.10";
 export const MIN_APP_VERSION: string = "0.1.150";
 export const EVENT_SHOW_ID: string = "405";
 export const INFO: Info = new Info();

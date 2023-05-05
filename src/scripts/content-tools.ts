@@ -14,6 +14,8 @@ const YOUTUBE_PREFIX_2: string = "https://www.youtube.com/watch?v=";
 
 export const EXTENDED_SHOW_DESCRIPTION_LENGHT: number = 380;
 export const MAX_SEASON_NAME_LENGHT: number = 45;
+export const MIN_SEARCH_EXPRESSION_LENGHT: number = 2;
+export const MAX_SEARCH_EXPRESSION_LENGHT: number = 32;
 
 function getPlayerOptionsAction(): string {
     return "[release:panel|panel:request:player:options]";
@@ -152,6 +154,9 @@ export function getTokenColor(item: any): string {
             return TWITCH_COLOR;
         } else if (item.msxTokenType == "soundcloud") {
             return SOUNDCLOUD_COLOR;
+        } else if (item.msxTokenType == "none") {
+            //Note: Return YouTube color, because this is the most used one
+            return YOUTUBE_COLOR;
         }
     }
     return null;
@@ -265,8 +270,11 @@ export function getVideoTitle(item: any): string {
 export function getReleaseDuration(item: any, timestamp: number): string {
     if (item != null) {
         if (item.msxRealeaseTimestamp == null) {
+            //Note: Also handle typo property "distibutionPublishingDate"
             if (item.distributionPublishingDate != null) {
                 item.msxRealeaseTimestamp = strToTimestamp(item.distributionPublishingDate);
+            } else if (item.distibutionPublishingDate != null) {
+                item.msxRealeaseTimestamp = strToTimestamp(item.distibutionPublishingDate);
             } else if (item.firstBroadcastdate != null) {
                 item.msxRealeaseTimestamp = strToTimestamp(item.firstBroadcastdate);
             }
@@ -308,20 +316,28 @@ export function getListNumber(index: number): string {
     return tvx.Tools.strValue(index + 1);
 }
 
+export function getVideosCount(total: number): string {
+    return total == 0 ? "Kein Video" : (total == 1 ? "Ein Video" : total + " Videos");
+}
+
 export function getEpisodesCount(total: number): string {
-    return total == 1 ? "Eine Folge" : total + " Folgen";
+    return total == 0 ? "Keine Folge" : (total == 1 ? "Eine Folge" : total + " Folgen");
 }
 
 export function getShowsCount(total: number): string {
-    return total == 1 ? "Eine Show" : total + " Shows";
+    return total == 0 ? "Keine Show" : (total == 1 ? "Eine Show" : total + " Shows");
 }
 
 export function getBeansCount(total: number): string {
-    return total == 1 ? "Eine Bohne" : total + " Bohnen";
+    return total == 0 ? "Keine Bohne" : (total == 1 ? "Eine Bohne" : total + " Bohnen");
 }
 
 export function getSeasonsCount(total: number): string {
-    return total == 1 ? "Eine Staffel" : total + " Staffeln";
+    return total == 0 ? "Keine Staffel" : (total == 1 ? "Eine Staffel" : total + " Staffeln");
+}
+
+export function getSearchCount(totalShows: number, totalEpisodes: number): string {
+    return getShowsCount(totalShows) + " und " + (totalEpisodes == 0 ? "kein Video" : (totalEpisodes == 1 ? "ein Video" : totalEpisodes + " Videos")) + " gefunden"
 }
 
 export function getEpisodeFooter(item: any, timestamp: number): string {
@@ -414,11 +430,11 @@ export function getBeansOrderLabel(order: string): string {
     return "Unbekannt (" + order + ")";
 }
 
-export function getEpisodesOrderLabel(order: string): string {
+export function getEpisodesOrderLabel(order: string, showRelated: boolean): string {
     if (order == "default") {
-        return "Neuste Folgen zuerst";
+        return "Neuste " + (showRelated ? "Folgen" : "Videos") + " zuerst";
     } else if (order == "reverse") {
-        return "Älteste Folgen zuerst";
+        return "Älteste " + (showRelated ? "Folgen" : "Videos") + " zuerst";
     }
     return "Unbekannt (" + order + ")";
 }
@@ -449,4 +465,8 @@ export function createShadowUrl(): string {
 
 export function createBackgroundUrl(): string {
     return appendKeepRatioSuffix(getImageUrl("background"));
+}
+
+export function createPlaceholderUrl(): string {
+    return getImageUrl("placeholder");
 }

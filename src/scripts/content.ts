@@ -1,6 +1,6 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
 import { callCallback, checkVersion, SETTINGS } from "./tools";
-import { getEpisodesOrderParameter, getShowsFilterParameter, getShowsOrderParameter } from "./content-tools";
+import { MIN_SEARCH_EXPRESSION_LENGHT, MAX_SEARCH_EXPRESSION_LENGHT, getEpisodesOrderParameter, getShowsFilterParameter, getShowsOrderParameter } from "./content-tools";
 import {
     createContentLoadError,
     createContentNotFound,
@@ -14,6 +14,7 @@ import {
     createCredits,
     createVideo,
     createOverview,
+    createSearch,
     createSettings
 } from "./content-creator";
 import {
@@ -28,8 +29,13 @@ import {
     extendBeanEpisodeList,
     loadBeans,
     loadEpisode,
-    loadOverview
+    loadOverview,
+    performSearch,
+    cancelSearch
 } from "./backend";
+
+let searchDelay: tvx.TVXDelay = new tvx.Delay(1000);
+let searchExpression: string = "";
 
 function reloadContent(): void {
     tvx.InteractionPlugin.executeAction("reload:content");
@@ -39,7 +45,7 @@ function handleContentLoadError(contentId: string, data: any, callback: (data: a
     if (data != null && tvx.Tools.isFullStr(data.error)) {
         callCallback(createContentLoadError(contentId, data.error), callback);
         return true;
-    } else if (data != null && data.data == null) {
+    } else if (data != null && data.data == null && data.canceled !== true) {
         callCallback(createContentLoadError(contentId, "Missing data"), callback);
         return true;
     }
@@ -52,6 +58,43 @@ function handleContentExtendResult(data: any): void {
         tvx.InteractionPlugin.error(data.error);
     }
     reloadContent();
+}
+
+function applySearch() {
+    if (tvx.Tools.strTrim(searchExpression).length >= MIN_SEARCH_EXPRESSION_LENGHT) {
+        searchDelay.start(reloadContent);
+    } else {
+        searchDelay.stop();
+    }
+    if (!cancelSearch()) {
+        reloadContent();
+    }
+}
+
+function handleSearchInput(input: string): void {
+    if (searchExpression.length < MAX_SEARCH_EXPRESSION_LENGHT) {
+        searchExpression += input;
+        applySearch();
+    }
+}
+
+function handleSearchControl(control: string): void {
+    if (control == "back") {
+        if (searchExpression.length > 0) {
+            searchExpression = searchExpression.substring(0, searchExpression.length - 1);
+            applySearch();
+        }
+    } else if (control == "clear") {
+        searchExpression = "";
+        applySearch();
+    } else if (control == "space") {
+        if (searchExpression.length > 0 && searchExpression.length < MAX_SEARCH_EXPRESSION_LENGHT && searchExpression[searchExpression.length - 1] != " ") {
+            searchExpression += " ";
+            applySearch();
+        }
+    } else {
+        tvx.InteractionPlugin.warn("Unknown search control: '" + control + "'");
+    }
 }
 
 function handleVideoLoadError(videoId: string, data: any, callback: (data: any) => void): boolean {
@@ -136,6 +179,17 @@ export function loadContent(contentId: string, callback: (data: any) => void): v
                             callCallback(createBean(beanData, episodesOrder, episodesData), callback);
                         }
                     });
+                } else if (contentId == "search") {
+                    let expression: string = tvx.Tools.strTrim(searchExpression);
+                    if (expression.length < MIN_SEARCH_EXPRESSION_LENGHT || searchDelay.isBusy()) {
+                        callCallback(createSearch(searchExpression, null, searchDelay.isBusy()), callback);
+                    } else {
+                        performSearch(expression, (resultsData: any) => {
+                            if (!handleContentLoadError(contentId, resultsData, callback)) {
+                                callCallback(createSearch(searchExpression, resultsData, searchDelay.isBusy()), callback);
+                            }
+                        });
+                    }
                 } else if (contentId == "settings") {
                     callCallback(createSettings(), callback);
                 } else {
@@ -167,6 +221,15 @@ export function executeContent(action: string): void {
                 extendBeanEpisodeList(handleContentExtendResult);
             } else {
                 tvx.InteractionPlugin.stopLoading();
+            }
+        } else if (action.indexOf("search:") == 0) {
+            let searchAction: string = action.substring(7);
+            if (searchAction.indexOf("input:") == 0) {
+                handleSearchInput(searchAction.substring(6));
+            } else if (searchAction.indexOf("control:") == 0) {
+                handleSearchControl(searchAction.substring(8));
+            } else {
+                tvx.InteractionPlugin.warn("Unknown search action: '" + searchAction + "'");
             }
         } else if (action.indexOf("settings:") == 0) {
             let settingsAction: string = action.substring(9);

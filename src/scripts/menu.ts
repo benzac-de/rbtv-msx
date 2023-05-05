@@ -31,6 +31,10 @@ export function createMenu(): tvx.MSXMenuRoot {
             label: "Alle Bohnen",
             data: createContentRequest("beans")
         }, {
+            icon: "search",
+            label: "Suche",
+            data: createContentRequest("search")
+        }, {
             type: "separator"
         }, {
             icon: "settings",

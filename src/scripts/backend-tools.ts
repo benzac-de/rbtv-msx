@@ -5,6 +5,8 @@ const CACHE_EXPIRATION: number = 3600000;//1 hour
 
 const cache: any = {};
 
+let requestCounter: number = 0;
+
 function compareBeanIndex(bean1: any, bean2: any): number {
     return bean1.msxIndex - bean2.msxIndex;
 }
@@ -125,6 +127,10 @@ export function createIdPath(path: string, id: string): string {
     return tvx.Tools.strReplace(path, "{ID}", id);
 }
 
+export function createExpressionPath(path: string, expression: string): string {
+    return tvx.Tools.strReplace(path, "{EXPRESSION}", tvx.Tools.strToUrlStr(expression));
+}
+
 export function isListLoaded(list: any): boolean {
     return list != null && list.pagination != null && list.pagination.total >= 0;
 }
@@ -139,14 +145,15 @@ export function shoudlLoadList(list: any, extend?: boolean): boolean {
 
 export function startLoadList(list: any): number {
     if (list != null) {
-        list.requestHash = list.hash;
-        return list.hash;
+        requestCounter++;
+        list.counter = requestCounter;
+        return requestCounter;
     }
     return 0;
 }
 
-export function stopLoadList(list: any, requestHash: number): boolean {
-    return list != null && list.requestHash == requestHash;
+export function stopLoadList(list: any, counter: number): boolean {
+    return list != null && list.counter == counter;
 }
 
 export function getListOffset(list: any): number {
@@ -177,20 +184,9 @@ export function validateList(list: any, type: string, id: string, order: string,
             },
             data: null,
             extendable: false,
-            counter: 0,
-            hash: 0,
             timestamp: timestamp
         };
-    } else {
-        list.counter++;
     }
-    list.hash = tvx.Tools.createHash(
-        tvx.Tools.strFullCheck(list.type, "") + "_" +
-        tvx.Tools.strFullCheck(list.id, "") + "_" +
-        tvx.Tools.strFullCheck(list.order, "") + "_" +
-        tvx.Tools.strFullCheck(list.filter, "") + "_" +
-        list.pagination.offset + "_" +
-        list.counter);
     return list;
 }
 
@@ -207,6 +203,20 @@ export function extendList(list: any, data: any): void {
             list.data = concatData(list.data, data.data);
         }
     }
+}
+
+export function validateSearch(results: any, expression: string): any {
+    let timestamp: number = tvx.DateTools.getTimestamp();
+    if (results == null ||
+        results.expression !== expression ||
+        timestamp - results.timestamp > CACHE_EXPIRATION) {
+        results = {
+            expression: expression,
+            data: null,
+            timestamp: timestamp
+        };
+    }
+    return results;
 }
 
 export function sortBeans(data: any, order?: string): void {

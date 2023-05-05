@@ -37,7 +37,10 @@ import {
     createHeaderUrl,
     createShadowUrl,
     createBackgroundUrl,
-    getYouTubeQualityLabel
+    getYouTubeQualityLabel,
+    getSearchCount,
+    createPlaceholderUrl,
+    getVideosCount
 } from "./content-tools";
 
 function completeError(error: string): string {
@@ -88,17 +91,17 @@ function createBackdrop(url: string): tvx.MSXReady {
     };
 }
 
-function createEpisodesOrderItem(flag: string, currentOrder: string, activeOrder: string, contentId: string, seasonId: string): tvx.MSXContentItem {
+function createEpisodesOrderItem(flag: string, currentOrder: string, activeOrder: string, contentId: string, seasonId: string, showRelated: boolean): tvx.MSXContentItem {
     var active = currentOrder == activeOrder;
     return {
         focus: active,
-        label: getEpisodesOrderLabel(currentOrder),
+        label: getEpisodesOrderLabel(currentOrder, showRelated),
         extensionIcon: active ? "check" : "blank",
         action: active ? "back" : "[back|invalidate:content|replace:content:" + flag + ":" + createContentRequest(contentId + ":" + tvx.Tools.strFullCheck(seasonId, "") + ":" + currentOrder) + "]"
     };
 }
 
-function createEpisodesOrderPanel(flag: string, order: string, contentId: string, seasonId: string): tvx.MSXContentRoot {
+function createEpisodesOrderPanel(flag: string, order: string, contentId: string, seasonId: string, showRelated: boolean): tvx.MSXContentRoot {
     return {
         headline: "Sortierung",
         template: {
@@ -107,8 +110,8 @@ function createEpisodesOrderPanel(flag: string, order: string, contentId: string
             layout: "0,0,8,1"
         },
         items: [
-            createEpisodesOrderItem(flag, "default", order, contentId, seasonId),
-            createEpisodesOrderItem(flag, "reverse", order, contentId, seasonId)
+            createEpisodesOrderItem(flag, "default", order, contentId, seasonId, showRelated),
+            createEpisodesOrderItem(flag, "reverse", order, contentId, seasonId, showRelated)
         ]
     };
 }
@@ -181,7 +184,7 @@ function createEpisodeAction(item: any, autoMode: boolean): string {
     return item != null && tvx.Tools.isNum(item.id) ? "video:" + (autoMode ? "auto:" : "") + "resolve:" + createVideoRequest(item.id) : null;
 }
 
-function createEpisodeTemplate(data: any, pagination: any): tvx.MSXContentItem {
+function createEpisodeTemplate(context: string, data: any, pagination: any): tvx.MSXContentItem {
     return {
         type: "default",
         layout: "0,0,3,3",
@@ -190,7 +193,7 @@ function createEpisodeTemplate(data: any, pagination: any): tvx.MSXContentItem {
         wrapperColor: "msx-black",
         truncation: "titleHeader|titleFooter",
         enumerate: false,
-        selection: createListSelection("Folge", getTotalItems(data, pagination)),
+        selection: createListSelection(context, getTotalItems(data, pagination)),
         imageFiller: "height-center",
         progress: -1,
         live: {
@@ -223,7 +226,7 @@ function createEpisodeItems(data: any, extendable: boolean, contentId: string): 
                 number: getListNumber(i),
                 titleHeader: addTextPrefix("{col:msx-white}", item.title),
                 titleFooter: getEpisodeFooter(item, timestamp),
-                image: extensionPage ? null : getThumbnail(item, "small"),
+                image: extensionPage ? null : tvx.Tools.strFullCheck(getThumbnail(item, "small"), createPlaceholderUrl()),
                 icon: extensionPage ? "msx-white-soft:more-horiz" : null,
                 stamp: getDuration(item),
                 liveStamp: getLiveDuration(item),
@@ -382,9 +385,9 @@ function createShowHeader(showData: any, seasonId: string, episodesOrder: string
             layout: "0," + (hasDescription ? descriptionHeight : 0) + ",9,1",
             icon: "sort",
             label: "Sortierung",
-            extensionLabel: getEpisodesOrderLabel(episodesOrder),
+            extensionLabel: getEpisodesOrderLabel(episodesOrder, true),
             action: "panel:data",
-            data: createEpisodesOrderPanel("show", episodesOrder, "show:" + showData.id, seasonId)
+            data: createEpisodesOrderPanel("show", episodesOrder, "show:" + showData.id, seasonId, true)
         }, {
             display: hasSeasons,
             type: "control",
@@ -521,9 +524,9 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
             offset: "0,-0.25,0,0",
             icon: "sort",
             label: "Sortierung",
-            extensionLabel: getEpisodesOrderLabel(episodesOrder),
+            extensionLabel: getEpisodesOrderLabel(episodesOrder, false),
             action: "panel:data",
-            data: createEpisodesOrderPanel("bean", episodesOrder, "bean:" + beanData.mgmtid, null)
+            data: createEpisodesOrderPanel("bean", episodesOrder, "bean:" + beanData.mgmtid, null, false)
         }, {
             display: tvx.Tools.isFullStr(showreelAction),
             type: "control",
@@ -547,7 +550,7 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
             type: "space",
             layout: "1,2,11,1",
             offset: "-1,0.03,1,0",
-            text: getEpisodesCount(getTotalItems(episodesData, episodesPagination))
+            text: getVideosCount(getTotalItems(episodesData, episodesPagination))
         }]
     };
 }
@@ -731,7 +734,7 @@ function createOverviewEpisode(item: any, index: number, timestamp: number): tvx
         imageFiller: "height-center",
         titleHeader: addTextPrefix("{col:msx-white}", item.title),
         titleFooter: getEpisodeFooter(item, timestamp),
-        image: getThumbnail(item, "small"),
+        image: tvx.Tools.strFullCheck(getThumbnail(item, "small"), createPlaceholderUrl()),
         stamp: getDuration(item),
         progressColor: getTokenColor(item),
         action: createEpisodeAction(item, false),
@@ -789,11 +792,11 @@ function createOverviewShows(data: any): tvx.MSXContentItem[] {
     return items;
 }
 
-function createGenericEpisodesOverview(headline: string, moreButtonName: string, moreButtonAction: string, data: any, pagination: any, timestamp: number): tvx.MSXContentPage {
+function createGenericEpisodesOverview(headline: string, moreButtonName: string, moreButtonAction: string, data: any, pagination: any, showRelated: boolean, timestamp: number): tvx.MSXContentPage {
     let items: tvx.MSXContentItem[] = createOverviewEpisodes(data, timestamp);
     let total: number = getTotalItems(data, pagination);
     if (items.length > 0) {
-        items.push(createOverviewHeadline(headline, getEpisodesCount(total)));
+        items.push(createOverviewHeadline(headline, showRelated ? getEpisodesCount(total) : getVideosCount(total)));
         if (total > 4) {
             items.push(createOverviewMoreButton(moreButtonName, moreButtonAction));
         }
@@ -828,11 +831,11 @@ function createGenericShowsOverview(headline: string, moreButtonName: string, mo
 }
 
 function createNewEpisodesOverview(data: any, pagination: any, timestamp: number): tvx.MSXContentPage {
-    return createGenericEpisodesOverview("Neue Videos", "Zeige alle neuen Videos", "content:" + createContentRequest("new"), data, pagination, timestamp);
+    return createGenericEpisodesOverview("Neue Videos", "Zeige alle neuen Videos", "content:" + createContentRequest("new"), data, pagination, false, timestamp);
 }
 
 function createEventEpisodesOverview(data: any, pagination: any, timestamp: number): tvx.MSXContentPage {
-    return createGenericEpisodesOverview("Aktuelle Events", "Zeige alle Events", "content:" + createContentRequest("show:" + EVENT_SHOW_ID), data, pagination, timestamp);
+    return createGenericEpisodesOverview("Aktuelle Events", "Zeige alle Events", "content:" + createContentRequest("show:" + EVENT_SHOW_ID), data, pagination, true, timestamp);
 }
 
 function createCurrentShowsOverview(data: any, pagination: any): tvx.MSXContentPage {
@@ -841,6 +844,244 @@ function createCurrentShowsOverview(data: any, pagination: any): tvx.MSXContentP
 
 function createCurrentPodcastsOverview(data: any, pagination: any): tvx.MSXContentPage {
     return createGenericShowsOverview("Alle Podcasts", "Zeige alle Podcasts", "content:" + createContentRequest("shows::podcast"), data, pagination);
+}
+
+function createSearchControlButton(control: string, key: string, x: number, y: number, extended: boolean): tvx.MSXContentItem {
+    let label: string = null;
+    if (control == "back") {
+        label = "{ico:backspace}";
+    } else if (control == "clear") {
+        label = "{ico:clear}";
+    } else if (control == "space") {
+        label = "{ico:space-bar}";
+    }
+    return {
+        type: "button",
+        layout: x + "," + y + "," + (extended ? 4 : 3) + "," + (y == 2 ? 2 : 1),
+        offset: y == 2 ? "0,0,0,-1" : null,
+        label: label,
+        key: key,
+        action: "interaction:commit:message:content:search:control:" + control
+    };
+}
+
+function createSearchInputButton(input: string, key: string, x: number, y: number): tvx.MSXContentItem {
+    return {
+        type: "button",
+        layout: x + "," + y + ",1,1",
+        offset: x >= 10 && x <= 12 ? "0.5,0,0,0" : null,
+        label: input,
+        key: key,
+        action: "interaction:commit:message:content:search:input:" + input
+    };
+}
+
+function createSearchDescription(description: string): tvx.MSXContentItem {
+    return {
+        type: "space",
+        layout: "0,4,16,1",
+        offset: "0,0.04,0,0",
+        text: description
+    };
+}
+
+function createSearchHeader(totalShows: number, totalEpisodes: number, searching: boolean): tvx.MSXContentPage {
+    return {
+        wrap: true,
+        items: [
+            createSearchInputButton("A", "a", 0, 0),
+            createSearchInputButton("B", "b", 1, 0),
+            createSearchInputButton("C", "c", 2, 0),
+            createSearchInputButton("D", "d", 3, 0),
+            createSearchInputButton("E", "e", 4, 0),
+            createSearchInputButton("F", "f", 5, 0),
+            createSearchInputButton("G", "g", 6, 0),
+            createSearchInputButton("H", "h", 7, 0),
+            createSearchInputButton("I", "i", 8, 0),
+            createSearchInputButton("J", "j", 9, 0),
+            createSearchInputButton("K", "k", 0, 1),
+            createSearchInputButton("L", "l", 1, 1),
+            createSearchInputButton("M", "m", 2, 1),
+            createSearchInputButton("N", "n", 3, 1),
+            createSearchInputButton("O", "o", 4, 1),
+            createSearchInputButton("P", "p", 5, 1),
+            createSearchInputButton("Q", "q", 6, 1),
+            createSearchInputButton("R", "r", 7, 1),
+            createSearchInputButton("S", "s", 8, 1),
+            createSearchInputButton("T", "t", 9, 1),
+            createSearchInputButton("U", "u", 0, 2),
+            createSearchInputButton("V", "v", 1, 2),
+            createSearchInputButton("W", "w", 2, 2),
+            createSearchInputButton("X", "x", 3, 2),
+            createSearchInputButton("Y", "y", 4, 2),
+            createSearchInputButton("Z", "z", 5, 2),
+            createSearchInputButton("Ä", "quote", 6, 2),
+            createSearchInputButton("Ö", "accent", 7, 2),
+            createSearchInputButton("Ü", "semicolon", 8, 2),
+            createSearchInputButton("ß", "bracket_open", 9, 2),
+            createSearchControlButton("back", "delete", 0, 3, false),
+            createSearchControlButton("space", "space|insert", 3, 3, true),
+            createSearchControlButton("clear", "home|end", 7, 3, false),
+            createSearchInputButton("1", "1", 10, 0),
+            createSearchInputButton("2", "2", 11, 0),
+            createSearchInputButton("3", "3", 12, 0),
+            createSearchInputButton("4", "4", 10, 1),
+            createSearchInputButton("5", "5", 11, 1),
+            createSearchInputButton("6", "6", 12, 1),
+            createSearchInputButton("7", "7", 10, 2),
+            createSearchInputButton("8", "8", 11, 2),
+            createSearchInputButton("9", "9", 12, 2),
+            createSearchInputButton("*", null, 10, 3),
+            createSearchInputButton("0", "0", 11, 3),
+            createSearchInputButton("#", "slash", 12, 3),
+            createSearchInputButton("@", null, 14, 0),
+            createSearchInputButton("&", null, 15, 0),
+            createSearchInputButton("+", "equal", 14, 1),
+            createSearchInputButton("-", "dash", 15, 1),
+            createSearchInputButton("!", null, 14, 2),
+            createSearchInputButton("?", null, 15, 2),
+            createSearchInputButton(".", "period", 14, 3),
+            createSearchInputButton(",", "comma", 15, 3),
+            createSearchDescription(totalShows >= 0 && totalEpisodes >= 0 ? getSearchCount(totalShows, totalEpisodes) : (searching ? "..." : "Gib mindestens 2 Buchstaben ein, um eine Suche zu starten"))
+        ]
+    };
+}
+
+function createSearchResultsHeadline(headline: string): tvx.MSXContentItem {
+    return {
+        type: "space",
+        layout: "1,0,11,1",
+        offset: "-1,0,1,-0.333",
+        headline: headline
+    };
+}
+
+function createSearchResultsPage(headline: string, baseOffset: number): tvx.MSXContentPage {
+    return {
+        compress: false,
+        offset: tvx.Tools.isFullStr(headline) ? "0,0,0," + (0.666 + baseOffset) : "0,0,0," + baseOffset,
+        items: tvx.Tools.isFullStr(headline) ? [createSearchResultsHeadline(headline)] : [],
+        options: createListOptions()
+    };
+}
+
+function startSearchResultsPage(pages: tvx.MSXContentPage[], headline: string, baseOffset: number): tvx.MSXContentPage {
+    let page: tvx.MSXContentPage = createSearchResultsPage(headline, baseOffset);
+    if (pages != null) {
+        pages.push(page);
+    }
+    return page;
+}
+
+function createSearchResultsShow(item: any, listIndex: number, pageIndex: number, total: number): tvx.MSXContentItem {
+    //Note: Search content is compressed
+    let posX: number = 0;
+    let offsetX: number = 0;
+    let offsetY: number = listIndex < 6 ? 0.666 : 0;
+    if (pageIndex == 0) {
+        posX = 0;
+        offsetX = 0;
+    } else if (pageIndex == 1) {
+        posX = 2;
+        offsetX = 0.666;
+    } else if (pageIndex == 2) {
+        posX = 4;
+        offsetX = 1.333;
+    } else if (pageIndex == 3) {
+        posX = 8;
+        offsetX = 0;
+    } else if (pageIndex == 4) {
+        posX = 10;
+        offsetX = 0.666;
+    } else if (pageIndex == 5) {
+        posX = 12;
+        offsetX = 1.333;
+    }
+    return {
+        type: "separate",
+        layout: posX + ",0,2,5",
+        offset: offsetX + "," + offsetY + ",0.666,0.333",
+        imageFiller: "height-center",
+        title: getShowTitle(item),
+        titleFooter: getShowFooter(item),
+        image: getThumbnail(item, "large"),
+        selection: createItemSelection("Show", listIndex, total),
+        action: createShowAction(item)
+    };
+}
+
+function createSearchResultsEpisode(item: any, listIndex: number, pageIndex: number, total: number, timestamp: number): tvx.MSXContentItem {
+    //Note: Search content is compressed
+    let posX: number = pageIndex < 4 ? pageIndex * 4 : (pageIndex - 4) * 4;
+    let posY: number = pageIndex < 4 ? 0 : 4;
+    return {
+        type: "default",
+        layout: posX + "," + posY + ",4,4",
+        offset: listIndex < 4 ? "0,0.666,0,0" : null,
+        imageHeight: 2.133,
+        imageBoundary: true,
+        wrapperColor: "msx-black",
+        truncation: "titleHeader|titleFooter",
+        imageFiller: "height-center",
+        titleHeader: addTextPrefix("{col:msx-white}", item.title),
+        titleFooter: getEpisodeFooter(item, timestamp),
+        image: tvx.Tools.strFullCheck(getThumbnail(item, "small"), createPlaceholderUrl()),
+        stamp: getDuration(item),
+        progressColor: getTokenColor(item),
+        selection: createItemSelection("Video", listIndex, total),
+        action: createEpisodeAction(item, false),
+        progress: -1,
+        live: {
+            type: "playback",
+            action: "player:show",
+            stamp: getDuration(item),
+            running: {
+                stamp: getLiveDuration(item)
+            }
+        },
+        properties: {
+            "resume:key": "url"
+        }
+    };
+}
+
+function createSearchResultsShows(shows: any): tvx.MSXContentPage[] {
+    let pages: tvx.MSXContentPage[] = [];
+    if (shows != null && shows.length > 0) {
+        let page: tvx.MSXContentPage = startSearchResultsPage(pages, "Shows", 0.333);
+        let index: number = 0;
+        for (let i: number = 0; i < shows.length; i++) {
+            if (index == 6) {
+                index = 0;
+                page = startSearchResultsPage(pages, null, 0.333);
+            }
+            page.items.push(createSearchResultsShow(shows[i], i, index, shows.length));
+            index++;
+        }
+    }
+    return pages;
+}
+
+function createSearchResultsEpisodes(episodes: any): tvx.MSXContentPage[] {
+    let timestamp: number = tvx.DateTools.getTimestamp();
+    let pages: tvx.MSXContentPage[] = [];
+    if (episodes != null && episodes.length > 0) {
+        let page: tvx.MSXContentPage = startSearchResultsPage(pages, "Videos", 0);
+        let index: number = 0;
+        for (let i: number = 0; i < episodes.length; i++) {
+            if (i == 4 || index == 8) {
+                index = 0;
+                page = startSearchResultsPage(pages, null, 0);
+            }
+            page.items.push(createSearchResultsEpisode(episodes[i], i, index, episodes.length, timestamp));
+            index++;
+        }
+    }
+    return pages;
+}
+
+function createSearchResults(shows: any, episodes: any): tvx.MSXContentPage[] {
+    return createSearchResultsShows(shows).concat(createSearchResultsEpisodes(episodes));
 }
 
 function createYouTubeQualityItem(currentQuality: string, activeQuality: string): tvx.MSXContentItem {
@@ -959,7 +1200,7 @@ export function createNewEpisodes(data: any): tvx.MSXContentRoot {
         headline: "Neue Videos",
         background: createBackgroundUrl(),
         ready: createBackdrop(null),
-        template: createEpisodeTemplate(data.data, data.pagination),
+        template: createEpisodeTemplate("Video", data.data, data.pagination),
         items: createEpisodeItems(data.data, data.extendable, "new"),
         options: createListOptions()
     };
@@ -976,7 +1217,7 @@ export function createShow(showData: any, seasonId: string, episodesOrder: strin
         background: createBackgroundUrl(),
         ready: createBackdrop(backdrop),
         transparent: tvx.Tools.isFullStr(backdrop) ? 2 : 0,
-        template: createEpisodeTemplate(episodesData.data, episodesData.pagination),
+        template: createEpisodeTemplate("Folge", episodesData.data, episodesData.pagination),
         items: createEpisodeItems(episodesData.data, episodesData.extendable, tvx.Tools.isFullStr(seasonId) ? "show:" + seasonId : "show"),
         options: createListOptions()
     };
@@ -1006,7 +1247,7 @@ export function createBean(beanData: any, episodesOrder: string, episodesData: a
         header: createBeanHeader(beanData.data, episodesOrder, episodesData.data, episodesData.pagination),
         background: createBackgroundUrl(),
         ready: createBackdrop(null),
-        template: createEpisodeTemplate(episodesData.data, episodesData.pagination),
+        template: createEpisodeTemplate("Video", episodesData.data, episodesData.pagination),
         items: createEpisodeItems(episodesData.data, episodesData.extendable, "bean"),
         options: createListOptions()
     };
@@ -1024,6 +1265,22 @@ export function createBeans(order: string, data: any): tvx.MSXContentRoot {
         template: createBeanTemplate(data.data),
         items: createBeanItems(data.data),
         options: createListOptions()
+    };
+}
+
+export function createSearch(expression: string, data: any, searching: boolean): tvx.MSXContentRoot {
+    let shows: any = data != null && data.data != null ? data.data.shows : null;
+    let episodes: any = data != null && data.data != null ? data.data.episodes : null;
+    let header: tvx.MSXContentPage[] = [createSearchHeader(shows != null ? shows.length : -1, episodes != null ? episodes.length : -1, searching)];
+    let results: tvx.MSXContentPage[] = createSearchResults(shows, episodes);
+    return {
+        compress: true,
+        important: true,
+        type: "list",
+        headline: "{ico:search} " + (tvx.Tools.isFullStr(expression) ? "\"" + expression + "\"" : "{col:msx-white-soft}Suche nach Shows oder Videos"),
+        background: createBackgroundUrl(),
+        ready: createBackdrop(null),
+        pages: header.concat(results)
     };
 }
 
@@ -1135,5 +1392,5 @@ export function createVideo(videoId: string, data: any): any {
         }
         return createVideoLoadError(videoId, "Kein unterstütztes Token gefunden");
     }
-    return createVideoLoadError(videoId, "Keine Folgen gefunden");
+    return createVideoLoadError(videoId, "Video nicht gefunden");
 }

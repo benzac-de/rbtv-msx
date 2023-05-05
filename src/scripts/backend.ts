@@ -6,6 +6,7 @@ import {
     appendQuery,
     checkId,
     createIdPath,
+    createExpressionPath,
     validateList,
     extendList,
     getListOffset,
@@ -14,7 +15,8 @@ import {
     startLoadList,
     stopLoadList,
     restoreData,
-    storeData
+    storeData,
+    validateSearch
 } from "./backend-tools";
 
 const SERVER_ROOT: string = "https://api.rocketbeans.tv/v1";
@@ -27,9 +29,12 @@ const BEAN_PATH: string = "/bohne/{ID}";
 const BEANS_PATH: string = "/bohne/portrait/all";
 const BEAN_EPISODES_PATH: string = "/media/episode/bybohne/{ID}";
 const EPISODE_PATH: string = "/media/episode/{ID}";
+const SEARCH_PATH: string = "/search/{EXPRESSION}";
 
 let showList: any = null;
 let episodeList: any = null;
+let searchResults: any = null;
+let pendingSearchCallback: any = null;
 
 function loadContent(path: string, query: string, callback?: (data: any) => void, useCache?: boolean): void {
     if (tvx.Tools.isFullStr(path)) {
@@ -88,12 +93,12 @@ export function loadShows(offset?: number, limit?: number, order?: string, filte
 export function loadShowList(order?: string, filter?: string, callback?: (data: any) => void, extend?: boolean): boolean {
     showList = validateList(showList, "show", null, order, filter);
     if (shoudlLoadList(showList, extend)) {
-        let requestHash: number = startLoadList(showList);
+        let requestCounter: number = startLoadList(showList);
         loadShows(getListOffset(showList), getListLimit(showList), showList.order, showList.filter, (data: any) => {
             if (tvx.Tools.isFullStr(data.error)) {
                 showList = null;
                 callCallback(data, callback);
-            } else if (stopLoadList(showList, requestHash)) {
+            } else if (stopLoadList(showList, requestCounter)) {
                 extendList(showList, data);
                 callCallback(showList, callback);
             } else {
@@ -124,12 +129,12 @@ export function loadShowEpisodes(id: string, offset?: number, limit?: number, or
 export function loadShowEpisodeList(id: string, order?: string, callback?: (data: any) => void, extend?: boolean): boolean {
     episodeList = validateList(episodeList, "show", id, order, null);
     if (shoudlLoadList(episodeList, extend)) {
-        let requestHash: number = startLoadList(episodeList);
+        let requestCounter: number = startLoadList(episodeList);
         loadShowEpisodes(id, getListOffset(episodeList), getListLimit(episodeList), episodeList.order, (data: any) => {
             if (tvx.Tools.isFullStr(data.error)) {
                 episodeList = null;
                 callCallback(data, callback);
-            } else if (stopLoadList(episodeList, requestHash)) {
+            } else if (stopLoadList(episodeList, requestCounter)) {
                 extendList(episodeList, data);
                 callCallback(episodeList, callback);
             } else {
@@ -160,12 +165,12 @@ export function loadSeasonEpisodes(id: string, offset?: number, limit?: number, 
 export function loadSeasonEpisodeList(id: string, order?: string, callback?: (data: any) => void, extend?: boolean): boolean {
     episodeList = validateList(episodeList, "season", id, order, null);
     if (shoudlLoadList(episodeList, extend)) {
-        let requestHash: number = startLoadList(episodeList);
+        let requestCounter: number = startLoadList(episodeList);
         loadSeasonEpisodes(id, getListOffset(episodeList), getListLimit(episodeList), episodeList.order, (data: any) => {
             if (tvx.Tools.isFullStr(data.error)) {
                 episodeList = null;
                 callCallback(data, callback);
-            } else if (stopLoadList(episodeList, requestHash)) {
+            } else if (stopLoadList(episodeList, requestCounter)) {
                 extendList(episodeList, data);
                 callCallback(episodeList, callback);
             } else {
@@ -230,12 +235,12 @@ export function loadNewEpisodes(offset?: number, limit?: number, order?: string,
 export function loadNewEpisodeList(order?: string, callback?: (data: any) => void, extend?: boolean): boolean {
     episodeList = validateList(episodeList, "new", null, order, null);
     if (shoudlLoadList(episodeList, extend)) {
-        let requestHash: number = startLoadList(episodeList);
+        let requestCounter: number = startLoadList(episodeList);
         loadNewEpisodes(getListOffset(episodeList), getListLimit(episodeList), episodeList.order, (data: any) => {
             if (tvx.Tools.isFullStr(data.error)) {
                 episodeList = null;
                 callCallback(data, callback);
-            } else if (stopLoadList(episodeList, requestHash)) {
+            } else if (stopLoadList(episodeList, requestCounter)) {
                 extendList(episodeList, data);
                 callCallback(episodeList, callback);
             } else {
@@ -279,12 +284,12 @@ export function loadBeanEpisodes(id: string, offset?: number, limit?: number, or
 export function loadBeanEpisodeList(id: string, order?: string, callback?: (data: any) => void, extend?: boolean): boolean {
     episodeList = validateList(episodeList, "bean", id, order, null);
     if (shoudlLoadList(episodeList, extend)) {
-        let requestHash: number = startLoadList(episodeList);
+        let requestCounter: number = startLoadList(episodeList);
         loadBeanEpisodes(id, getListOffset(episodeList), getListLimit(episodeList), episodeList.order, (data: any) => {
             if (tvx.Tools.isFullStr(data.error)) {
                 episodeList = null;
                 callCallback(data, callback);
-            } else if (stopLoadList(episodeList, requestHash)) {
+            } else if (stopLoadList(episodeList, requestCounter)) {
                 extendList(episodeList, data);
                 callCallback(episodeList, callback);
             } else {
@@ -361,4 +366,39 @@ export function loadOverview(callback?: (newEpisodesData: any, eventEpisodesData
             callback(newEpisodesData, eventEpisodesData, currentShowsData, currentPodcastsData);
         });
     };
+}
+
+export function performSearch(expression: string, callback?: (data: any) => void): boolean {
+    searchResults = validateSearch(searchResults, expression);
+    if (searchResults.data == null) {
+        pendingSearchCallback = callback;
+        loadContent(createExpressionPath(SEARCH_PATH, expression), null, (data: any) => {
+            if (pendingSearchCallback == callback) {
+                pendingSearchCallback = null;
+                if (tvx.Tools.isFullStr(data.error)) {
+                    searchResults = null;
+                    callCallback(data, callback);
+                } else {
+                    searchResults.data = data.data;
+                    callCallback(searchResults, callback);
+                }
+            }
+        });
+        return true;
+    }
+    callCallback(searchResults, callback);
+    return false;
+}
+
+export function cancelSearch(): boolean {
+    if (pendingSearchCallback != null) {
+        let callback: any = pendingSearchCallback;
+        pendingSearchCallback = null;
+        searchResults = null;
+        callCallback({
+            canceled: true
+        }, callback);
+        return true;
+    }
+    return false;
 }
