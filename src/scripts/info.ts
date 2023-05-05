@@ -4,6 +4,7 @@ export class Info {
     public localContext: boolean = false;
 
     public init(data: tvx.MSXAttachedInfo): void {
-        this.localContext = data != null && data.info != null && data.info.host === "local";
+        //Note: The host "52357benzac.de.mediastationx" is used in local UWP instances
+        this.localContext = data != null && data.info != null && (data.info.host === "local" || data.info.host === "52357benzac.de.mediastationx");
     }
 }

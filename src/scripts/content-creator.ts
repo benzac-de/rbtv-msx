@@ -942,7 +942,7 @@ function createSearchHeader(totalShows: number, totalEpisodes: number, searching
             createSearchInputButton("?", null, 15, 2),
             createSearchInputButton(".", "period", 14, 3),
             createSearchInputButton(",", "comma", 15, 3),
-            createSearchDescription(totalShows >= 0 && totalEpisodes >= 0 ? getSearchCount(totalShows, totalEpisodes) : (searching ? "..." : "Gib mindestens 2 Buchstaben ein, um eine Suche zu starten"))
+            createSearchDescription(totalShows >= 0 && totalEpisodes >= 0 ? getSearchCount(totalShows, totalEpisodes) : (searching ? "..." : "Gib mindestens 2 Zeichen ein, um eine Suche zu starten"))
         ]
     };
 }
