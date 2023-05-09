@@ -31,6 +31,7 @@ npm install
 npm run start
 ```
 By default, the index page is available under: http://localhost:1234/index.html
+
 You can open this page directly in a browser (it will be automatically loaded as MSX plugin).
 
 ### Building for deployment
@@ -44,6 +45,7 @@ npm install --global http-server
 http-server ./dist --cors
 ```
 By default, the index page is available under: http://localhost:8080/index.html
+
 You can open this page directly in a browser (it will be automatically loaded as MSX plugin).
 
 #### Testing on TV device
