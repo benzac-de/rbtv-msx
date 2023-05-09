@@ -1,5 +1,6 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
 import { SETTINGS, EVENT_SHOW_ID, NAME, VERSION, MIN_APP_VERSION, objToBase64, proxyImageForLocalContext } from "./tools";
+import { isShowPinned, isBeanPinned } from "./pins";
 import {
     EXTENDED_SHOW_DESCRIPTION_LENGHT,
     getTokenUrl,
@@ -40,7 +41,10 @@ import {
     getYouTubeQualityLabel,
     getSearchCount,
     createPlaceholderUrl,
-    getVideosCount
+    getVideosCount,
+    getPinIcon,
+    getPinHint,
+    getPinTag
 } from "./content-tools";
 
 function completeError(error: string): string {
@@ -61,11 +65,15 @@ function createListLiveExtension(item: any, index: number, length: number, exten
     } : (extensionPage ? {} : null);
 }
 
-function createListOptions(): tvx.MSXContentPage {
+function createListOptions(): tvx.MSXContentRoot {
     return {
-        items: [{
+        headline: "Optionen",
+        template: {
+            enumerate: false,
             layout: "0,0,8,1",
-            type: "control",
+            type: "control"
+        },
+        items: [{
             icon: "vertical-align-top",
             label: "Zum Anfang der Liste",
             action: "[cleanup|focus:index:-1]"
@@ -193,7 +201,9 @@ function createEpisodeTemplate(context: string, data: any, pagination: any): tvx
         wrapperColor: "msx-black",
         truncation: "titleHeader|titleFooter",
         enumerate: false,
+        tagColor: "msx-white",
         selection: createListSelection(context, getTotalItems(data, pagination)),
+        options: createListOptions(),
         imageFiller: "height-center",
         progress: -1,
         live: {
@@ -256,7 +266,9 @@ function createShowTemplate(data: any, pagination: any): tvx.MSXContentItem {
         type: "separate",
         layout: "0,0,2,4",
         enumerate: false,
+        tagColor: "msx-white",
         selection: createListSelection("Show", getTotalItems(data, pagination)),
+        options: createListOptions(),
         imageFiller: "height-center"
     };
 }
@@ -273,6 +285,7 @@ function createShowItems(data: any, extendable: boolean): tvx.MSXContentItem[] {
             }
             items.push({
                 id: "show" + i + "_" + item.id,
+                tag: getPinTag(isShowPinned(item.id)),
                 number: getListNumber(i),
                 title: getShowTitle(item),
                 titleFooter: getShowFooter(item),
@@ -382,7 +395,7 @@ function createShowHeader(showData: any, seasonId: string, episodesOrder: string
             text: description
         }, {
             type: "control",
-            layout: "0," + (hasDescription ? descriptionHeight : 0) + ",9,1",
+            layout: "0," + (hasDescription ? descriptionHeight : 0) + ",8,1",
             icon: "sort",
             label: "Sortierung",
             extensionLabel: getEpisodesOrderLabel(episodesOrder, true),
@@ -391,12 +404,22 @@ function createShowHeader(showData: any, seasonId: string, episodesOrder: string
         }, {
             display: hasSeasons,
             type: "control",
-            layout: "0," + (hasDescription ? descriptionHeight + 1 : 1) + ",9,1",
+            layout: "0," + (hasDescription ? descriptionHeight + 1 : 1) + ",8,1",
             icon: "filter-list",
             label: "Folgenauswahl",
             extensionLabel: getEpisodesSeasonLabel(activeSeason, false),
             action: "panel:data",
             data: createEpisodesSeasonPanel("show", activeSeason, showData.seasons, "show:" + showData.id, episodesOrder)
+        }, {
+            id: "pin_show_" + showData.id,
+            type: "button",
+            layout: "8," + (hasSeasons ? (hasDescription ? descriptionHeight + 1 : 1) : (hasDescription ? descriptionHeight : 0)) + ",1,1",
+            icon: getPinIcon(isShowPinned(showData.id)),
+            iconSize: "small",
+            selection: {
+                headline: getPinHint("Lieblingsshow", isShowPinned(showData.id))
+            },
+            action: "interaction:commit:message:menu:pin:toggle:show:" + showData.id
         }, {
             type: "space",
             layout: "1," + (hasSeasons ? (hasDescription ? descriptionHeight + 1 : 1) : (hasDescription ? descriptionHeight : 0)) + ",11,1",
@@ -468,7 +491,9 @@ function createBeanTemplate(data: any): tvx.MSXContentItem {
         type: "default",
         layout: "0,0,4,2",
         enumerate: false,
+        tagColor: "msx-white",
         selection: createListSelection("Bohne", data != null ? data.length : -1),
+        options: createListOptions(),
         imageFiller: "height-right",
         imageOverlay: 0
     };
@@ -481,6 +506,7 @@ function createBeanItems(data: any): tvx.MSXContentItem[] {
             let item: any = data[i];
             items.push({
                 id: "bean" + i + "_" + item.mgmtid,
+                tag: getPinTag(isBeanPinned(item.mgmtid)),
                 number: getListNumber(i),
                 title: getBeanName(item),
                 titleFooter: item.episodeCount > 0 ? "{ico:video-collection} " + item.episodeCount : null,
@@ -494,6 +520,7 @@ function createBeanItems(data: any): tvx.MSXContentItem[] {
 
 function createBeanHeader(beanData: any, episodesOrder: string, episodesData: any, episodesPagination: any): tvx.MSXContentPage {
     let showreelAction: string = getShowreelAction(beanData);
+    let hasShowreel: boolean = tvx.Tools.isFullStr(showreelAction);
     return {
         offset: "0,0,0,-0.5",
         items: [{
@@ -528,14 +555,17 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
             action: "panel:data",
             data: createEpisodesOrderPanel("bean", episodesOrder, "bean:" + beanData.mgmtid, null, false)
         }, {
-            display: tvx.Tools.isFullStr(showreelAction),
-            type: "control",
-            layout: "6,1,3,1",
+            display: hasShowreel,
+            type: "button",
+            layout: "6,1,1,1",
             offset: "0,-0.25,0,0",
             icon: "smart-display",
-            label: "Showreel",
+            iconSize: "small",
             action: showreelAction,
             playerLabel: "Showreel - " + getBeanFullName(beanData),
+            selection: {
+                headline: "Showreel ansehen"
+            },
             properties: {
                 "control:type": "extended",
                 "trigger:complete": "player:eject",
@@ -546,6 +576,17 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
                 "button:speed:icon": "settings",
                 "button:speed:action": getShowreelOptionsAction()
             }
+        }, {
+            id: "pin_bean_" + beanData.mgmtid,
+            type: "button",
+            layout: hasShowreel ? "7,1,1,1" : "6,1,1,1",
+            offset: "0,-0.25,0,0",
+            icon: getPinIcon(isBeanPinned(beanData.mgmtid)),
+            iconSize: "small",
+            selection: {
+                headline: getPinHint("Lieblingsbohne", isBeanPinned(beanData.mgmtid))
+            },
+            action: "interaction:commit:message:menu:pin:toggle:bean:" + beanData.mgmtid
         }, {
             type: "space",
             layout: "1,2,11,1",
@@ -699,16 +740,16 @@ function createOverviewHeader(): tvx.MSXContentPage {
     };
 }
 
-function createOverviewHeadline(headline: string, count: string): tvx.MSXContentItem {
+function createOverviewHeadline(headline: string): tvx.MSXContentItem {
     return {
         type: "space",
         layout: "1,0,11,1",
         offset: "-1,0,1,-0.5",
-        headline: headline + " {txt:msx-white-soft:(" + count + ")}"
+        headline: headline
     };
 }
 
-function createOverviewMoreButton(name: string, action: string): tvx.MSXContentItem {
+function createOverviewMoreButton(name: string, action: string, count: string): tvx.MSXContentItem {
     return {
         type: "button",
         layout: "11,0,1,1",
@@ -716,7 +757,7 @@ function createOverviewMoreButton(name: string, action: string): tvx.MSXContentI
         icon: "more-horiz",
         iconSize: "small",
         selection: {
-            headline: name
+            headline: name + " {txt:msx-white-soft:(" + count + ")}"
         },
         action: action
     };
@@ -758,6 +799,8 @@ function createOverviewShow(item: any, index: number): tvx.MSXContentItem {
         type: "separate",
         layout: (index * 2) + ",0," + (index == 5 ? 1 : 2) + ",4",
         offset: "0,0.5," + (index == 5 ? 1 : 0) + ",0",
+        tag: getPinTag(isShowPinned(item.id)),
+        tagColor: "msx-white",
         imageFiller: "height-center",
         title: getShowTitle(item),
         titleFooter: getShowFooter(item),
@@ -796,9 +839,9 @@ function createGenericEpisodesOverview(headline: string, moreButtonName: string,
     let items: tvx.MSXContentItem[] = createOverviewEpisodes(data, timestamp);
     let total: number = getTotalItems(data, pagination);
     if (items.length > 0) {
-        items.push(createOverviewHeadline(headline, showRelated ? getEpisodesCount(total) : getVideosCount(total)));
+        items.push(createOverviewHeadline(headline));
         if (total > 4) {
-            items.push(createOverviewMoreButton(moreButtonName, moreButtonAction));
+            items.push(createOverviewMoreButton(moreButtonName, moreButtonAction, showRelated ? getEpisodesCount(total) : getVideosCount(total)));
         }
         return {
             offset: "0,0,0,1",
@@ -815,9 +858,9 @@ function createGenericShowsOverview(headline: string, moreButtonName: string, mo
     let items: tvx.MSXContentItem[] = createOverviewShows(data);
     let total: number = getTotalItems(data, pagination);
     if (items.length > 0) {
-        items.push(createOverviewHeadline(headline, getShowsCount(total)));
+        items.push(createOverviewHeadline(headline));
         if (total > 6) {
-            items.push(createOverviewMoreButton(moreButtonName, moreButtonAction));
+            items.push(createOverviewMoreButton(moreButtonName, moreButtonAction, getShowsCount(total)));
         }
         return {
             offset: "0,0,0,0.5",
@@ -831,19 +874,19 @@ function createGenericShowsOverview(headline: string, moreButtonName: string, mo
 }
 
 function createNewEpisodesOverview(data: any, pagination: any, timestamp: number): tvx.MSXContentPage {
-    return createGenericEpisodesOverview("Neue Videos", "Zeige alle neuen Videos", "content:" + createContentRequest("new"), data, pagination, false, timestamp);
+    return createGenericEpisodesOverview("Neue Videos", "Alle neuen Videos zeigen", "content:" + createContentRequest("new"), data, pagination, false, timestamp);
 }
 
 function createEventEpisodesOverview(data: any, pagination: any, timestamp: number): tvx.MSXContentPage {
-    return createGenericEpisodesOverview("Aktuelle Events", "Zeige alle Events", "content:" + createContentRequest("show:" + EVENT_SHOW_ID), data, pagination, true, timestamp);
+    return createGenericEpisodesOverview("Aktuelle Events", "Alle Events zeigen", "content:" + createContentRequest("show:" + EVENT_SHOW_ID), data, pagination, true, timestamp);
 }
 
 function createCurrentShowsOverview(data: any, pagination: any): tvx.MSXContentPage {
-    return createGenericShowsOverview("Alle Shows", "Zeige alle Shows", "content:" + createContentRequest("shows"), data, pagination);
+    return createGenericShowsOverview("Aktuelle Shows", "Alle Shows zeigen", "content:" + createContentRequest("shows"), data, pagination);
 }
 
 function createCurrentPodcastsOverview(data: any, pagination: any): tvx.MSXContentPage {
-    return createGenericShowsOverview("Alle Podcasts", "Zeige alle Podcasts", "content:" + createContentRequest("shows::podcast"), data, pagination);
+    return createGenericShowsOverview("Aktuelle Podcasts", "Alle Podcasts zeigen", "content:" + createContentRequest("shows::podcast"), data, pagination);
 }
 
 function createSearchControlButton(control: string, key: string, x: number, y: number, extended: boolean): tvx.MSXContentItem {
@@ -1001,6 +1044,8 @@ function createSearchResultsShow(item: any, listIndex: number, pageIndex: number
         type: "separate",
         layout: posX + ",0,2,5",
         offset: offsetX + "," + offsetY + ",0.666,0.333",
+        tagColor: "msx-white",
+        tag: getPinTag(isShowPinned(item.id)),
         imageFiller: "height-center",
         title: getShowTitle(item),
         titleFooter: getShowFooter(item),
@@ -1122,7 +1167,7 @@ export function createContentNotFound(contentId: string): tvx.MSXContentRoot {
                 type: "default",
                 layout: "0,0,12,6",
                 headline: "{ico:msx-yellow:warning} Inhalt nicht gefunden",
-                text: "Der Inhalt mit der ID '" + contentId + "' konnte nicht gefunden werden."
+                text: "Der Inhalt mit der ID {col:msx-white}'" + contentId + "'{col} konnte nicht gefunden werden."
             }]
         }]
     };
@@ -1137,7 +1182,7 @@ export function createContentLoadError(contentId: string, error: string): tvx.MS
                 type: "default",
                 layout: "0,0,12,6",
                 headline: "{ico:msx-red:error} Inhalt konnte nicht geladen werden",
-                text: "Der Inhalt mit der ID '" + contentId + "' konnte nicht geladen werden.{br}{br}" + completeError(error)
+                text: "Der Inhalt mit der ID {col:msx-white}'" + contentId + "'{col} konnte nicht geladen werden.{br}{br}" + completeError(error)
             }]
         }]
     };
@@ -1145,7 +1190,7 @@ export function createContentLoadError(contentId: string, error: string): tvx.MS
 
 export function createVideoLoadError(videoId: string, error: string): any {
     return {
-        error: "Das Video mit der ID '" + videoId + "' konnte nicht geladen werden.{br}" + completeError(error)
+        error: "Das Video mit der ID {col:msx-white}'" + videoId + "'{col} konnte nicht geladen werden.{br}" + completeError(error)
     };
 }
 
@@ -1201,8 +1246,7 @@ export function createNewEpisodes(data: any): tvx.MSXContentRoot {
         background: createBackgroundUrl(),
         ready: createBackdrop(null),
         template: createEpisodeTemplate("Video", data.data, data.pagination),
-        items: createEpisodeItems(data.data, data.extendable, "new"),
-        options: createListOptions()
+        items: createEpisodeItems(data.data, data.extendable, "new")
     };
 }
 
@@ -1218,8 +1262,7 @@ export function createShow(showData: any, seasonId: string, episodesOrder: strin
         ready: createBackdrop(backdrop),
         transparent: tvx.Tools.isFullStr(backdrop) ? 2 : 0,
         template: createEpisodeTemplate("Folge", episodesData.data, episodesData.pagination),
-        items: createEpisodeItems(episodesData.data, episodesData.extendable, tvx.Tools.isFullStr(seasonId) ? "show:" + seasonId : "show"),
-        options: createListOptions()
+        items: createEpisodeItems(episodesData.data, episodesData.extendable, tvx.Tools.isFullStr(seasonId) ? "show:" + seasonId : "show")
     };
 }
 
@@ -1233,8 +1276,7 @@ export function createShows(order: string, filter: string, data: any): tvx.MSXCo
         background: createBackgroundUrl(),
         ready: createBackdrop(null),
         template: createShowTemplate(data.data, data.pagination),
-        items: createShowItems(data.data, data.extendable),
-        options: createListOptions()
+        items: createShowItems(data.data, data.extendable)
     };
 }
 
@@ -1248,8 +1290,7 @@ export function createBean(beanData: any, episodesOrder: string, episodesData: a
         background: createBackgroundUrl(),
         ready: createBackdrop(null),
         template: createEpisodeTemplate("Video", episodesData.data, episodesData.pagination),
-        items: createEpisodeItems(episodesData.data, episodesData.extendable, "bean"),
-        options: createListOptions()
+        items: createEpisodeItems(episodesData.data, episodesData.extendable, "bean")
     };
 }
 
@@ -1263,8 +1304,7 @@ export function createBeans(order: string, data: any): tvx.MSXContentRoot {
         background: createBackgroundUrl(),
         ready: createBackdrop(null),
         template: createBeanTemplate(data.data),
-        items: createBeanItems(data.data),
-        options: createListOptions()
+        items: createBeanItems(data.data)
     };
 }
 

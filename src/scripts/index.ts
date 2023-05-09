@@ -1,10 +1,11 @@
 import $ from "jquery";
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { createMenu } from "./menu";
+import { loadMenu, executeMenu } from "./menu";
 import { loadContent, executeContent, loadVideo } from "./content";
-import { INFO, SETTINGS, callCallback } from "./tools";
+import { INFO, SETTINGS, callCallback, validatePlugin } from "./tools";
 import { ContentController } from "./content-controller";
 import { loadImage } from "./backdrop";
+import { initPins } from "./pins";
 import { polyfix } from "./parcel-polyfix";
 
 polyfix();
@@ -44,6 +45,7 @@ class RbtvHandler implements tvx.TVXInteractionPluginHandler {
     }
 
     public init(): void {
+        initPins();
         this.backdropContainer = $("#backdropContainer");
         this.backdropGround = $("#backdropGround");
         this.backdropImage = $("#backdropImage");
@@ -67,6 +69,8 @@ class RbtvHandler implements tvx.TVXInteractionPluginHandler {
         if (tvx.Tools.isFullStr(data.message)) {
             if (data.message.indexOf("backdrop:") == 0) {
                 this.loadBackdrop(data.message.substr(9));
+            } else if (data.message.indexOf("menu:") == 0) {
+                executeMenu(data.message.substr(5));
             } else if (data.message.indexOf("content:") == 0) {
                 executeContent(data.message.substr(8));
             } else {
@@ -77,7 +81,7 @@ class RbtvHandler implements tvx.TVXInteractionPluginHandler {
 
     public handleRequest(dataId: string, data: tvx.AnyObject, callback: (respData?: tvx.AnyObject) => void): void {
         if (dataId == "init") {
-            callCallback(createMenu(), callback);
+            loadMenu(callback);
         } else if (dataId.indexOf("content:") == 0) {
             loadContent(dataId.substring(8), callback);
         } else if (dataId.indexOf("video:") == 0) {
@@ -91,6 +95,8 @@ class RbtvHandler implements tvx.TVXInteractionPluginHandler {
 }
 
 tvx.PluginTools.onReady(() => {
-    tvx.InteractionPlugin.setupHandler(new RbtvHandler());
-    tvx.InteractionPlugin.init();
+    if (validatePlugin()) {
+        tvx.InteractionPlugin.setupHandler(new RbtvHandler());
+        tvx.InteractionPlugin.init();
+    }
 });

@@ -1,6 +1,6 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
+import { STORAGE_PREFIX_ID } from "./tools";
 
-const STORAGE_PREFIX_ID: string = "rbtv:";
 const PRELOAD_PAGES_ID: string = "preload_pages";
 const YOUTUBE_QUALITY_ID: string = "youtube_quality";
 

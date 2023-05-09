@@ -13,9 +13,9 @@ const YOUTUBE_PREFIX_1: string = "https://youtu.be/";
 const YOUTUBE_PREFIX_2: string = "https://www.youtube.com/watch?v=";
 
 export const EXTENDED_SHOW_DESCRIPTION_LENGHT: number = 380;
-export const MAX_SEASON_NAME_LENGHT: number = 45;
+export const MAX_SEASON_NAME_LENGHT: number = 40;
 export const MIN_SEARCH_EXPRESSION_LENGHT: number = 2;
-export const MAX_SEARCH_EXPRESSION_LENGHT: number = 32;
+export const MAX_SEARCH_EXPRESSION_LENGHT: number = 40;
 
 function getPlayerOptionsAction(): string {
     return "[release:panel|panel:request:player:options]";
@@ -313,7 +313,7 @@ export function getTotalItems(data: any, pagination: any): any {
 }
 
 export function getListNumber(index: number): string {
-    return tvx.Tools.strValue(index + 1);
+    return "" + (index + 1);
 }
 
 export function getVideosCount(total: number): string {
@@ -469,4 +469,16 @@ export function createBackgroundUrl(): string {
 
 export function createPlaceholderUrl(): string {
     return getImageUrl("placeholder");
+}
+
+export function getPinTag(pinned: boolean): string {
+    return pinned ? "{ico:msx-black:star}" : null;
+}
+
+export function getPinIcon(pinned: boolean): string {
+    return pinned ? "star" : "star-border";
+}
+
+export function getPinHint(context: string, pinned: boolean): string {
+    return context + (pinned ? " entfernen" : " hinzufügen");
 }

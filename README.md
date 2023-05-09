@@ -1,12 +1,13 @@
 # RBTV MSX
-This is a **Rocket Beans TV (RBTV)** portal for the **Media Station X (MSX)** application that allows you to consume RBTV content on your Smart TV. It uses the [Rocket Beans TV API](https://github.com/rocketbeans/rbtv-apidoc) to browse and play RBTV content. You can simply set it up by installing MSX on your Smart TV (please see [Platform Support](https://msx.benzac.de/info/?tab=PlatformSupport) for corresponding application stores), launching it, and entering `rbtv.msx.benzac.de` as start parameter. You can also launch the portal directly in your browser by opening this link: [RBTV MSX](https://msx.benzac.de/?start=menu:request:interaction:init@https://rbtv.msx.benzac.de).
+This is a **Rocket Beans TV (RBTV)** portal for the **Media Station X (MSX)** application that allows you to consume RBTV content on your Smart TV. It uses the [Rocket Beans TV API](https://github.com/rocketbeans/rbtv-apidoc) to browse and play RBTV content. You can simply set it up by installing MSX on your Smart TV (please see [Platform Support](https://msx.benzac.de/info/?tab=PlatformSupport) for corresponding application stores), launching it, and entering `rbtv.msx.benzac.de` as start parameter. You can also launch the portal directly in your browser by opening this link: [RBTV MSX](https://rbtv.msx.benzac.de).
 
 ## Features
 * Clean, minimalistic, fast, and responsive UI (optimized for Smart TVs)
 * Automatic list expansion (continuous scrolling)
-* Extensive video information (related episodes, related show, involved beans, etc.)
+* Extensive video information (related videos, related show, involved beans, etc.)
 * Resume functions (show progress and resume content from last position)
-* Search for shows/episodes
+* Search functions (search for shows or videos)
+* Customizable menu (add/move/remove favorite shows/beans to/in/from main menu)
 
 ## Screenshots
 ![RBTV MSX](https://rbtv.msx.benzac.de/assets/screens.png)
@@ -18,7 +19,6 @@ This is a **Rocket Beans TV (RBTV)** portal for the **Media Station X (MSX)** ap
 ## Possible Extensions
 * User login/logout
 * User related content (manage playlists, show subscribed shows/beans, etc.)
-* Add/remove favorite shows/beans to/from main menu
 
 ## For Developers
 ### Installing
@@ -31,9 +31,7 @@ npm install
 npm run start
 ```
 By default, the index page is available under: http://localhost:1234/index.html
-
-#### Testing in browser
-http://msx.benzac.de/?start=menu:request:interaction:init@http://localhost:1234/index.html
+You can open this page directly in a browser (it will be automatically loaded as MSX plugin).
 
 ### Building for deployment
 ```
@@ -46,9 +44,7 @@ npm install --global http-server
 http-server ./dist --cors
 ```
 By default, the index page is available under: http://localhost:8080/index.html
-
-#### Testing in browser
-http://msx.benzac.de/?start=menu:request:interaction:init@http://localhost:8080/index.html
+You can open this page directly in a browser (it will be automatically loaded as MSX plugin).
 
 #### Testing on TV device
 * Copy folder `./src/msx` to `./dist/msx`
