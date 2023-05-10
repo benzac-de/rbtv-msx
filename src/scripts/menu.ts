@@ -6,8 +6,7 @@ import { getPinnedBeans, getPinnedShows, isShowPinned, isBeanPinned, pinShow, pi
 let validationNumber: number = 0;
 
 function reloadMenu(): void {
-    //Note: Since the menu is loaded at startup, we need to reload it by replacing it
-    tvx.InteractionPlugin.executeAction(appendInteractionRefSuffix("replace:menu:rbtv:request:interaction:init"));
+    tvx.InteractionPlugin.executeAction("reload:menu");
 }
 
 function validateMenu(reload: boolean): void {
@@ -152,6 +151,10 @@ function addPinnedBeans(menu: tvx.MSXMenuItem[], pinnedBeans: any): void {
     }
 }
 
+function createMenuReference(): string {
+    return appendInteractionRefSuffix("request:interaction:init");
+}
+
 function createMenuValidation(): tvx.MSXReady {
     return {
         action: "interaction:commit:message:menu:validate:" + validationNumber
@@ -200,7 +203,6 @@ function createMenu(pinnedShows: any, pinnedBeans: any): tvx.MSXMenuRoot {
     });
     return {
         cache: false,
-        flag: "rbtv",
         name: NAME,
         version: VERSION,
         headline: NAME,
@@ -208,6 +210,7 @@ function createMenu(pinnedShows: any, pinnedBeans: any): tvx.MSXMenuRoot {
         logoSize: "small",
         background: createBackgroundUrl(),
         style: "flat-separator",
+        reference: createMenuReference(),
         ready: createMenuValidation(),
         menu: menu
     };
