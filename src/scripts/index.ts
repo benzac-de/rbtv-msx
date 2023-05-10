@@ -1,11 +1,13 @@
 import $ from "jquery";
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { loadMenu, executeMenu } from "./menu";
-import { loadContent, executeContent, loadVideo } from "./content";
 import { INFO, SETTINGS, callCallback, validatePlugin } from "./tools";
+import { loadMenu, executeMenu } from "./menu";
+import { loadContent, executeContent } from "./content";
+import { loadVideo, executeVideo } from "./video";
 import { ContentController } from "./content-controller";
 import { isImageLoaded, loadImage } from "./backdrop";
 import { initPins } from "./pins";
+import { initHistory } from "./history";
 import { polyfix } from "./parcel-polyfix";
 
 polyfix();
@@ -77,6 +79,7 @@ class RbtvHandler implements tvx.TVXInteractionPluginHandler {
 
     public init(): void {
         initPins();
+        initHistory();
         this.initBackdrop();
         this.contentController.init($(".content-wrapper"));
     }
@@ -102,6 +105,8 @@ class RbtvHandler implements tvx.TVXInteractionPluginHandler {
                 executeMenu(data.message.substr(5));
             } else if (data.message.indexOf("content:") == 0) {
                 executeContent(data.message.substr(8));
+            } else if (data.message.indexOf("video:") == 0) {
+                executeVideo(data.message.substr(6));
             } else {
                 tvx.InteractionPlugin.warn("Unknown interaction message: '" + data.message + "'");
             }

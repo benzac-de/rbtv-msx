@@ -1,6 +1,6 @@
 {
     "name": "RBTV MSX",
-    "version": "1.0.12",
+    "version": "1.0.13",
     "parameter": "menu:request:interaction:init@{PREFIX}{SERVER}/index.html",
     "launcher": {
         "image": "http://rbtv.msx.benzac.de/assets/launcher.png"

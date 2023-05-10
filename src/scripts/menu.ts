@@ -170,6 +170,7 @@ function createMenu(pinnedShows: any, pinnedBeans: any): tvx.MSXMenuRoot {
         label: "Übersicht",
         data: createContentRequest("overview")
     }, {
+        display: false,
         icon: "new-releases",
         label: "Neue Videos",
         data: createContentRequest("new")
@@ -185,6 +186,10 @@ function createMenu(pinnedShows: any, pinnedBeans: any): tvx.MSXMenuRoot {
         icon: "search",
         label: "Suche",
         data: createContentRequest("search")
+    }, {
+        icon: "history",
+        label: "Verlauf",
+        data: createContentRequest("history")
     }];
     addPinnedShows(menu, pinnedShows);
     addPinnedBeans(menu, pinnedBeans);

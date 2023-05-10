@@ -25,8 +25,8 @@ function tryApplyToken(item: any, type: string): boolean {
     if (item != null) {
         let token: string = getToken(item, type);
         if (tvx.Tools.isFullStr(token)) {
-            item.msxToken = token;
             item.msxTokenType = type;
+            item.msxTokenId = token;
             return true;
         }
     }
@@ -34,12 +34,12 @@ function tryApplyToken(item: any, type: string): boolean {
 }
 
 function applyToken(item: any): void {
-    if (item != null && item.msxToken == null) {
+    if (item != null && item.msxTokenType == null) {
         if (!tryApplyToken(item, "youtube") &&
             !tryApplyToken(item, "twitch") &&
             !tryApplyToken(item, "soundcloud")) {
-            item.msxToken = "none";
             item.msxTokenType = "none";
+            item.msxTokenId = null;
         }
     }
 }
@@ -131,7 +131,7 @@ export function getImage(item: any, name: string): string {
 }
 
 export function getPotraitImage(item: any, name: string): string {
-    return getAnyImage(item, item != null ? item.portraitImage : null, "msxtPotraitImage", name);
+    return getAnyImage(item, item != null ? item.portraitImage : null, "msxPotrait", name);
 }
 
 export function getToken(item: any, type: string): string {
@@ -141,6 +141,14 @@ export function getToken(item: any, type: string): string {
                 return item.tokens[i].token;
             }
         }
+    }
+    return null;
+}
+
+export function getTokenType(item: any): string {
+    if (item != null) {
+        applyToken(item);
+        return item.msxTokenType;
     }
     return null;
 }
@@ -182,11 +190,11 @@ export function getTokenUrl(item: any): string {
     if (item != null) {
         applyToken(item);
         if (item.msxTokenType == "youtube") {
-            return "plugin:" + YOUTUBE_PLUGIN.replace("{ID}", item.msxToken).replace("{QUALITY}", SETTINGS.youtubeQuality);
+            return "plugin:" + YOUTUBE_PLUGIN.replace("{ID}", item.msxTokenId).replace("{QUALITY}", SETTINGS.youtubeQuality);
         } else if (item.msxTokenType == "twitch") {
-            return "plugin:" + TWITCH_PLUGIN.replace("{ID}", item.msxToken);
+            return "plugin:" + TWITCH_PLUGIN.replace("{ID}", item.msxTokenId);
         } else if (item.msxTokenType == "soundcloud") {
-            return "plugin:" + SOUNDCLOUD_PLUGIN.replace("{ID}", item.msxToken);
+            return "plugin:" + SOUNDCLOUD_PLUGIN.replace("{ID}", item.msxTokenId);
         }
     }
     return null;
@@ -203,7 +211,7 @@ export function getTokenOptionsAction(item: any): string {
 }
 
 export function getDuration(item: any): string {
-    if (item != null && tvx.Tools.isNum(item.duration)) {
+    if (item != null && tvx.Tools.isNum(item.duration) && item.duration >= 0) {
         return addTextPrefix(getTokenPrefix(item), "{num:" + (item.duration * 1000) + ":duration:time:hh:mm:ss}", " ");
     }
     return null;
@@ -267,20 +275,28 @@ export function getVideoTitle(item: any): string {
     return tvx.Tools.strFullCheck(item != null ? item.title : null, "Unbekanntes Video");
 }
 
-export function getReleaseDuration(item: any, timestamp: number): string {
+export function getReleaseTimestamp(item: any): number {
     if (item != null) {
-        if (item.msxRealeaseTimestamp == null) {
+        if (item.msxRelease == null) {
             //Note: Also handle typo property "distibutionPublishingDate"
             if (item.distributionPublishingDate != null) {
-                item.msxRealeaseTimestamp = strToTimestamp(item.distributionPublishingDate);
+                item.msxRelease = strToTimestamp(item.distributionPublishingDate);
             } else if (item.distibutionPublishingDate != null) {
-                item.msxRealeaseTimestamp = strToTimestamp(item.distibutionPublishingDate);
+                item.msxRelease = strToTimestamp(item.distibutionPublishingDate);
             } else if (item.firstBroadcastdate != null) {
-                item.msxRealeaseTimestamp = strToTimestamp(item.firstBroadcastdate);
+                item.msxRelease = strToTimestamp(item.firstBroadcastdate);
             }
         }
-        if (item.msxRealeaseTimestamp != null && item.msxRealeaseTimestamp > 0) {
-            let duration: number = (timestamp - item.msxRealeaseTimestamp) / 1000;
+        return item.msxRelease != null ? item.msxRelease : -1;
+    }
+    return -1;
+}
+
+export function getReleaseDuration(item: any, timestamp: number): string {
+    if (item != null) {
+        let releaseTimestamp: number = getReleaseTimestamp(item);
+        if (releaseTimestamp > 0) {
+            let duration: number = (timestamp - releaseTimestamp) / 1000;
             let years: number = Math.floor(duration / 31536000);
             if (years > 0) {
                 return "vor " + (years == 1 ? "einem Jahr" : years + " Jahren");
@@ -317,27 +333,27 @@ export function getListNumber(index: number): string {
 }
 
 export function getVideosCount(total: number): string {
-    return total == 0 ? "Kein Video" : (total == 1 ? "Ein Video" : total + " Videos");
+    return total == 0 ? "Keine Videos" : (total == 1 ? "Ein Video" : total + " Videos");
 }
 
 export function getEpisodesCount(total: number): string {
-    return total == 0 ? "Keine Folge" : (total == 1 ? "Eine Folge" : total + " Folgen");
+    return total == 0 ? "Keine Folgen" : (total == 1 ? "Eine Folge" : total + " Folgen");
 }
 
 export function getShowsCount(total: number): string {
-    return total == 0 ? "Keine Show" : (total == 1 ? "Eine Show" : total + " Shows");
+    return total == 0 ? "Keine Shows" : (total == 1 ? "Eine Show" : total + " Shows");
 }
 
 export function getBeansCount(total: number): string {
-    return total == 0 ? "Keine Bohne" : (total == 1 ? "Eine Bohne" : total + " Bohnen");
+    return total == 0 ? "Keine Bohnen" : (total == 1 ? "Eine Bohne" : total + " Bohnen");
 }
 
 export function getSeasonsCount(total: number): string {
-    return total == 0 ? "Keine Staffel" : (total == 1 ? "Eine Staffel" : total + " Staffeln");
+    return total == 0 ? "Keine Staffeln" : (total == 1 ? "Eine Staffel" : total + " Staffeln");
 }
 
 export function getSearchCount(totalShows: number, totalEpisodes: number): string {
-    return getShowsCount(totalShows) + " und " + (totalEpisodes == 0 ? "kein Video" : (totalEpisodes == 1 ? "ein Video" : totalEpisodes + " Videos")) + " gefunden"
+    return getShowsCount(totalShows) + " und " + (totalEpisodes == 0 ? "keine Videos" : (totalEpisodes == 1 ? "ein Video" : totalEpisodes + " Videos")) + " gefunden"
 }
 
 export function getEpisodeFooter(item: any, timestamp: number): string {
@@ -451,6 +467,14 @@ export function createVideoRequest(videoId: string): string {
     return appendInteractionRefSuffix("request:interaction:video:" + videoId);
 }
 
+export function createVideoAction(videoId: string, autoMode: boolean): string {
+    return "video:" + (autoMode ? "auto:" : "") + "resolve:" + createVideoRequest(videoId);
+}
+
+export function createEpisodeAction(item: any, autoMode: boolean): string {
+    return item != null && tvx.Tools.isNum(item.id) ? createVideoAction(item.id, autoMode) : null;
+}
+
 export function createLogoUrl(): string {
     return getImageUrl("logo");
 }
@@ -481,4 +505,23 @@ export function getPinIcon(pinned: boolean): string {
 
 export function getPinHint(context: string, pinned: boolean): string {
     return context + (pinned ? " entfernen" : " hinzufügen");
+}
+
+export function createEpisodesFromHistory(history: any): any {
+    let episodes: any = [];
+    if (history != null && history.length > 0) {
+        for (let i: number = 0; i < history.length; i++) {
+            let item: any = history[i];
+            episodes.push({
+                id: item.id,
+                title: item.title,
+                duration: item.duration,
+                showName: item.show,
+                msxTokenType: item.token,
+                msxThumbnail: item.image,
+                msxRelease: item.release
+            });
+        }
+    }
+    return episodes;
 }

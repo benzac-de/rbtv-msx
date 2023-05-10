@@ -1,10 +1,9 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { SETTINGS, EVENT_SHOW_ID, NAME, VERSION, MIN_APP_VERSION, objToBase64, proxyImageForLocalContext } from "./tools";
+import { SETTINGS, EVENT_SHOW_ID, NAME, VERSION, MIN_APP_VERSION, proxyImageForLocalContext } from "./tools";
 import { isShowPinned, isBeanPinned } from "./pins";
+import { hasHistory } from "./history";
 import {
     EXTENDED_SHOW_DESCRIPTION_LENGHT,
-    getTokenUrl,
-    getTokenOptionsAction,
     addTextPrefix,
     getBeanName,
     getBeanFullName,
@@ -30,9 +29,7 @@ import {
     getPotraitImage,
     getBeansCount,
     createContentRequest,
-    createVideoRequest,
-    getVideoTitle,
-    getVideoDescription,
+    createEpisodeAction,
     getShowreelAction,
     getShowreelOptionsAction,
     createHeaderUrl,
@@ -188,10 +185,6 @@ function createEpisodesSeasonPanel(flag: string, activeSeason: any, seasons: any
     };
 }
 
-function createEpisodeAction(item: any, autoMode: boolean): string {
-    return item != null && tvx.Tools.isNum(item.id) ? "video:" + (autoMode ? "auto:" : "") + "resolve:" + createVideoRequest(item.id) : null;
-}
-
 function createEpisodeTemplate(context: string, data: any, pagination: any): tvx.MSXContentItem {
     return {
         type: "default",
@@ -248,6 +241,48 @@ function createEpisodeItems(data: any, extendable: boolean, contentId: string): 
         }
     }
     return items;
+}
+
+function createHistoryClearPanel(): tvx.MSXContentRoot {
+    return {
+        headline: "Verlauf zurücksetzen",
+        pages: [{
+            items: [{
+                type: "space",
+                layout: "0,0,8,5",
+                text: "Möchtest du den Verlauf der zuletzt geschauten Videos zurücksetzen? Der Fortschritt der Videos bleibt dabei erhalten."
+            }, {
+                type: "button",
+                layout: "0,5,4,1",
+                label: "Ja",
+                action: "[back|interaction:commit:message:content:history:clear]"
+            }, {
+                type: "button",
+                layout: "4,5,4,1",
+                label: "Nein",
+                action: "back"
+            }]
+        }]
+    };
+}
+
+function createHistoryHeader(data: any): tvx.MSXContentPage {
+    return {
+        offset: "0,0,0,0.5",
+        items: [{
+            type: "control",
+            layout: "0,0,12,1",
+            icon: "delete",
+            label: "Verlauf zurücksetzen",
+            action: hasHistory() ? "panel:data" : "info:Der Verlauf ist leer und kann nicht zurückgesetzt werden.",
+            data: createHistoryClearPanel()
+        }, {
+            type: "space",
+            layout: "1,0,11,1",
+            offset: "-1,1.03,1,0",
+            text: getVideosCount(getTotalItems(data, null))
+        }]
+    };
 }
 
 function createShowAction(item: any): string {
@@ -593,72 +628,6 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
             offset: "-1,0.03,1,0",
             text: getVideosCount(getTotalItems(episodesData, episodesPagination))
         }]
-    };
-}
-
-function createVideoPanel(beansData: any, episodeData: any): tvx.MSXContentRoot {
-    let header: tvx.MSXContentPage = null;
-    let items: tvx.MSXContentItem[] = [];
-    if (beansData != null) {
-        for (let beanId in beansData) {
-            if (tvx.Tools.isNum(beanId)) {
-                let bean: any = beansData[beanId];
-                items.push({
-                    image: proxyImageForLocalContext(getImage(bean, "small")),
-                    imageFiller: "width-center",
-                    imagePreload: true,
-                    label: getBeanName(bean),
-                    action: "player:content:" + createContentRequest("bean:" + beanId)
-                });
-            }
-        }
-        for (let i: number = 0; i < items.length; i++) {
-            items[i].selection = createItemSelection("Bohne", i, items.length);
-        }
-    }
-    let shrink: boolean = items.length > 6;
-    let compress: boolean = items.length > 12;
-    if (tvx.Tools.isNum(episodeData.showId) && tvx.Tools.isFullStr(episodeData.showName)) {
-        header = {
-            compress: false,
-            offset: compress ? "0,0,0,1" : "0,0,0,0.5",
-            items: [{
-                type: "control",
-                layout: compress ? "0,0,10,1" : "0,0,8,1",
-                offset: compress ? "0,0,0,0.333" : null,
-                icon: "local-movies",
-                label: episodeData.showName,
-                action: "player:content:" + createContentRequest("show:" + episodeData.showId + (tvx.Tools.isNum(episodeData.seasonId) ? ":" + episodeData.seasonId : ""))
-            }, {
-                display: items.length > 0,
-                type: "space",
-                layout: compress ? "1,0,9,1" : "1,0,7,1",
-                offset: compress ? "-1,1.37,1,0" : "-1,1.03,1,0",
-                text: getBeansCount(items.length)
-            }]
-        };
-    }
-    if (header == null && items.length == 0) {
-        header = {
-            items: [{
-                type: "default",
-                layout: "0,0,8,6",
-                headline: "{ico:msx-blue:info} Keine zugehörigen Inhalte verfügbar",
-                text: "Dieses Video gehört zu keiner Show und keine Bohne kommt darin vor.",
-                action: "back"
-            }]
-        };
-    }
-    return {
-        compress: compress,
-        headline: "Show & Bohnen",
-        header: header,
-        template: {
-            enumerate: false,
-            type: "control",
-            layout: compress ? "0,0,5,1" : (shrink ? "0,0,4,1" : "0,0,8,1")
-        },
-        items: items
     };
 }
 
@@ -1250,6 +1219,19 @@ export function createNewEpisodes(data: any): tvx.MSXContentRoot {
     };
 }
 
+export function createHistoryEpisodes(data: any): tvx.MSXContentRoot {
+    return {
+        type: "list",
+        preload: SETTINGS.preloadPages ? "next" : null,
+        headline: "Verlauf",
+        header: createHistoryHeader(data),
+        background: createBackgroundUrl(),
+        ready: createBackdrop(null),
+        template: createEpisodeTemplate("Video", data, null),
+        items: createEpisodeItems(data, false, null)
+    };
+}
+
 export function createShow(showData: any, seasonId: string, episodesOrder: string, episodesData: any): tvx.MSXContentRoot {
     let backdrop: string = getThumbnail(showData.data, "large");
     return {
@@ -1400,38 +1382,68 @@ export function createSettings(): tvx.MSXContentRoot {
     };
 }
 
-export function createVideo(videoId: string, data: any): any {
-    if (data.data.episodes != null && data.data.episodes.length > 0) {
-        let beans: any = data.data.bohnen;
-        let episode: any = data.data.episodes[0];
-        let url: string = getTokenUrl(episode);
-        if (tvx.Tools.isFullStr(url)) {
-            return {
-                url: url,
-                label: getVideoTitle(episode),
-                properties: {
-                    "resume:key": "url",
-                    "control:type": "extended",
-                    "info:size": "large",
-                    "info:overlay": "full",
-                    "info:image": getThumbnail(episode, "small"),
-                    "info:text": getVideoDescription(episode, tvx.DateTools.getTimestamp()),
-                    "trigger:complete": episode.next != null ? "[player:button:next:execute|resume:position:none]" : "player:eject",
-                    "trigger:back": "player:eject",
-                    "button:content:icon": "info",
-                    "button:content:action": "panel:json:" + objToBase64(createVideoPanel(beans, episode)),
-                    "button:next:icon": "default",
-                    "button:next:action": createEpisodeAction(episode.next, true),
-                    "button:next:key": "channel_up",
-                    "button:prev:icon": "default",
-                    "button:prev:action": createEpisodeAction(episode.prev, true),
-                    "button:prev:key": "channel_down",
-                    "button:speed:icon": "settings",
-                    "button:speed:action": getTokenOptionsAction(episode)
-                }
-            };
+export function createVideoPanel(beansData: any, episodeData: any): tvx.MSXContentRoot {
+    let header: tvx.MSXContentPage = null;
+    let items: tvx.MSXContentItem[] = [];
+    if (beansData != null) {
+        for (let beanId in beansData) {
+            if (tvx.Tools.isNum(beanId)) {
+                let bean: any = beansData[beanId];
+                items.push({
+                    image: proxyImageForLocalContext(getImage(bean, "small")),
+                    imageFiller: "width-center",
+                    imagePreload: true,
+                    label: getBeanName(bean),
+                    action: "player:content:" + createContentRequest("bean:" + beanId)
+                });
+            }
         }
-        return createVideoLoadError(videoId, "Kein unterstütztes Token gefunden");
+        for (let i: number = 0; i < items.length; i++) {
+            items[i].selection = createItemSelection("Bohne", i, items.length);
+        }
     }
-    return createVideoLoadError(videoId, "Video nicht gefunden");
+    let shrink: boolean = items.length > 6;
+    let compress: boolean = items.length > 12;
+    if (tvx.Tools.isNum(episodeData.showId) && tvx.Tools.isFullStr(episodeData.showName)) {
+        header = {
+            compress: false,
+            offset: compress ? "0,0,0,1" : "0,0,0,0.5",
+            items: [{
+                type: "control",
+                layout: compress ? "0,0,10,1" : "0,0,8,1",
+                offset: compress ? "0,0,0,0.333" : null,
+                icon: "local-movies",
+                label: episodeData.showName,
+                action: "player:content:" + createContentRequest("show:" + episodeData.showId + (tvx.Tools.isNum(episodeData.seasonId) ? ":" + episodeData.seasonId : ""))
+            }, {
+                display: items.length > 0,
+                type: "space",
+                layout: compress ? "1,0,9,1" : "1,0,7,1",
+                offset: compress ? "-1,1.37,1,0" : "-1,1.03,1,0",
+                text: getBeansCount(items.length)
+            }]
+        };
+    }
+    if (header == null && items.length == 0) {
+        header = {
+            items: [{
+                type: "default",
+                layout: "0,0,8,6",
+                headline: "{ico:msx-blue:info} Keine zugehörigen Inhalte verfügbar",
+                text: "Dieses Video gehört zu keiner Show und keine Bohne kommt darin vor.",
+                action: "back"
+            }]
+        };
+    }
+    return {
+        compress: compress,
+        headline: "Show & Bohnen",
+        header: header,
+        template: {
+            enumerate: false,
+            type: "control",
+            layout: compress ? "0,0,5,1" : (shrink ? "0,0,4,1" : "0,0,8,1")
+        },
+        items: items
+    };
 }

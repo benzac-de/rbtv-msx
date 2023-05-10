@@ -1,10 +1,17 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
 import { callCallback, checkVersion, SETTINGS } from "./tools";
-import { MIN_SEARCH_EXPRESSION_LENGHT, MAX_SEARCH_EXPRESSION_LENGHT, getEpisodesOrderParameter, getShowsFilterParameter, getShowsOrderParameter } from "./content-tools";
+import { clearHistory, getHistory } from "./history";
+import {
+    MIN_SEARCH_EXPRESSION_LENGHT,
+    MAX_SEARCH_EXPRESSION_LENGHT,
+    getEpisodesOrderParameter,
+    getShowsFilterParameter,
+    getShowsOrderParameter,
+    createEpisodesFromHistory
+} from "./content-tools";
 import {
     createContentLoadError,
     createContentNotFound,
-    createVideoLoadError,
     createVersionNotSupported,
     createShows,
     createShow,
@@ -12,10 +19,10 @@ import {
     createBeans,
     createBean,
     createCredits,
-    createVideo,
     createOverview,
     createSearch,
-    createSettings
+    createSettings,
+    createHistoryEpisodes
 } from "./content-creator";
 import {
     loadNewEpisodeList,
@@ -28,7 +35,6 @@ import {
     loadBeanWithEpisodeList,
     extendBeanEpisodeList,
     loadBeans,
-    loadEpisode,
     loadOverview,
     performSearch,
     cancelSearch
@@ -95,17 +101,6 @@ function handleSearchControl(control: string): void {
     } else {
         tvx.InteractionPlugin.warn("Unknown search control: '" + control + "'");
     }
-}
-
-function handleVideoLoadError(videoId: string, data: any, callback: (data: any) => void): boolean {
-    if (data != null && tvx.Tools.isFullStr(data.error)) {
-        callCallback(createVideoLoadError(videoId, data.error), callback);
-        return true;
-    } else if (data != null && data.data == null) {
-        callCallback(createVideoLoadError(videoId, "Missing data"), callback);
-        return true;
-    }
-    return false;
 }
 
 function getContentToken(contentToken: string, first: boolean): string {
@@ -190,6 +185,8 @@ export function loadContent(contentId: string, callback: (data: any) => void): v
                             }
                         });
                     }
+                } else if (contentId == "history") {
+                    callCallback(createHistoryEpisodes(createEpisodesFromHistory(getHistory())), callback);
                 } else if (contentId == "settings") {
                     callCallback(createSettings(), callback);
                 } else {
@@ -231,6 +228,14 @@ export function executeContent(action: string): void {
             } else {
                 tvx.InteractionPlugin.warn("Unknown search action: '" + searchAction + "'");
             }
+        } else if (action.indexOf("history:") == 0) {
+            let historyAction: string = action.substring(8);
+            if (historyAction == "clear") {
+                clearHistory();
+                reloadContent();
+            } else {
+                tvx.InteractionPlugin.warn("Unknown history action: '" + historyAction + "'");
+            }
         } else if (action.indexOf("settings:") == 0) {
             let settingsAction: string = action.substring(9);
             if (SETTINGS.handleMessage(settingsAction)) {
@@ -242,12 +247,4 @@ export function executeContent(action: string): void {
             tvx.InteractionPlugin.warn("Unknown content action: '" + action + "'");
         }
     }
-}
-
-export function loadVideo(videoId: string, callback: (data: any) => void): void {
-    loadEpisode(videoId, (data: any) => {
-        if (!handleVideoLoadError(videoId, data, callback)) {
-            callCallback(createVideo(videoId, data), callback);
-        }
-    });
 }

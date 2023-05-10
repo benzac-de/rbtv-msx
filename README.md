@@ -6,6 +6,7 @@ This is a **Rocket Beans TV (RBTV)** portal for the **Media Station X (MSX)** ap
 * Automatic list expansion (continuous scrolling)
 * Extensive video information (related videos, related show, involved beans, etc.)
 * Resume functions (show progress and resume content from last position)
+* History functions (show last watched videos)
 * Search functions (search for shows or videos)
 * Customizable menu (add/move/remove favorite shows/beans to/in/from main menu)
 
