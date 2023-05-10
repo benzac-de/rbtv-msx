@@ -189,7 +189,7 @@ function createPinOptions(headline: string, context: string, contentId: string, 
             action: "interaction:commit:message:menu:pin:move:" + contentId + ":" + pinId + ":end"
         }, {
             icon: "delete",
-            label: context + " von der Liste entfernen",
+            label: context + " aus der Liste entfernen",
             action: "[cleanup|interaction:commit:message:menu:pin:remove:" + contentId + ":" + pinId + "]"
         }]
     };
