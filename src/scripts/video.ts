@@ -76,7 +76,8 @@ export function executeVideo(videoId: string): void {
                     token: tvx.PropertyTools.getFullStr(data.video.info, "rbtv:token", null),
                     show: tvx.PropertyTools.getFullStr(data.video.info, "rbtv:show", null),
                     release: tvx.PropertyTools.getNum(data.video.info, "rbtv:release", -1),
-                    duration: tvx.PropertyTools.getNum(data.video.info, "rbtv:duration", -1)
+                    duration: tvx.PropertyTools.getNum(data.video.info, "rbtv:duration", -1),
+                    timestamp: tvx.DateTools.getTimestamp()
                 });
             }
         });
