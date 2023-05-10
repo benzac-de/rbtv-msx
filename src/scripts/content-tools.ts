@@ -21,6 +21,17 @@ function getPlayerOptionsAction(): string {
     return "[release:panel|panel:request:player:options]";
 }
 
+function getToken(item: any, type: string): string {
+    if (item != null && item.tokens != null && item.tokens.length > 0) {
+        for (let i: number = 0; i < item.tokens.length; i++) {
+            if (item.tokens[i].type === type) {
+                return item.tokens[i].token;
+            }
+        }
+    }
+    return null;
+}
+
 function tryApplyToken(item: any, type: string): boolean {
     if (item != null) {
         let token: string = getToken(item, type);
@@ -132,17 +143,6 @@ export function getImage(item: any, name: string): string {
 
 export function getPotraitImage(item: any, name: string): string {
     return getAnyImage(item, item != null ? item.portraitImage : null, "msxPotrait", name);
-}
-
-export function getToken(item: any, type: string): string {
-    if (item != null && item.tokens != null && item.tokens.length > 0) {
-        for (let i: number = 0; i < item.tokens.length; i++) {
-            if (item.tokens[i].type === type) {
-                return item.tokens[i].token;
-            }
-        }
-    }
-    return null;
 }
 
 export function getTokenType(item: any): string {
