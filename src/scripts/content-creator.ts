@@ -284,7 +284,7 @@ function createHistoryHeader(data: any): tvx.MSXContentPage {
             layout: "0,0,12,1",
             icon: "delete",
             label: "Verlauf zurücksetzen",
-            action: hasHistory() ? "panel:data" : "info:Der Verlauf ist leer und kann nicht zurückgesetzt werden.",
+            action: hasHistory() ? "panel:data" : "info:Der Verlauf ist bereits leer und kann nicht zurückgesetzt werden.",
             data: createHistoryClearPanel()
         }, {
             type: "space",
