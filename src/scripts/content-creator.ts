@@ -213,6 +213,16 @@ function createEpisodeTemplate(context: string, data: any, pagination: any): tvx
     };
 }
 
+function createHistoryTemplate(data: any): tvx.MSXContentItem {
+    let template: tvx.MSXContentItem = createEpisodeTemplate("Video", data, null);
+    template.options.items.push({
+        icon: "delete",
+        label: "Video aus dem Verlauf entfernen",
+        action: "[cleanup|interaction:commit:message:content:history:remove:{context:id}]"
+    });
+    return template;
+}
+
 function createEpisodeItems(data: any, extendable: boolean, contentId: string): tvx.MSXContentItem[] {
     let items: tvx.MSXContentItem[] = [];
     let timestamp: number = tvx.DateTools.getTimestamp();
@@ -1227,7 +1237,7 @@ export function createHistoryEpisodes(data: any): tvx.MSXContentRoot {
         header: createHistoryHeader(data),
         background: createBackgroundUrl(),
         ready: createBackdrop(null),
-        template: createEpisodeTemplate("Video", data, null),
+        template: createHistoryTemplate(data),
         items: createEpisodeItems(data, false, null)
     };
 }

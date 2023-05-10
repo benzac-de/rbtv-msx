@@ -18,15 +18,16 @@ function restoreHistory(): void {
     historyList = base64ToObj(tvx.Services.storage.getFullStr(STORAGE_PREFIX_ID + HISTORY_ID, null));
 }
 
-function removeHistoryItem(id: string): void {
+function removeHistoryItem(id: string): boolean {
     if (historyList != null && historyList.length > 0 && tvx.Tools.isFullStr(id)) {
         for (let i: number = 0; i < historyList.length; i++) {
             if (historyList[i].id == id) {
                 historyList.splice(i, 1);
-                break;
+                return true;
             }
         }
     }
+    return false;
 }
 
 export function initHistory(): void {
@@ -41,7 +42,7 @@ export function getHistory(): void {
     return historyList != null ? historyList : [];
 }
 
-export function updateHistory(item: any): void {
+export function expandHistory(item: any): boolean {
     if (item != null) {
         removeHistoryItem(item.id);
         if (historyList == null || historyList.length == 0) {
@@ -53,7 +54,17 @@ export function updateHistory(item: any): void {
             }
         }
         storeHistory();
+        return true;
     }
+    return false;
+}
+
+export function reduceHistory(id: string): boolean {
+    if (removeHistoryItem(id)) {
+        storeHistory();
+        return true;
+    }
+    return false;
 }
 
 export function clearHistory(): void {

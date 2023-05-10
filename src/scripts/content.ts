@@ -1,6 +1,6 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
 import { callCallback, checkVersion, SETTINGS } from "./tools";
-import { clearHistory, getHistory } from "./history";
+import { clearHistory, getHistory, reduceHistory } from "./history";
 import {
     MIN_SEARCH_EXPRESSION_LENGHT,
     MAX_SEARCH_EXPRESSION_LENGHT,
@@ -43,8 +43,8 @@ import {
 let searchDelay: tvx.TVXDelay = new tvx.Delay(1000);
 let searchExpression: string = "";
 
-function reloadContent(): void {
-    tvx.InteractionPlugin.executeAction("reload:content");
+function reloadContent(focusIndex?: boolean): void {
+    tvx.InteractionPlugin.executeAction("reload:content" + (focusIndex === true ? ">item:index" : ""));
 }
 
 function handleContentLoadError(contentId: string, data: any, callback: (data: any) => void): boolean {
@@ -100,6 +100,23 @@ function handleSearchControl(control: string): void {
         }
     } else {
         tvx.InteractionPlugin.warn("Unknown search control: '" + control + "'");
+    }
+}
+
+function handleHistoryClear(): void {
+    clearHistory();
+    reloadContent();
+}
+
+function handleHistoryRemove(id: string): void {
+    if (tvx.Tools.isFullStr(id)) {
+        //Note also handle item IDs: "episode0_1234" -> "1234"
+        let separator: number = id.indexOf("_");
+        if (reduceHistory(separator > 0 ? id.substring(separator + 1) : id)) {
+            reloadContent(true);
+        }
+    } else {
+        tvx.InteractionPlugin.warn("Empty history remove action");
     }
 }
 
@@ -231,8 +248,9 @@ export function executeContent(action: string): void {
         } else if (action.indexOf("history:") == 0) {
             let historyAction: string = action.substring(8);
             if (historyAction == "clear") {
-                clearHistory();
-                reloadContent();
+                handleHistoryClear();
+            } else if (historyAction.indexOf("remove:") == 0) {
+                handleHistoryRemove(historyAction.substring(0));
             } else {
                 tvx.InteractionPlugin.warn("Unknown history action: '" + historyAction + "'");
             }
@@ -246,5 +264,7 @@ export function executeContent(action: string): void {
         } else {
             tvx.InteractionPlugin.warn("Unknown content action: '" + action + "'");
         }
+    } else {
+        tvx.InteractionPlugin.warn("Empty content action");
     }
 }

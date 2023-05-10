@@ -74,6 +74,90 @@ function completeRemovedBean(pin: any): void {
     completeRemovedPin(pin, "Lieblingsbohne", "Die Bohne {col:msx-white}'" + pin.name + "'{col} wurde von deinen Lieblingsbohnen entfernt bzw. für die Entfernung vergemerkt.", "pin_bean_" + pin.id);
 }
 
+function togglePin(action: string): void {
+    if (tvx.Tools.isFullStr(action)) {
+        if (action.indexOf("show:") == 0) {
+            let showId: string = action.substring(5);
+            if (isShowPinned(showId)) {
+                completeRemovedShow(unpinShow(showId));
+            } else {
+                pinShow(showId, (pin: any) => {
+                    completeAddedShow(pin);
+                });
+            }
+        } else if (action.indexOf("bean:") == 0) {
+            let beanId: string = action.substring(5);
+            if (isBeanPinned(beanId)) {
+                completeRemovedBean(unpinBean(beanId));
+            } else {
+                pinBean(beanId, (pin: any) => {
+                    completeAddedBean(pin);
+                });
+            }
+        } else {
+            tvx.InteractionPlugin.warn("Unknown pin toggle action: '" + action + "'");
+        }
+    } else {
+        tvx.InteractionPlugin.warn("Empty pin toggle action");
+    }
+}
+
+function addPin(action: string): void {
+    if (tvx.Tools.isFullStr(action)) {
+        if (action.indexOf("show:") == 0) {
+            pinShow(action.substring(5), (pin: any) => {
+                completeAddedShow(pin);
+            });
+        } else if (action.indexOf("bean:") == 0) {
+            pinBean(action.substring(5), (pin: any) => {
+                completeAddedBean(pin);
+            });
+        } else {
+            tvx.InteractionPlugin.warn("Unknown pin add action: '" + action + "'");
+        }
+    } else {
+        tvx.InteractionPlugin.warn("Empty pin add action");
+    }
+}
+
+function movePin(action: string): void {
+    if (tvx.Tools.isFullStr(action)) {
+        if (action.indexOf("show:") == 0 || action.indexOf("bean:") == 0) {
+            let moveIdAndDirection: string = action.substring(5);
+            let moveSeparator: number = moveIdAndDirection.indexOf(":");
+            if (moveSeparator > 0) {
+                let moveId: string = moveIdAndDirection.substring(0, moveSeparator);
+                let moveDirection: string = moveIdAndDirection.substring(moveSeparator + 1);
+                if (action.indexOf("show:") == 0) {
+                    completeMovedPin(movePinnedShow(moveId, moveDirection));
+                } else {
+                    completeMovedPin(movePinnedBean(moveId, moveDirection));
+                }
+            } else {
+                tvx.InteractionPlugin.warn("Invalid pin move action: '" + action + "'");
+            }
+        } else {
+            tvx.InteractionPlugin.warn("Unknown pin move action: '" + action + "'");
+        }
+    } else {
+        tvx.InteractionPlugin.warn("Empty pin move action");
+    }
+}
+
+function removePin(action: string): void {
+    if (tvx.Tools.isFullStr(action)) {
+        if (action.indexOf("show:") == 0) {
+            completeRemovedShow(unpinShow(action.substring(5)));
+        } else if (action.indexOf("bean:") == 0) {
+            completeRemovedBean(unpinBean(action.substring(5)));
+        } else {
+            tvx.InteractionPlugin.warn("Unknown pin remove action: '" + action + "'");
+        }
+    } else {
+        tvx.InteractionPlugin.warn("Empty pin remove action");
+    }
+}
+
 function createPinOptions(headline: string, context: string, contentId: string, pinId: string, total: number): tvx.MSXContentRoot {
     return {
         headline: headline,
@@ -234,74 +318,20 @@ export function executeMenu(action: string): void {
         } else if (action.indexOf("pin:") == 0) {
             let pinAction: string = action.substring(4);
             if (pinAction.indexOf("toggle:") == 0) {
-                let toggleAction: string = pinAction.substring(7);
-                if (toggleAction.indexOf("show:") == 0) {
-                    let showId: string = toggleAction.substring(5);
-                    if (isShowPinned(showId)) {
-                        completeRemovedShow(unpinShow(showId));
-                    } else {
-                        pinShow(showId, (pin: any) => {
-                            completeAddedShow(pin);
-                        });
-                    }
-                } else if (toggleAction.indexOf("bean:") == 0) {
-                    let beanId: string = toggleAction.substring(5);
-                    if (isBeanPinned(beanId)) {
-                        completeRemovedBean(unpinBean(beanId));
-                    } else {
-                        pinBean(beanId, (pin: any) => {
-                            completeAddedBean(pin);
-                        });
-                    }
-                } else {
-                    tvx.InteractionPlugin.warn("Unknown pin toggle action: '" + toggleAction + "'");
-                }
-            } else if (pinAction.indexOf("set:") == 0) {
-                let setAction: string = pinAction.substring(4);
-                if (setAction.indexOf("show:") == 0) {
-                    pinShow(setAction.substring(5), (pin: any) => {
-                        completeAddedShow(pin);
-                    });
-                } else if (setAction.indexOf("bean:") == 0) {
-                    pinBean(setAction.substring(5), (pin: any) => {
-                        completeAddedBean(pin);
-                    });
-                } else {
-                    tvx.InteractionPlugin.warn("Unknown pin set action: '" + setAction + "'");
-                }
+                togglePin(pinAction.substring(7));
+            } else if (pinAction.indexOf("add:") == 0) {
+                addPin(pinAction.substring(4));
             } else if (pinAction.indexOf("move:") == 0) {
-                let moveAction: string = pinAction.substring(5);
-                if (moveAction.indexOf("show:") == 0 || moveAction.indexOf("bean:") == 0) {
-                    let moveIdAndDirection: string = moveAction.substring(5);
-                    let moveSeparator: number = moveIdAndDirection.indexOf(":");
-                    if (moveSeparator > 0) {
-                        let moveId: string = moveIdAndDirection.substring(0, moveSeparator);
-                        let moveDirection: string = moveIdAndDirection.substring(moveSeparator + 1);
-                        if (moveAction.indexOf("show:") == 0) {
-                            completeMovedPin(movePinnedShow(moveId, moveDirection));
-                        } else {
-                            completeMovedPin(movePinnedBean(moveId, moveDirection));
-                        }
-                    } else {
-                        tvx.InteractionPlugin.warn("Invalid pin move action: '" + moveAction + "'");
-                    }
-                } else {
-                    tvx.InteractionPlugin.warn("Unknown pin move action: '" + moveAction + "'");
-                }
+                movePin(pinAction.substring(5));
             } else if (pinAction.indexOf("remove:") == 0) {
-                let removeAction: string = pinAction.substring(7);
-                if (removeAction.indexOf("show:") == 0) {
-                    completeRemovedShow(unpinShow(removeAction.substring(5)));
-                } else if (removeAction.indexOf("bean:") == 0) {
-                    completeRemovedBean(unpinBean(removeAction.substring(5)));
-                } else {
-                    tvx.InteractionPlugin.warn("Unknown pin remove action: '" + removeAction + "'");
-                }
+                removePin(pinAction.substring(7));
             } else {
                 tvx.InteractionPlugin.warn("Unknown pin action: '" + pinAction + "'");
             }
         } else {
             tvx.InteractionPlugin.warn("Unknown menu action: '" + action + "'");
         }
+    } else {
+        tvx.InteractionPlugin.warn("Empty menu action");
     }
 }

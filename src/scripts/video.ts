@@ -1,7 +1,7 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
 import { objToBase64, callCallback } from "./tools";
 import { loadEpisode } from "./backend";
-import { updateHistory } from "./history";
+import { expandHistory } from "./history";
 import { getVideoTitle, getTokenType, getTokenUrl, getReleaseTimestamp, getThumbnail, getVideoDescription, createEpisodeAction, getTokenOptionsAction } from "./content-tools";
 import { createVideoLoadError, createVideoPanel } from "./content-creator";
 
@@ -69,7 +69,7 @@ export function executeVideo(videoId: string): void {
     if (tvx.Tools.isFullStr(videoId)) {
         tvx.InteractionPlugin.requestData("video:info", (data: tvx.MSXAttachedGeneric) => {
             if (data.video != null && data.video.info != null && tvx.Tools.isFullStr(data.video.info.label)) {
-                updateHistory({
+                expandHistory({
                     id: videoId,
                     title: data.video.info.label,
                     image: tvx.PropertyTools.getFullStr(data.video.info, "info:image", null),
@@ -81,5 +81,7 @@ export function executeVideo(videoId: string): void {
                 });
             }
         });
+    } else {
+        tvx.InteractionPlugin.warn("Empty video action");
     }
 }
