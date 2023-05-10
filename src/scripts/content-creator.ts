@@ -260,7 +260,11 @@ function createHistoryClearPanel(): tvx.MSXContentRoot {
             items: [{
                 type: "space",
                 layout: "0,0,8,5",
-                text: "Möchtest du den Verlauf der zuletzt geschauten Videos zurücksetzen? Der Fortschritt der Videos bleibt dabei erhalten."
+                text: [
+                    "Möchtest du den Verlauf der zuletzt angesehenen Videos zurücksetzen?{br}{br}",
+                    "{ico:msx-blue:info} Beim Zurücksetzen des Verlaufs bleibt der individuelle Fortschritt der Videos erhalten.",
+                    " Es ist also weiterhin möglich, ein Video ab der letzten Position fortzusetzen."
+                ]
             }, {
                 type: "button",
                 layout: "0,5,4,1",
