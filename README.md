@@ -19,7 +19,7 @@ This is a **Rocket Beans TV (RBTV)** portal for the **Media Station X (MSX)** ap
 
 ## Possible Extensions
 * User login/logout
-* User related content (manage playlists, show subscribed shows/beans, etc.)
+* User related content (manage playlists, show videos of subscribed shows/beans, etc.)
 
 ## For Developers
 ### Installing
