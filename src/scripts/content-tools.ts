@@ -273,17 +273,17 @@ export function getBeanFullName(item: any): string {
     return tvx.Tools.strFullCheck(item != null ? item.computedName : null, "Unbekannte Person");
 }
 
-export function getBeanRole(item: any): string {
+export function getBeanRole(item: any, shorthand: boolean): string {
     if (item != null) {
         if (item.role === "onair") {
-            return "Host";
+            return shorthand ? "Host" : "Host/Moderator bei RBTV";
         } else if (item.role === "offair") {
-            return "Crew";
+            return shorthand ? "Crew" : "Crew-Mitglied bei RBTV";
         } else if (item.role === "external") {
-            return "Partner";
+            return shorthand ? "Partner" : "Partner/Freund von RBTV";
         }
     }
-    return "Unbekannte Rolle";
+    return shorthand ? null : "Unbekannte Rolle bei RBTV";
 }
 
 export function getBeanVideosCount(item: any): string {

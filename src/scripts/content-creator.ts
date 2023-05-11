@@ -557,7 +557,7 @@ function createBeanItems(data: any): tvx.MSXContentItem[] {
                 tag: getPinTag(isBeanPinned(item.mgmtid)),
                 number: getListNumber(i),
                 title: getBeanName(item),
-                titleHeader: getBeanRole(item),
+                titleHeader: getBeanRole(item, true),
                 titleFooter: getBeanVideosCount(item),
                 image: proxyImageForLocalContext(getImage(item, "large")),
                 action: createBeanAction(item)
@@ -595,7 +595,7 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
             type: "space",
             layout: "1,0,6,1",
             offset: "-1,0,0,0",
-            text: getBeanRole(beanData)
+            text: getBeanRole(beanData, false)
         }, {
             type: "space",
             layout: "6,0,6,2",
