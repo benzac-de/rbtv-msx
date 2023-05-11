@@ -12,6 +12,8 @@ const SOUNDCLOUD_PLUGIN: string = "http://msx.benzac.de/plugins/soundcloud.html?
 const YOUTUBE_PREFIX_1: string = "https://youtu.be/";
 const YOUTUBE_PREFIX_2: string = "https://www.youtube.com/watch?v=";
 
+const DESCRIPTION_ELEMENT: any = document.createElement("div");
+
 export const EXTENDED_SHOW_DESCRIPTION_LENGHT: number = 380;
 export const MAX_SEASON_NAME_LENGHT: number = 40;
 export const MIN_SEARCH_EXPRESSION_LENGHT: number = 2;
@@ -141,7 +143,7 @@ export function getImage(item: any, name: string): string {
     return getAnyImage(item, item != null ? item.images : null, "msxImage", name);
 }
 
-export function getPotraitImage(item: any, name: string): string {
+export function getPotrait(item: any, name: string): string {
     return getAnyImage(item, item != null ? item.portraitImage : null, "msxPotrait", name);
 }
 
@@ -269,6 +271,23 @@ export function getBeanName(item: any): string {
 
 export function getBeanFullName(item: any): string {
     return tvx.Tools.strFullCheck(item != null ? item.computedName : null, "Unbekannte Person");
+}
+
+export function getBeanRole(item: any): string {
+    if (item != null) {
+        if (item.role === "onair") {
+            return "Host";
+        } else if (item.role === "offair") {
+            return "Crew";
+        } else if (item.role === "external") {
+            return "Partner";
+        }
+    }
+    return "Unbekannte Rolle";
+}
+
+export function getBeanVideosCount(item: any): string {
+    return item != null ? addTextPrefix("{ico:video-collection}", item.episodeCount > 0 ? "" + item.episodeCount : null, " ") : null;
 }
 
 export function getVideoTitle(item: any): string {
@@ -524,4 +543,17 @@ export function createEpisodesFromHistory(history: any): any {
         }
     }
     return episodes;
+}
+
+export function createDescriptionFromHTML(html: string): string {
+    let decription: string = null;
+    if (tvx.Tools.isFullStr(html)) {
+        DESCRIPTION_ELEMENT.innerHTML = html
+            .replace(/<\/p>/g, "{br}")
+            .replace(/<strong>/g, "{col:msx-white}")
+            .replace(/<\/strong>/g, "{col}");
+        decription = tvx.Tools.strTrim(DESCRIPTION_ELEMENT.textContent);
+        DESCRIPTION_ELEMENT.innerHTML = "";
+    }
+    return tvx.Tools.strFullCheck(decription, "Keine Beschreibung vorhanden.");
 }

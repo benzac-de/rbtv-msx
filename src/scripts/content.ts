@@ -187,7 +187,8 @@ export function loadContent(contentId: string, callback: (data: any) => void): v
                     let beanId: string = getContentToken(contentToken, true);
                     let episodesOrder: string = tvx.Tools.strFullCheck(getContentToken(nextContentToken, false), "default");
                     loadBeanWithEpisodeList(beanId, getEpisodesOrderParameter(episodesOrder), (beanData: any, episodesData: any) => {
-                        if (!handleContentLoadError(contentId, beanData, callback) && !handleContentLoadError(contentId, episodesData, callback)) {
+                        //Note: Do not handle episode errors, because a bean could have no episodes
+                        if (!handleContentLoadError(contentId, beanData, callback)) {
                             callCallback(createBean(beanData, episodesOrder, episodesData), callback);
                         }
                     });

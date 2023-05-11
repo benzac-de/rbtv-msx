@@ -26,7 +26,7 @@ import {
     getThumbnail,
     getTokenColor,
     getTotalItems,
-    getPotraitImage,
+    getPotrait,
     getBeansCount,
     createContentRequest,
     createEpisodeAction,
@@ -41,7 +41,10 @@ import {
     getVideosCount,
     getPinIcon,
     getPinHint,
-    getPinTag
+    getPinTag,
+    getBeanRole,
+    getBeanVideosCount,
+    createDescriptionFromHTML
 } from "./content-tools";
 
 function completeError(error: string): string {
@@ -526,11 +529,7 @@ function createBeansHeader(order: string, total: number): tvx.MSXContentPage {
 
 function createBeanAction(item: any): string {
     if (item != null && tvx.Tools.isNum(item.mgmtid)) {
-        if (item.episodeCount > 0) {
-            return "content:" + createContentRequest("bean:" + item.mgmtid);
-        } else {
-            return "info:Diese Bohne arbeitet hinter den Kulissen und ist in keinem Video zu sehen."
-        }
+        return "content:" + createContentRequest("bean:" + item.mgmtid);
     }
     return null;
 }
@@ -558,7 +557,8 @@ function createBeanItems(data: any): tvx.MSXContentItem[] {
                 tag: getPinTag(isBeanPinned(item.mgmtid)),
                 number: getListNumber(i),
                 title: getBeanName(item),
-                titleFooter: item.episodeCount > 0 ? "{ico:video-collection} " + item.episodeCount : null,
+                titleHeader: getBeanRole(item),
+                titleFooter: getBeanVideosCount(item),
                 image: proxyImageForLocalContext(getImage(item, "large")),
                 action: createBeanAction(item)
             });
@@ -569,7 +569,11 @@ function createBeanItems(data: any): tvx.MSXContentItem[] {
 
 function createBeanHeader(beanData: any, episodesOrder: string, episodesData: any, episodesPagination: any): tvx.MSXContentPage {
     let showreelAction: string = getShowreelAction(beanData);
+    let hasVideos: boolean = episodesData != null && episodesData.length > 0;
     let hasShowreel: boolean = tvx.Tools.isFullStr(showreelAction);
+    let showreelOffsetX: number = 6;
+    let infoOffsetX: number = showreelOffsetX + (hasShowreel ? 1 : 0);
+    let pinOffsetX: number = infoOffsetX + 1;
     return {
         offset: "0,0,0,-0.5",
         items: [{
@@ -589,12 +593,18 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
             image: createShadowUrl()
         }, {
             type: "space",
+            layout: "1,0,6,1",
+            offset: "-1,0,0,0",
+            text: getBeanRole(beanData)
+        }, {
+            type: "space",
             layout: "6,0,6,2",
             offset: "0,-1,0,1",
             imagePreload: true,
-            image: proxyImageForLocalContext(getPotraitImage(beanData, "large")),
+            image: proxyImageForLocalContext(getPotrait(beanData, "large")),
             imageFiller: "height-right"
         }, {
+            enable: hasVideos,
             type: "control",
             layout: "0,1,6,1",
             offset: "0,-0.25,0,0",
@@ -606,7 +616,7 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
         }, {
             display: hasShowreel,
             type: "button",
-            layout: "6,1,1,1",
+            layout: showreelOffsetX + ",1,1,1",
             offset: "0,-0.25,0,0",
             icon: "smart-display",
             iconSize: "small",
@@ -626,9 +636,29 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
                 "button:speed:action": getShowreelOptionsAction()
             }
         }, {
+            type: "button",
+            layout: infoOffsetX + ",1,1,1",
+            offset: "0,-0.25,0,0",
+            icon: "info",
+            iconSize: "small",
+            selection: {
+                headline: "Beschreibung ansehen"
+            },
+            action: "panel:data",
+            data: {
+                pages: [{
+                    headline: getBeanFullName(beanData),
+                    items: [{
+                        type: "space",
+                        layout: "0,0,8,6",
+                        text: createDescriptionFromHTML(beanData.contentHTML)
+                    }, createPanelCloseButton()]
+                }]
+            }
+        }, {
             id: "pin_bean_" + beanData.mgmtid,
             type: "button",
-            layout: hasShowreel ? "7,1,1,1" : "6,1,1,1",
+            layout: pinOffsetX + ",1,1,1",
             offset: "0,-0.25,0,0",
             icon: getPinIcon(isBeanPinned(beanData.mgmtid)),
             iconSize: "small",
@@ -640,7 +670,7 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
             type: "space",
             layout: "1,2,11,1",
             offset: "-1,0.03,1,0",
-            text: getVideosCount(getTotalItems(episodesData, episodesPagination))
+            text: getVideosCount(hasVideos ? getTotalItems(episodesData, episodesPagination) : 0)
         }]
     };
 }
