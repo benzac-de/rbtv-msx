@@ -549,6 +549,7 @@ export function createDescriptionFromHTML(html: string): string {
     let decription: string = null;
     if (tvx.Tools.isFullStr(html)) {
         DESCRIPTION_ELEMENT.innerHTML = html
+            .replace(/<p>/g, "")
             .replace(/<\/p>/g, "{br}")
             .replace(/<strong>/g, "{col:msx-white}")
             .replace(/<\/strong>/g, "{col}");
