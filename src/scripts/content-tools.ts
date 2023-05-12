@@ -415,6 +415,10 @@ export function getShowFooter(item: any): string {
     return null;
 }
 
+export function getShowHeadline(item: any): string {
+    return item != null ? appendTextSegment(getShowFooter(item), item.statusPublicNote, " | ") : null;
+}
+
 export function getShowDescription(item: any): string {
     return item != null ? item.description : null;
 }

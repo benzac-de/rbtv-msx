@@ -17,6 +17,7 @@ import {
     getImage,
     getListNumber,
     getSeasonsCount,
+    getShowHeadline,
     getShowDescription,
     getShowFooter,
     getShowTitle,
@@ -431,7 +432,7 @@ function createShowsHeader(order: string, filter: string, data: any, pagination:
 }
 
 function createShowHeader(showData: any, seasonId: string, episodesOrder: string, episodesData: any, episodesPagination: any): tvx.MSXContentPage {
-    let headline: string = getShowFooter(showData);
+    let headline: string = getShowHeadline(showData);
     let description: string = getShowDescription(showData);
     let hasDescription: boolean = tvx.Tools.isFullStr(headline) || tvx.Tools.isFullStr(description);
     let descriptionHeight: number = tvx.Tools.isFullStr(description) && description.length > EXTENDED_SHOW_DESCRIPTION_LENGHT ? 3 : 2;
