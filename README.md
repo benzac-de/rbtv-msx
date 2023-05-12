@@ -11,7 +11,7 @@ This is a **Rocket Beans TV (RBTV)** portal for the **Media Station X (MSX)** ap
 * Customizable menu (add/move/remove favorite shows/beans to/in/from main menu)
 
 ## Screenshots
-![RBTV MSX](https://rbtv.msx.benzac.de/assets/screens.png?v=2)
+![RBTV MSX](https://rbtv.msx.benzac.de/assets/screens.png?v=3)
 
 ## Related Links
 * Rocket Beans TV: https://rocketbeans.tv/
