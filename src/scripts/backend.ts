@@ -378,9 +378,13 @@ export function performSearch(expression: string, callback?: (data: any) => void
                 if (tvx.Tools.isFullStr(data.error)) {
                     searchResults = null;
                     callCallback(data, callback);
-                } else {
+                } else if (searchResults != null) {
                     searchResults.data = data.data;
                     callCallback(searchResults, callback);
+                } else {
+                    callCallback({
+                        error: "Backend error: Invalidated search results"
+                    }, callback);
                 }
             }
         });
