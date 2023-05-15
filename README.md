@@ -14,7 +14,7 @@ This is a **Rocket Beans TV (RBTV)** portal for the **Media Station X (MSX)** ap
 ![RBTV MSX](https://rbtv.msx.benzac.de/assets/screens.png?v=3)
 
 ## Related Links
-* Rocket Beans TV: https://rocketbeans.tv/
+* Rocket Beans TV: https://rocketbeans.tv
 * Media Station X: https://msx.benzac.de/info/
 
 ## Possible Extensions
