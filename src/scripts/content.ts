@@ -1,5 +1,5 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { callCallback, checkVersion, SETTINGS } from "./tools";
+import { SETTINGS, callCallback, checkVersion } from "./tools";
 import { clearHistory, getHistory, reduceHistory } from "./history";
 import {
     MIN_SEARCH_EXPRESSION_LENGHT,
