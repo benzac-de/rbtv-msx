@@ -1181,7 +1181,8 @@ export function createContentNotFound(contentId: string): tvx.MSXContentRoot {
                 type: "default",
                 layout: "0,0,12,6",
                 headline: "{ico:msx-yellow:warning} Inhalt nicht gefunden",
-                text: "Der Inhalt mit der ID {col:msx-white}'" + contentId + "'{col} konnte nicht gefunden werden."
+                text: "Der Inhalt mit der ID {col:msx-white}'" + contentId + "'{col} konnte nicht gefunden werden.",
+                action: "back"
             }]
         }]
     };
@@ -1196,7 +1197,8 @@ export function createContentLoadError(contentId: string, error: string): tvx.MS
                 type: "default",
                 layout: "0,0,12,6",
                 headline: "{ico:msx-red:error} Inhalt konnte nicht geladen werden",
-                text: "Der Inhalt mit der ID {col:msx-white}'" + contentId + "'{col} konnte nicht geladen werden.{br}{br}" + completeError(error)
+                text: "Der Inhalt mit der ID {col:msx-white}'" + contentId + "'{col} konnte nicht geladen werden.{br}{br}" + completeError(error),
+                action: "back"
             }]
         }]
     };
