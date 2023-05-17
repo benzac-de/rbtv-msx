@@ -1,4 +1,4 @@
-// Type definitions for TVX Plugin UX v0.0.67.1 (Module)
+// Type definitions for TVX Plugin UX v0.0.68 (Module)
 // Project: https://msx.benzac.de/info/
 // Definitions by: Benjamin Zachey
 
@@ -803,15 +803,15 @@ declare interface TVXSettings {
     FULLSCREEN: number;
     SUSPEND: number;
     SECURE: number;
-    APP: AnyObject;
+    APP: any;
 }
 
 declare interface TVXStyles {
-    readonly COMMON: AnyObject;
-    readonly LOGGER: AnyObject;
-    readonly RENDERER: AnyObject;
-    readonly REMOTE: AnyObject;
-    APP: AnyObject;
+    readonly COMMON: any;
+    readonly LOGGER: any;
+    readonly RENDERER: any;
+    readonly REMOTE: any;
+    APP: any;
 }
 
 declare interface TVXVersion {
@@ -841,7 +841,7 @@ declare interface TVXTools {
     strTruncate(str: any, length: number): string;
     strShuffle(str: any): string;
     strReplace(str: any, find: string, replace?: any): string;
-    strReplaceMap(str: any, map: AnyObject): string;
+    strReplaceMap(str: any, map: any): string;
     strToBool(str: any, defaultValue: boolean): boolean;
     strToNum(str: any, defaultValue: number): number;
     strToAction(str: any): string;
@@ -923,18 +923,18 @@ declare interface TVXDateFormatter {
 }
 
 declare interface TVXPropertyTools {
-    foreach(data: AnyObject, callback: (key: string, value: any) => void | boolean): void;
-    getValue(data: AnyObject, key: string, defaultValue: any): any;
-    get(data: AnyObject, key: string, defaultValue: string): string;
-    getFullStr(data: AnyObject, key: string, defaultValue: string): string;
-    getNum(data: AnyObject, ke: string, defaultValue: number): number;
-    getBool(data: AnyObject, key: string, defaultValue: boolean): boolean;
-    has(data: AnyObject, key: string, hasValue?: boolean): boolean;
-    put(data: AnyObject, key: string, value: any): void;
-    remove(data: AnyObject, key: string): void;
-    clear(data: AnyObject): void;
-    count(data: AnyObject): number;
-    extend(data: AnyObject, extension: AnyObject): void;
+    foreach(data: any, callback: (key: string, value: any) => void | boolean): void;
+    getValue(data: any, key: string, defaultValue: any): any;
+    get(data: any, key: string, defaultValue: string): string;
+    getFullStr(data: any, key: string, defaultValue: string): string;
+    getNum(data: any, ke: string, defaultValue: number): number;
+    getBool(data: any, key: string, defaultValue: boolean): boolean;
+    has(data: any, key: string, hasValue?: boolean): boolean;
+    put(data: any, key: string, value: any): void;
+    remove(data: any, key: string): void;
+    clear(data: any): void;
+    count(data: any): number;
+    extend(data: any, extension: any): void;
 }
 
 declare interface TVXVideoState {
@@ -1059,12 +1059,12 @@ declare abstract class TVXUrlParams {
     foreach(callback: (name: string, value: any) => void | boolean): void;
     remove(name: string): void;
     clear(): void;
-    create(url: string): AnyObject;
+    create(url: string): any;
     build(encoded?: boolean, separator?: string): string;
 }
 
 declare abstract class TVXOptions {
-    constructor(options: AnyObject, defaultOptions?: AnyObject);
+    constructor(options: any, defaultOptions?: any);
     getValue(name: string): any;
     get(name: string): string;
     getFullStr(name: string): string;
@@ -1077,11 +1077,11 @@ declare abstract class TVXObservers {
     constructor();
     hasObserver(name: string): boolean;
     hasObservers(): boolean;
-    addObserver(name: string, handler: (data: AnyObject) => void): void;
+    addObserver(name: string, handler: (data: any) => void): void;
     removeObserver(name: string): void;
-    onEvent(name: string, handler?: (data: AnyObject) => void): void;
-    notifyObserver(name: string, data: AnyObject): void;
-    notifyObservers(data: AnyObject): void;
+    onEvent(name: string, handler?: (data: any) => void): void;
+    notifyObserver(name: string, data: any): void;
+    notifyObservers(data: any): void;
     clear(): void;
 }
 
@@ -1089,17 +1089,17 @@ declare abstract class TVXEventObservers {
     constructor();
     hasObserver(eventName: string, handlerName: string): boolean;
     hasObservers(eventName: string): boolean;
-    addObserver(eventName: string, handlerName: string, handler: (data: AnyObject) => void): void;
+    addObserver(eventName: string, handlerName: string, handler: (data: any) => void): void;
     removeObserver(eventName: string, handlerName: string): void;
-    onEvent(eventName: string, handlerName: string, handler?: (data: AnyObject) => void): void;
-    notifyObserver(eventName: string, handlerName: string, data: AnyObject): void;
-    notifyObservers(eventName: string, data: AnyObject): void;
+    onEvent(eventName: string, handlerName: string, handler?: (data: any) => void): void;
+    notifyObserver(eventName: string, handlerName: string, data: any): void;
+    notifyObservers(eventName: string, data: any): void;
     clear(eventName?: string): void;
 }
 
 declare abstract class TVXQueue {
     constructor();
-    delegate: AnyObject;
+    delegate: any;
     execute(): void;
     process(): void;
     reset(): void;
@@ -1130,7 +1130,7 @@ declare abstract class TVXDelay {
 
 declare abstract class TVXClick {
     constructor();
-    click(clicked: AnyObject): number;
+    click(clicked: any): number;
 }
 
 declare interface TVXAjaxOptions {
@@ -1138,7 +1138,7 @@ declare interface TVXAjaxOptions {
     isForm?: boolean;
     withCredentials?: boolean;
     accurateHeaders?: boolean;
-    headers?: AnyObject;
+    headers?: any;
 }
 
 declare interface TVXAjaxCallback {
@@ -1170,8 +1170,8 @@ declare abstract class TVXLogger {
     maxInfoLength: number;
     maxWarnLength: number;
     maxErrorLength: number;
-    registerControl(control: AnyObject, print?: boolean): void;
-    unregisterControl(control: AnyObject): void;
+    registerControl(control: any, print?: boolean): void;
+    unregisterControl(control: any): void;
     print(): void;
     clear(): void;
     log(level: number, message: string): void;
@@ -1184,14 +1184,14 @@ declare abstract class TVXLogger {
 declare abstract class TVXDictionary {
     constructor();
     onReady(name: string, handler?: () => void): void;
-    init(data: AnyObject): void;
+    init(data: any): void;
     getName(): string;
     getVersion(): string;
     getSize(): number;
     isInitialized(): boolean;
     getValueForKey(key: string, defaultValue: string): string;
     getValueForExpr(expr: string): string;
-    getData(): AnyObject;
+    getData(): any;
 }
 
 declare abstract class TVXClock {
@@ -1207,8 +1207,8 @@ declare abstract class TVXClock {
     addHook(name: string, hook: () => void): void;
     removeHook(name: string): void;
     onTick(name: string, hook?: () => void): void;
-    registerControl(control: AnyObject): void;
-    unregisterControl(control: AnyObject): void;
+    registerControl(control: any): void;
+    unregisterControl(control: any): void;
     update(): void;
     validate(): void;
     process(): void;
@@ -1242,13 +1242,13 @@ declare abstract class TVXDataService {
     onReady(name: string, handler?: TVXDataServiceEntryCallback): void;
     onError(name: string, handler?: TVXDataServiceEntryCallback): void;
     onCompleted(name: string, handler?: TVXDataServiceEntryCallback): void;
-    foreachEntry(callback: (entry: AnyObject) => void | boolean): void;
-    foreachError(callback: (error: AnyObject) => void | boolean): void;
+    foreachEntry(callback: (entry: any) => void | boolean): void;
+    foreachError(callback: (error: any) => void | boolean): void;
     getData(id: string): any;
-    getEntry(id: string): AnyObject;
-    setEntry(id: string, entry: AnyObject): void;
-    getError(id: string): AnyObject;
-    setError(id: string, error: AnyObject): void;
+    getEntry(id: string): any;
+    setEntry(id: string, entry: any): void;
+    getError(id: string): any;
+    setError(id: string, error: any): void;
     shouldStoreData(id: string): boolean;
     createData(id: string, resp: any): void;
     putData(url: string, data: string, callback?: TVXDataServiceActionCallback, options?: TVXAjaxOptions): void;
@@ -1261,13 +1261,13 @@ declare abstract class TVXDataService {
 
 declare interface TVXDataServiceActionCallback {
     success?(data: any): void;
-    error?(message: string, status: number, reason: AnyObject): void;
+    error?(message: string, status: number, reason: any): void;
 }
 
 declare interface TVXDataServiceEntryCallback {
-    success?(entry: AnyObject): void;
-    error?(message: string, status: number, reason: AnyObject): void;
-    completed?(entry: AnyObject): void;
+    success?(entry: any): void;
+    error?(message: string, status: number, reason: any): void;
+    completed?(entry: any): void;
 }
 
 declare abstract class TVXBlobService {
@@ -1275,14 +1275,14 @@ declare abstract class TVXBlobService {
     onReady(name: string, handler?: TVXBlobServiceCallback): void;
     onError(name: string, handler?: TVXBlobServiceCallback): void;
     onCompleted(name: string, handler?: TVXBlobServiceCallback): void;
-    foreachEntry(callback: (entry: AnyObject) => void | boolean): void;
-    foreachError(callback: (error: AnyObject) => void | boolean): void;
-    getBlob(id: string): AnyObject;
+    foreachEntry(callback: (entry: any) => void | boolean): void;
+    foreachError(callback: (error: any) => void | boolean): void;
+    getBlob(id: string): any;
     getUrl(id: string): string;
-    getEntry(id: string): AnyObject;
-    setEntry(id: string, entry: AnyObject): void;
-    getError(id: string): AnyObject;
-    setError(id: string, error: AnyObject): void;
+    getEntry(id: string): any;
+    setEntry(id: string, entry: any): void;
+    getError(id: string): any;
+    setError(id: string, error: any): void;
     executeBlob(id: string, url: string, data: string, callback?: TVXBlobServiceCallback, options?: TVXAjaxOptions): void;
     loadBlob(id: string, url: string, callback?: TVXBlobServiceCallback, options?: TVXAjaxOptions): void;
     clearBlob(id: string): void;
@@ -1290,9 +1290,9 @@ declare abstract class TVXBlobService {
 }
 
 declare interface TVXBlobServiceCallback {
-    success?(entry: AnyObject): void;
-    error?(message: string, status: number, reason: AnyObject): void;
-    completed?(entry: AnyObject): void;
+    success?(entry: any): void;
+    error?(message: string, status: number, reason: any): void;
+    completed?(entry: any): void;
 }
 
 declare abstract class TVXRequestService {
@@ -1318,76 +1318,241 @@ declare abstract class TVXBusyService {
     onReady(handler: () => void): void;
 }
 
+declare interface TVXEffectsBlendMode {
+    readonly NAME: string;
+    readonly MULTIPLY: string;
+    readonly SCREEN: string;
+    readonly OVERLAY: string;
+    readonly DARKEN: string;
+    readonly LIGHTEN: string;
+    readonly COLOR_DODGE: string;
+    readonly COLOR_BURN: string;
+    readonly HARD_LIGHT: string;
+    readonly SOFT_LIGHT: string;
+    readonly DIFFERENCE: string;
+    readonly EXCLUSION: string;
+    readonly HUE: string;
+    readonly SATURATION: string;
+    readonly COLOR: string;
+    readonly LUMINOSITY: string;
+}
+
+declare interface TVXEffectsCompositeMode {
+    readonly CLEAR: string;
+    readonly COPY: string;
+    readonly DESTINATION: string;
+    readonly SOURCE_OVER: string;
+    readonly SOURCE_OUT: string;
+    readonly DESTINATION_OUT: string;
+    readonly SOURCE_ATOP: string;
+    readonly DESTINATION_ATOP: string;
+    readonly XOR: string;
+    readonly LIGHTER: string;
+    readonly DARKER: string;
+}
+
 declare interface TVXEffects {
-    //TODO
+    readonly BLEND_MODE: TVXEffectsBlendMode;
+    readonly COMPOSITE_MODE: TVXEffectsCompositeMode;
 }
 
 declare interface TVXAnimationController {
-    //TODO
+    render(): void;
+    start(control: any): void;
+    stop(control: any): void;
+    isRunning(): boolean;
+    hasControl(): boolean;
+    isControl(control: any): boolean;
 }
 
 declare interface TVXColorTools {
-    //TODO
+    createColor(color: number[]): string;
+    parseColor(str: string): number[];
 }
 
 declare interface TVXTransit {
-    //TODO
+    //Scope for jQuery extension $.transit
+}
+
+declare interface TVXPosition {
+    x: number;
+    y: number;
+}
+
+declare interface TVXParticlesOptions {
+    name: string;
+    particleCount: number;
+    position: TVXPosition;
+    positionRandom: TVXPosition;
+    size: number;
+    sizeRandom: number;
+    speed: number;
+    speedRandom: number;
+    lifeSpan: number;
+    lifeSpanRandom: number;
+    angle: number;
+    angleRandom: number;
+    gravity: TVXPosition;
+    startColor: number[];
+    startColorRandom: number[];
+    endColor: number[];
+    endColorRandom: number[];
+    sharpness: number;
+    sharpnessRandom: number;
+    splash: number;
+    splashRandom: number;
+    keepAlive: boolean;
+    autoDestroy: boolean;
 }
 
 declare abstract class TVXParticles {
-    //TODO
+    constructor(canvas: any, width: number, height: number, options: TVXParticlesOptions);
+    fpsIndicator: any;
+    transparentColor: string;
+    hasContext(): boolean;
+    getCompositeMode(): string;
+    setCompositeMode(mode: string): void;
+    render(force?: boolean): void;
+    start(): void;
+    stop(): void;
+    restart(): void;
+    isRunning(): boolean;
+    applyColors(): void;
 }
 
 declare abstract class TVXDrawing {
-    //TODO
+    constructor(canvas: any, width: number, height: number);
+    fpsIndicator: any;
+    hasContext(): boolean;
+    getCompositeMode(): string;
+    setCompositeMode(mode: string): void;
+    render(force?: boolean): void;
+    start(): void;
+    stop(): void;
+    restart(): void;
+    isRunning(): boolean;
+    getObjectsCount(): number;
+    clearObjects(): void;
+    containsObject(obj: any): boolean;
+    addObject(obj: any): void;
+    removeObject(obj: any): void;
+    removeFirstObject(): void;
+    removeLastObject(): void;
+    moveObject(obj: any, index: number): void;
+    foreachObject(callback: (index: number, obj: any) => void | boolean): void;
+}
+
+declare interface TVXRendererTransform {
+    important?: boolean;
+    translateX?: number | boolean;
+    translateY?: number | boolean;
+    translateZ?: number | boolean;
+    scale?: number | boolean;
+    scaleX?: number | boolean;
+    scaleY?: number | boolean;
+    scaleZ?: number | boolean;
+    skewX?: number | boolean;
+    skewY?: number | boolean;
+    rotate?: number | boolean;
+    rotateX?: number | boolean;
+    rotateY?: number | boolean;
+    rotateZ?: number | boolean;
+}
+
+declare interface TVXRendererState {
+    zIndex?: number;
+    postZIndex?: number;
+    action?:
+    ((item: any, fromState: TVXRendererState, newState: TVXRendererState, animate?: boolean) => void) |
+    ((item: any, newState: TVXRendererState, fromState: TVXRendererState, currentState: TVXRendererState) => void);
+    preAction?: (item: any, newState: TVXRendererState, animate?: boolean) => void;
+    postAction?: (item: any, newState: TVXRendererState, currentState: TVXRendererState) => void;
+    left?: number | boolean;
+    top?: number | boolean;
+    width?: number | boolean;
+    height?: number | boolean;
+    opacity?: number | boolean;
+    visible?: boolean;
+    fontSize?: number | boolean;
+    color?: number[] | boolean;
+    backColor?: number[] | boolean;
+    baseWidth?: number | boolean;
+    baseHeight?: number | boolean;
+    transform?: TVXRendererTransform | boolean;
 }
 
 declare interface TVXRenderer {
-    //TODO
+    isAnimating: boolean;
+    useAnimations(): boolean;
+    useTransformations(): boolean;
+    useTransitions(): boolean;
+    use3d(): boolean;
+    setup(): void;
+    onReady(handler: () => void): void;
+    transfer(state1: TVXRendererState, state2: TVXRendererState, process: number): TVXRendererState;
+    scale(state: TVXRendererState, factor: number): TVXRendererState;
+    combine(state1: TVXRendererState, state2: TVXRendererState): TVXRendererState;
+    render(item: any, nextState: TVXRendererState, animate?: boolean, control?: any, callback?: () => void): void;
+    renderFromTo(item: any, fromState: TVXRendererState, toState: TVXRendererState, animate?: boolean, control?: any, callback?: () => void): void;
+    show(item: any, animate?: boolean, control?: any, callback?: () => void): void;
+    hide(item: any, animate?: boolean, control?: any, callback?: () => void): void;
+    toggle(item: any, animate?: boolean, control?: any, callback?: () => void): void;
+    fadeIn(item: any, animate?: boolean, control?: any, callback?: () => void): void;
+    fadeOut(item: any, animate?: boolean, control?: any, callback?: () => void): void;
+    fadeToggle(item: any, animate?: boolean, control?: any, callback?: () => void): void;
+    delay(item: any, animate?: boolean, callback?: () => void): void;
+    applyClass(item: any, aClass: string): void;
+    applySubclass(item: any, aClass: string): void;
+    putClass(item: any, aClass: string): void;
+    removeClass(item: any, aClass: string): void;
+    replaceClass(item: any, oldClass: string, newClass: string): void;
+    replaceClasses(oldClass: string, newClass: string): void;
+    addClasses(aClass: string, addClass: string): void;
+    removeClasses(aClass: string, removeClass: string): void;
+    getTransformZeroClass(): string;
+    setupTransformZero(item: any): void;
 }
 
 declare interface TVXElementTools {
-    //TODO
-}
-
-declare abstract class TVXSelector {
-    //TODO
-}
-
-declare interface TVXSelectorTools {
-    //TODO
+    getElement(position: TVXPosition): any;
+    getOffsetPosition(element: any, position: TVXPosition): any;
+    belongsToId(element: any, id: string): boolean;
+    belongsToClass(element: any, aClass: string): boolean;
+    belongsToClasses(element: any, classes: string): boolean;
+    isHidden(element: any): boolean;
 }
 
 declare interface TVXImageTools {
-    //TODO
+    setupFallback(control: any, url: string, callback?: () => void): void;
+    controlImage(control: any, animate?: boolean, stateControl?: any, callback?: () => void): void;
+    prepareImage(control: any, hide?: boolean, animate?: boolean, stateControl?: any): void;
+    loadImage(control: any, url: string, animate?: boolean, stateControl?: any, callback?: () => void): void;
+    swapImage(control1: any, control2: any, url: string, animate?: boolean, stateControl?: any): void;
 }
 
 declare interface TVXItemTools {
-    //TODO
+    setupFallback(item: any, fallback: string): void;
+    prepareImage(item: any, image: string, animate?: boolean, stateControl?: any): void;
+    updateImage(item: any, image: string, animate?: boolean, stateControl?: any): void;
+    validateImage(item: any): void;
+    applyFiller(item: any): void;
+    initImage(item: any, image: string, fallback: string): void;
+    updateItem(item: any): void;
 }
 
 declare interface TVXStyleTools {
-    //TODO
-}
-
-declare interface TVXMoveMode {
-    //TODO
-}
-
-declare interface TVXControlTools {
-    //TODO
-}
-
-declare abstract class TVXBusyIndicator {
-    //TODO
-}
-
-declare abstract class TVXWakeLock {
-    //TODO
-}
-
-declare abstract class TVXSceneManager {
-    //TODO
+    roundPixelValue(value: number): number;
+    roundOpacityValue(value: number): number;
+    getScaledValue(value: number, factor: number): number;
+    scaleProperty(obj: any, property: string, factor: number): void;
+    scaleState(state: TVXRendererState, factor: number): void;
+    createCanvas(canvasClass: string, width: number, height: number): string;
+    createIFrame(frameClass: string, src: string): string;
+    createColor(color: string): string;
+    createIcon(icon: string, color?: string, inline?: boolean, addClass?: string): string;
+    createText(text: string, color?: string, inline?: boolean, addClass?: string): string;
+    createTextStart(color?: string, inline?: boolean, addClass?: string): string;
+    createTextEnd(): string;
 }
 
 declare interface TVXPluginTools {
@@ -1397,7 +1562,7 @@ declare interface TVXPluginTools {
     invalidateSettings(): void;
     validateSettings(data: MSXAttachedInfo): void;
     onValidatedSettings(callback: (data: MSXAttachedInfo) => void): void;
-    handleSettingsEvent(data: AnyObject): void;
+    handleSettingsEvent(data: any): void;
     getFrameworkInfo(data: MSXAttachedInfo): string;
     getApplicationInfo(data: MSXAttachedInfo): string;
     getContentInfo(data: MSXAttachedInfo): string;
@@ -1490,22 +1655,22 @@ declare interface TVXVideoPlugin {
      * Indicates if the fullscreen mode is enabled.
      * @param element The element that should be checked (e.g. the video element). If not specified (or not accessible), the global fullscreen mode is checked.
      */
-    isFullscreenEnabled(element?: AnyObject): boolean;
+    isFullscreenEnabled(element?: any): boolean;
     /**
      * Indicates if the fullscreen mode is active.
      * @param element The element that should be checked (e.g. the video element). If not specified (or not accessible), the global fullscreen mode is checked.
      */
-    isFullscreenActive(element?: AnyObject): boolean;
+    isFullscreenActive(element?: any): boolean;
     /**
      * Requests the fullscreen mode for an element (returns true on success).
      * @param element The element that should be displayed in fullscreen mode (e.g. the video element).
      */
-    requestFullscreen(element: AnyObject): boolean;
+    requestFullscreen(element: any): boolean;
     /**
      * Exits the fullscreen mode (returns true on success).
      * @param element The element that is displayed in fullscreen mode (e.g. the video element). If not specified (or not accessible), the global fullscreen exit function is used.
      */
-    exitFullscreen(element?: AnyObject): boolean;
+    exitFullscreen(element?: any): boolean;
     /**
      * Sets the state (see TVXVideoState interface).
      * @param state The state.
@@ -2318,16 +2483,9 @@ export class Particles extends TVXParticles { }
 export class Drawing extends TVXDrawing { }
 export const Renderer: TVXRenderer;
 export const ElementTools: TVXElementTools;
-export class Selector extends TVXSelector { }
-export const SelectorTools: TVXSelectorTools;
 export const ImageTools: TVXImageTools;
 export const ItemTools: TVXItemTools;
 export const StyleTools: TVXStyleTools;
-export const MoveMode: TVXMoveMode;
-export const ControlTools: TVXControlTools;
-export class BusyIndicator extends TVXBusyIndicator { }
-export class WakeLock extends TVXWakeLock { }
-export class SceneManager extends TVXSceneManager { }
 export const PluginTools: TVXPluginTools;
 export const VideoPlugin: TVXVideoPlugin;
 export const InteractionPlugin: TVXInteractionPlugin;

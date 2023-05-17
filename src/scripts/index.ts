@@ -24,20 +24,14 @@ class RbtvHandler implements tvx.TVXInteractionPluginHandler {
     private backdropImage2: any = null;
 
     private hideBackdrop(): void {
-        //@ts-ignore
         tvx.Renderer.fadeOut(this.backdropGround);
-        //@ts-ignore
         tvx.Renderer.fadeOut(this.backdropContainer1);
-        //@ts-ignore
         tvx.Renderer.fadeOut(this.backdropContainer2);
     }
 
     private showBackdrop(number: number): void {
-        //@ts-ignore
         tvx.Renderer.fadeIn(this.backdropGround);
-        //@ts-ignore
         tvx.Renderer.fadeOut(number == 1 ? this.backdropContainer2 : this.backdropContainer1);
-        //@ts-ignore
         tvx.Renderer.fadeIn(number == 1 ? this.backdropContainer1 : this.backdropContainer2);
     }
 

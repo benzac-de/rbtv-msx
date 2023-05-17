@@ -217,7 +217,6 @@ export function loadImage(container: any, image: any, url: string, fallbackUrl: 
             image = defaultImage;
         }
         if (tvx.Tools.isHttpUrl(fallbackUrl)) {
-            //@ts-ignore
             tvx.ImageTools.setupFallback(image, fallbackUrl, function () {
                 setupImage(container, image);
                 if (typeof callback == "function") {
@@ -225,7 +224,6 @@ export function loadImage(container: any, image: any, url: string, fallbackUrl: 
                 }
             });
         }
-        //@ts-ignore
         tvx.ImageTools.loadImage(image, url, false, null, function () {
             setupImage(container, image);
             if (typeof callback == "function") {
