@@ -1374,16 +1374,16 @@ declare interface TVXTransit {
     //Scope for jQuery extension $.transit
 }
 
-declare interface TVXPosition {
+declare interface TVXParticlePosition {
     x: number;
     y: number;
 }
 
-declare interface TVXParticlesOptions {
+declare interface TVXParticleOptions {
     name: string;
     particleCount: number;
-    position: TVXPosition;
-    positionRandom: TVXPosition;
+    position: TVXParticlePosition;
+    positionRandom: TVXParticlePosition;
     size: number;
     sizeRandom: number;
     speed: number;
@@ -1392,7 +1392,7 @@ declare interface TVXParticlesOptions {
     lifeSpanRandom: number;
     angle: number;
     angleRandom: number;
-    gravity: TVXPosition;
+    gravity: TVXParticlePosition;
     startColor: number[];
     startColorRandom: number[];
     endColor: number[];
@@ -1406,7 +1406,7 @@ declare interface TVXParticlesOptions {
 }
 
 declare abstract class TVXParticles {
-    constructor(canvas: any, width: number, height: number, options: TVXParticlesOptions);
+    constructor(canvas: any, width: number, height: number, options: TVXParticleOptions);
     fpsIndicator: any;
     transparentColor: string;
     hasContext(): boolean;
@@ -1513,31 +1513,12 @@ declare interface TVXRenderer {
     setupTransformZero(item: any): void;
 }
 
-declare interface TVXElementTools {
-    getElement(position: TVXPosition): any;
-    getOffsetPosition(element: any, position: TVXPosition): any;
-    belongsToId(element: any, id: string): boolean;
-    belongsToClass(element: any, aClass: string): boolean;
-    belongsToClasses(element: any, classes: string): boolean;
-    isHidden(element: any): boolean;
-}
-
 declare interface TVXImageTools {
     setupFallback(control: any, url: string, callback?: () => void): void;
     controlImage(control: any, animate?: boolean, stateControl?: any, callback?: () => void): void;
     prepareImage(control: any, hide?: boolean, animate?: boolean, stateControl?: any): void;
     loadImage(control: any, url: string, animate?: boolean, stateControl?: any, callback?: () => void): void;
     swapImage(control1: any, control2: any, url: string, animate?: boolean, stateControl?: any): void;
-}
-
-declare interface TVXItemTools {
-    setupFallback(item: any, fallback: string): void;
-    prepareImage(item: any, image: string, animate?: boolean, stateControl?: any): void;
-    updateImage(item: any, image: string, animate?: boolean, stateControl?: any): void;
-    validateImage(item: any): void;
-    applyFiller(item: any): void;
-    initImage(item: any, image: string, fallback: string): void;
-    updateItem(item: any): void;
 }
 
 declare interface TVXStyleTools {
@@ -2482,9 +2463,7 @@ export const Transit: TVXTransit;
 export class Particles extends TVXParticles { }
 export class Drawing extends TVXDrawing { }
 export const Renderer: TVXRenderer;
-export const ElementTools: TVXElementTools;
 export const ImageTools: TVXImageTools;
-export const ItemTools: TVXItemTools;
 export const StyleTools: TVXStyleTools;
 export const PluginTools: TVXPluginTools;
 export const VideoPlugin: TVXVideoPlugin;
