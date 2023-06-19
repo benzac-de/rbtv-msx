@@ -1,4 +1,4 @@
-// Type definitions for TVX Plugin UX v0.0.69 (Module)
+// Type definitions for TVX Plugin UX v0.0.70 (Module)
 // Project: https://msx.benzac.de/info/
 // Definitions by: Benjamin Zachey
 
@@ -1594,6 +1594,7 @@ declare interface TVXDeviceId {
 }
 
 declare interface TVXPlayerButtonData {
+    key?: string;
     icon?: string;
     action?: string;
     enable?: boolean;
@@ -1852,6 +1853,11 @@ declare interface TVXVideoPlugin {
      * @param id The button ID.
      */
     disableButton(id: string): void;
+    /**
+    * Resets a player button (all buttons except the eject button are supported).
+    * @param id The button ID.
+    */
+    resetButton(id: string): void;
     /**
      * Focuses a player button.
      * @param id The button ID.
