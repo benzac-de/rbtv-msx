@@ -162,6 +162,8 @@ function createPinOptions(headline: string, context: string, contentId: string, 
     return {
         headline: headline,
         ready: createMenuValidation(),
+        flag: "pin_options",
+        refocus: true,
         template: {
             enumerate: false,
             layout: "0,0,8,1",
