@@ -31,6 +31,7 @@ function createVideo(videoId: string, data: any): any {
                     "rbtv:release": getReleaseTimestamp(episode),
                     "rbtv:duration": tvx.Tools.isNum(episode.duration) ? episode.duration : -1,
                     "resume:key": "url",
+                    "resume:context": "rbtv",
                     "control:type": "extended",
                     "info:size": "large",
                     "info:overlay": "full",
