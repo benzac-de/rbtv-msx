@@ -700,6 +700,7 @@ function createOverviewHeader(): tvx.MSXContentPage {
             titleFooter: "Rocket Beans ist Content Creator, Produktionsfirma, Plattform, Kreativschmiede und Publisher für verspielte, popkulturelle Bewegtbild-Inhalte.",
             action: "panel:data",
             data: {
+                captionUnderlay: 0,
                 pages: [{
                     headline: "Wir sind die Rocket Beans",
                     items: [{
