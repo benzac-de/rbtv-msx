@@ -40,7 +40,9 @@ class RbtvHandler implements tvx.TVXInteractionPluginHandler {
             number == 1 ? this.backdropContainer1 : this.backdropContainer2,
             number == 1 ? this.backdropImage1 : this.backdropImage2,
             url, null, () => {
-                this.showBackdrop(number);
+                if (this.backdropUrl == url) {
+                    this.showBackdrop(number);
+                }
             });
     }
 
