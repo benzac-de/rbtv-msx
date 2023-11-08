@@ -100,7 +100,7 @@ class RbtvHandler implements tvx.TVXInteractionPluginHandler {
             } else if (data.message.indexOf("menu:") == 0) {
                 executeMenu(data.message.substr(5));
             } else if (data.message.indexOf("content:") == 0) {
-                executeContent(data.message.substr(8));
+                executeContent(data.message.substr(8), data.data);
             } else if (data.message.indexOf("video:") == 0) {
                 executeVideo(data.message.substr(6));
             } else {

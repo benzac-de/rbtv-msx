@@ -2,7 +2,18 @@ import * as tvx from "./lib/tvx-plugin-ux-module.min";
 import { objToBase64, callCallback } from "./tools";
 import { loadEpisode } from "./backend";
 import { expandHistory } from "./history";
-import { getVideoTitle, getTokenType, getTokenUrl, getReleaseTimestamp, getThumbnail, getVideoDescription, createEpisodeAction, getTokenOptionsAction } from "./content-tools";
+import {
+    createEpisodeAction,
+    getReleaseTimestamp,
+    getShowName,
+    getThumbnail,
+    getTokenOptionsAction,
+    getTokenType,
+    getTokenUrl,
+    getVideoDescription,
+    getVideoDuration,
+    getVideoTitle
+} from "./content-tools";
 import { createVideoLoadError, createVideoPanel } from "./content-creator";
 
 function handleVideoLoadError(videoId: string, data: any, callback: (data: any) => void): boolean {
@@ -27,9 +38,9 @@ function createVideo(videoId: string, data: any): any {
                 label: getVideoTitle(episode),
                 properties: {
                     "rbtv:token": getTokenType(episode),
-                    "rbtv:show": tvx.Tools.strFullCheck(episode.showName, null),
+                    "rbtv:show": getShowName(episode),
                     "rbtv:release": getReleaseTimestamp(episode),
-                    "rbtv:duration": tvx.Tools.isNum(episode.duration) ? episode.duration : -1,
+                    "rbtv:duration": getVideoDuration(episode),
                     "resume:key": "url",
                     "resume:context": "rbtv",
                     "control:type": "extended",

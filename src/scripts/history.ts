@@ -1,7 +1,7 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
 import { STORAGE_PREFIX_ID, objToBase64, base64ToObj } from "./tools";
 
-const MAX_HISTORY_LENGTH: number = 24;
+const MAX_HISTORY_LENGTH: number = 64;
 const HISTORY_ID: string = "history";
 
 let historyList: any = null;

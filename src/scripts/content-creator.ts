@@ -5,47 +5,55 @@ import { hasHistory } from "./history";
 import {
     EXTENDED_SHOW_DESCRIPTION_LENGHT,
     addTextPrefix,
-    getBeanName,
+    createBackgroundUrl,
+    createContentRequest,
+    createDescriptionFromHTML,
+    createEpisodeAction,
+    createHeaderUrl,
+    createPlaceholderUrl,
+    createSettingsToggleAction,
+    createShadowUrl,
     getBeanFullName,
+    getBeanName,
+    getBeanRole,
+    getBeansCount,
     getBeansOrderLabel,
+    getBeanVideosCount,
     getDuration,
-    getLiveDuration,
     getEpisodeFooter,
+    getEpisodeHeader,
     getEpisodesCount,
     getEpisodesOrderLabel,
     getEpisodesSeasonLabel,
     getImage,
     getListNumber,
+    getLiveDuration,
+    getPinHint,
+    getPinIcon,
+    getPinTag,
+    getPotrait,
+    getReleaseTimestamp,
+    getSearchCount,
     getSeasonsCount,
-    getShowHeadline,
+    getSettingsToggleIcon,
     getShowDescription,
     getShowFooter,
-    getShowTitle,
+    getShowHeadline,
+    getShowName,
+    getShowreelAction,
+    getShowreelOptionsAction,
     getShowsCount,
     getShowsFilterLabel,
     getShowsOrderLabel,
+    getShowTitle,
     getThumbnail,
     getTokenColor,
+    getTokenType,
     getTotalItems,
-    getPotrait,
-    getBeansCount,
-    createContentRequest,
-    createEpisodeAction,
-    getShowreelAction,
-    getShowreelOptionsAction,
-    createHeaderUrl,
-    createShadowUrl,
-    createBackgroundUrl,
-    getYouTubeQualityLabel,
-    getSearchCount,
-    createPlaceholderUrl,
+    getVideoDuration,
     getVideosCount,
-    getPinIcon,
-    getPinHint,
-    getPinTag,
-    getBeanRole,
-    getBeanVideosCount,
-    createDescriptionFromHTML
+    getVideoTitle,
+    getYouTubeQualityLabel
 } from "./content-tools";
 
 function completeError(error: string): string {
@@ -66,20 +74,52 @@ function createListLiveExtension(item: any, index: number, length: number, exten
     } : (extensionPage ? {} : null);
 }
 
-function createListOptions(): tvx.MSXContentRoot {
+function createListOptions(goToTopOption: boolean): tvx.MSXContentRoot {
     return {
         headline: "Optionen",
+        flag: "list_options",
+        refocus: true,
         template: {
             enumerate: false,
             layout: "0,0,8,1",
             type: "control"
         },
-        items: [{
+        items: goToTopOption ? [{
             icon: "vertical-align-top",
             label: "Zum Anfang der Liste",
             action: "[cleanup|focus:index:-1]"
-        }]
+        }] : []
     };
+}
+
+function createEpisodeListOptions(goToTopOption: boolean, item: any): tvx.MSXContentRoot {
+    let options: tvx.MSXContentRoot = createListOptions(goToTopOption);
+    if (item != null) {
+        options.items.push({
+            icon: "add-circle",
+            label: "Video zum Verlauf hinzufügen",
+            action: "[cleanup|interaction:commit:message:content:history:add:" + item.id + "]",
+            data: {
+                title: getVideoTitle(item),
+                image: getThumbnail(item, "small"),
+                token: getTokenType(item),
+                show: getShowName(item),
+                release: getReleaseTimestamp(item),
+                duration: getVideoDuration(item)
+            }
+        });
+    }
+    return options;
+}
+
+function createHistoryListOptions(goToTopOption: boolean): tvx.MSXContentRoot {
+    let options: tvx.MSXContentRoot = createListOptions(goToTopOption);
+    options.items.push({
+        icon: "delete",
+        label: "Video aus dem Verlauf entfernen",
+        action: "[cleanup|interaction:commit:message:content:history:remove:{context:id}]"
+    });
+    return options;
 }
 
 function createListSelection(context: string, total: number): tvx.MSXSelection {
@@ -189,18 +229,18 @@ function createEpisodesSeasonPanel(flag: string, activeSeason: any, seasons: any
     };
 }
 
-function createEpisodeTemplate(context: string, data: any, pagination: any): tvx.MSXContentItem {
+function createEpisodeTemplate(context: string, data: any, pagination: any, historyItems: boolean): tvx.MSXContentItem {
     return {
         type: "default",
         layout: "0,0,3,3",
-        imageHeight: 1.6,
+        imageHeight: SETTINGS.longTitles ? 1.5 : 1.6,
         imageBoundary: true,
         wrapperColor: "msx-black",
         truncation: "titleHeader|titleFooter",
         enumerate: false,
         stampColor: "rgba(0,0,0,0.8)",
         selection: createListSelection(context, getTotalItems(data, pagination)),
-        options: createListOptions(),
+        options: historyItems ? createHistoryListOptions(true) : createListOptions(true),
         imageFiller: "height-center",
         progress: -1,
         live: {
@@ -217,17 +257,7 @@ function createEpisodeTemplate(context: string, data: any, pagination: any): tvx
     };
 }
 
-function createHistoryTemplate(data: any): tvx.MSXContentItem {
-    let template: tvx.MSXContentItem = createEpisodeTemplate("Video", data, null);
-    template.options.items.push({
-        icon: "delete",
-        label: "Video aus dem Verlauf entfernen",
-        action: "[cleanup|interaction:commit:message:content:history:remove:{context:id}]"
-    });
-    return template;
-}
-
-function createEpisodeItems(data: any, extendable: boolean, contentId: string): tvx.MSXContentItem[] {
+function createEpisodeItems(data: any, extendable: boolean, contentId: string, historyItems: boolean): tvx.MSXContentItem[] {
     let items: tvx.MSXContentItem[] = [];
     let timestamp: number = tvx.DateTools.getTimestamp();
     if (data != null && data.length > 0) {
@@ -241,7 +271,7 @@ function createEpisodeItems(data: any, extendable: boolean, contentId: string): 
             items.push({
                 id: "episode" + i + "_" + item.id,
                 number: getListNumber(i),
-                titleHeader: addTextPrefix("{col:msx-white}", item.title),
+                titleHeader: getEpisodeHeader(item),
                 titleFooter: getEpisodeFooter(item, timestamp),
                 image: extensionPage ? null : tvx.Tools.strFullCheck(getThumbnail(item, "small"), createPlaceholderUrl()),
                 icon: extensionPage ? "msx-white-soft:more-horiz" : null,
@@ -250,7 +280,8 @@ function createEpisodeItems(data: any, extendable: boolean, contentId: string): 
                 progressColor: getTokenColor(item),
                 imagePreload: preloadPage,
                 live: extendable === true ? createListLiveExtension(item, i, data.length, extensionPage, contentId) : null,
-                action: createEpisodeAction(item, false)
+                action: createEpisodeAction(item, false),
+                options: historyItems ? null : createEpisodeListOptions(true, item)
             });
         }
     }
@@ -321,7 +352,7 @@ function createShowTemplate(data: any, pagination: any): tvx.MSXContentItem {
         enumerate: false,
         tagColor: "msx-white",
         selection: createListSelection("Show", getTotalItems(data, pagination)),
-        options: createListOptions(),
+        options: createListOptions(true),
         imageFiller: "height-center"
     };
 }
@@ -542,7 +573,7 @@ function createBeanTemplate(data: any): tvx.MSXContentItem {
         enumerate: false,
         tagColor: "msx-white",
         selection: createListSelection("Bohne", data != null ? data.length : -1),
-        options: createListOptions(),
+        options: createListOptions(true),
         imageFiller: "height-right",
         imageOverlay: 0
     };
@@ -783,12 +814,12 @@ function createOverviewEpisode(item: any, index: number, timestamp: number): tvx
         type: "default",
         layout: (index * 3) + ",0," + (index == 3 ? 2 : 3) + ",3",
         offset: "0,0.5," + (index == 3 ? 1 : 0) + ",0",
-        imageHeight: 1.6,
+        imageHeight: SETTINGS.longTitles ? 1.5 : 1.6,
         imageBoundary: true,
         wrapperColor: "msx-black",
         truncation: "titleHeader|titleFooter",
         imageFiller: "height-center",
-        titleHeader: addTextPrefix("{col:msx-white}", item.title),
+        titleHeader: getEpisodeHeader(item),
         titleFooter: getEpisodeFooter(item, timestamp),
         image: tvx.Tools.strFullCheck(getThumbnail(item, "small"), createPlaceholderUrl()),
         stamp: getDuration(item),
@@ -806,7 +837,8 @@ function createOverviewEpisode(item: any, index: number, timestamp: number): tvx
         },
         properties: {
             "resume:key": "url"
-        }
+        },
+        options: createEpisodeListOptions(false, item)
     };
 }
 
@@ -1020,7 +1052,7 @@ function createSearchResultsPage(headline: string, baseOffset: number): tvx.MSXC
         compress: false,
         offset: tvx.Tools.isFullStr(headline) ? "0,0,0," + (0.666 + baseOffset) : "0,0,0," + baseOffset,
         items: tvx.Tools.isFullStr(headline) ? [createSearchResultsHeadline(headline)] : [],
-        options: createListOptions()
+        options: createListOptions(true)
     };
 }
 
@@ -1079,12 +1111,12 @@ function createSearchResultsEpisode(item: any, listIndex: number, pageIndex: num
         type: "default",
         layout: posX + "," + posY + ",4,4",
         offset: listIndex < 4 ? "0,0.666,0,0" : null,
-        imageHeight: 2.133,
+        imageHeight: SETTINGS.longTitles ? 2 : 2.133,
         imageBoundary: true,
         wrapperColor: "msx-black",
         truncation: "titleHeader|titleFooter",
         imageFiller: "height-center",
-        titleHeader: addTextPrefix("{col:msx-white}", item.title),
+        titleHeader: getEpisodeHeader(item),
         titleFooter: getEpisodeFooter(item, timestamp),
         image: tvx.Tools.strFullCheck(getThumbnail(item, "small"), createPlaceholderUrl()),
         stamp: getDuration(item),
@@ -1103,7 +1135,8 @@ function createSearchResultsEpisode(item: any, listIndex: number, pageIndex: num
         },
         properties: {
             "resume:key": "url"
-        }
+        },
+        options: createEpisodeListOptions(true, item)
     };
 }
 
@@ -1152,7 +1185,7 @@ function createYouTubeQualityItem(currentQuality: string, activeQuality: string)
         focus: active,
         label: getYouTubeQualityLabel(currentQuality),
         extensionIcon: active ? "check" : "blank",
-        action: active ? "back" : "[back|interaction:commit:message:content:settings:youtube_quality:" + currentQuality + "]"
+        action: active ? "back" : "[back|interaction:commit:message:content:settings:" + SETTINGS.youtubeQualityId + ":" + currentQuality + "]"
     };
 }
 
@@ -1264,8 +1297,8 @@ export function createNewEpisodes(data: any): tvx.MSXContentRoot {
         headline: "Neue Videos",
         background: createBackgroundUrl(),
         ready: createBackdrop(null),
-        template: createEpisodeTemplate("Video", data.data, data.pagination),
-        items: createEpisodeItems(data.data, data.extendable, "new")
+        template: createEpisodeTemplate("Video", data.data, data.pagination, false),
+        items: createEpisodeItems(data.data, data.extendable, "new", false)
     };
 }
 
@@ -1277,8 +1310,8 @@ export function createHistoryEpisodes(data: any): tvx.MSXContentRoot {
         header: createHistoryHeader(data),
         background: createBackgroundUrl(),
         ready: createBackdrop(null),
-        template: createHistoryTemplate(data),
-        items: createEpisodeItems(data, false, null)
+        template: createEpisodeTemplate("Video", data, null, true),
+        items: createEpisodeItems(data, false, null, true)
     };
 }
 
@@ -1293,8 +1326,8 @@ export function createShow(showData: any, seasonId: string, episodesOrder: strin
         background: createBackgroundUrl(),
         ready: createBackdrop(backdrop),
         transparent: tvx.Tools.isFullStr(backdrop) ? 2 : 0,
-        template: createEpisodeTemplate("Folge", episodesData.data, episodesData.pagination),
-        items: createEpisodeItems(episodesData.data, episodesData.extendable, tvx.Tools.isFullStr(seasonId) ? "show:" + seasonId : "show")
+        template: createEpisodeTemplate("Folge", episodesData.data, episodesData.pagination, false),
+        items: createEpisodeItems(episodesData.data, episodesData.extendable, tvx.Tools.isFullStr(seasonId) ? "show:" + seasonId : "show", false)
     };
 }
 
@@ -1321,8 +1354,8 @@ export function createBean(beanData: any, episodesOrder: string, episodesData: a
         header: createBeanHeader(beanData.data, episodesOrder, episodesData.data, episodesData.pagination),
         background: createBackgroundUrl(),
         ready: createBackdrop(null),
-        template: createEpisodeTemplate("Video", episodesData.data, episodesData.pagination),
-        items: createEpisodeItems(episodesData.data, episodesData.extendable, "bean")
+        template: createEpisodeTemplate("Video", episodesData.data, episodesData.pagination, false),
+        items: createEpisodeItems(episodesData.data, episodesData.extendable, "bean", false)
     };
 }
 
@@ -1390,13 +1423,21 @@ export function createSettings(): tvx.MSXContentRoot {
         items: [{
             icon: "downloading",
             label: "Seiten vorladen",
-            extensionIcon: SETTINGS.preloadPages ? "msx-white:check-box" : "check-box-outline-blank",
+            extensionIcon: getSettingsToggleIcon(SETTINGS.preloadPages),
             description: [
                 "Wenn Seiten vorgeladen werden, sind die Bilder beim Scrollen schneller sichtbar.",
                 "Allerdings kann sich das auf einigen Geräten negativ auf die Scroll-Performance auswirken.",
                 "Solltest du Probleme mit der Performance haben, kannst du das Vorladen deaktivieren."
             ].join(" "),
-            action: "interaction:commit:message:content:settings:preload_pages:" + (SETTINGS.preloadPages ? "false" : "true")
+            action: createSettingsToggleAction(SETTINGS.preloadPagesId, SETTINGS.preloadPages)
+        }, {
+            icon: "short-text",
+            label: "Lange Episodentitel",
+            extensionIcon: getSettingsToggleIcon(SETTINGS.longTitles),
+            description: [
+                "Bei langen Episodentitel werden zwei Zeilen (anstelle nur einer Zeile) für den Titel verwendet. Allerdings werden dadurch die Episodenbilder etwas kleiner."
+            ].join(" "),
+            action: createSettingsToggleAction(SETTINGS.longTitlesId, SETTINGS.longTitles)
         }, {
             icon: "smart-display",
             label: "YouTube Qualität",

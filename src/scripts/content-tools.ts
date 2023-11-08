@@ -18,6 +18,7 @@ export const EXTENDED_SHOW_DESCRIPTION_LENGHT: number = 380;
 export const MAX_SEASON_NAME_LENGHT: number = 40;
 export const MIN_SEARCH_EXPRESSION_LENGHT: number = 2;
 export const MAX_SEARCH_EXPRESSION_LENGHT: number = 40;
+export const MAX_EPISODE_TITLE_BREAK_POSITION: number = 25;
 
 function getPlayerOptionsAction(): string {
     return "[release:panel|panel:request:player:options]";
@@ -294,6 +295,14 @@ export function getVideoTitle(item: any): string {
     return tvx.Tools.strFullCheck(item != null ? item.title : null, "Unbekanntes Video");
 }
 
+export function getShowName(item: any): string {
+    return tvx.Tools.strFullCheck(item != null ? item.showName : null, null);
+}
+
+export function getVideoDuration(item: any): number {
+    return item != null && tvx.Tools.isNum(item.duration) ? item.duration : -1;
+}
+
 export function getReleaseTimestamp(item: any): number {
     if (item != null) {
         if (item.msxRelease == null) {
@@ -343,6 +352,21 @@ export function getReleaseDuration(item: any, timestamp: number): string {
     return null;
 }
 
+export function getReleaseDateTime(item: any): string {
+    if (item != null) {
+        let releaseTimestamp: number = getReleaseTimestamp(item);
+        if (releaseTimestamp > 0) {
+            return "{num:" + releaseTimestamp + ":date:dd.mm.yyyy}, {num:" + releaseTimestamp + ":time:hh:mm}";
+        }
+    }
+    return null;
+}
+
+export function getReleaseDurationAndDateTime(item: any, timestamp: number): string {
+    let releaseDuration: string = getReleaseDuration(item, timestamp);
+    return releaseDuration != null ? releaseDuration + " (" + getReleaseDateTime(item) + ")" : null;
+}
+
 export function getTotalItems(data: any, pagination: any): any {
     return pagination != null ? pagination.total : (data != null ? data.length : -1);
 }
@@ -375,6 +399,18 @@ export function getSearchCount(totalShows: number, totalEpisodes: number): strin
     return getShowsCount(totalShows) + " und " + (totalEpisodes == 0 ? "keine Videos" : (totalEpisodes == 1 ? "ein Video" : totalEpisodes + " Videos")) + " gefunden"
 }
 
+export function createEpisodeTitle(title: string): string {
+    if (SETTINGS.longTitles && tvx.Tools.isFullStr(title) && title.length >= MAX_EPISODE_TITLE_BREAK_POSITION) {
+        let breakIndex: number = title.lastIndexOf(" ", MAX_EPISODE_TITLE_BREAK_POSITION);
+        return breakIndex > 0 ? title.substring(0, breakIndex) + "{br}" + title.substring(breakIndex + 1) : title;
+    }
+    return title;
+}
+
+export function getEpisodeHeader(item: any): string {
+    return item != null ? addTextPrefix("{col:msx-white}", createEpisodeTitle(item.title)) : null;
+}
+
 export function getEpisodeFooter(item: any, timestamp: number): string {
     let footer: string = null;
     if (item != null) {
@@ -388,7 +424,7 @@ export function getVideoDescription(item: any, timestamp: number): string {
     let description: string = null;
     if (item != null) {
         description = appendTextTab(description, addTextPrefix("{col:msx-white}{ico:local-movies}", item.showName, " "));
-        description = appendTextTab(description, addTextPrefix("{col:msx-white}{ico:event}", getReleaseDuration(item, timestamp), " "));
+        description = appendTextTab(description, addTextPrefix("{col:msx-white}{ico:event}", getReleaseDurationAndDateTime(item, timestamp), " "));
         description = appendTextLine(description, addTextPrefix("{col}", item.description));
     }
     return description;
@@ -478,8 +514,16 @@ export function getEpisodesOrderLabel(order: string, showRelated: boolean): stri
     return "Unbekannt (" + order + ")";
 }
 
+export function getSettingsToggleIcon(toggle: boolean): string {
+    return toggle ? "msx-white:check-box" : "check-box-outline-blank";
+}
+
 export function getYouTubeQualityLabel(quality: string): string {
     return quality == "default" ? "Auto" : quality;
+}
+
+export function createSettingsToggleAction(settingsId: string, toggle: boolean): string {
+    return "interaction:commit:message:content:settings:" + settingsId + ":" + (toggle ? "false" : "true")
 }
 
 export function createContentRequest(contentId: string): string {

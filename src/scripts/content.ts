@@ -1,43 +1,43 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
 import { SETTINGS, callCallback, checkVersion } from "./tools";
-import { clearHistory, getHistory, reduceHistory } from "./history";
+import { clearHistory, getHistory, expandHistory, reduceHistory } from "./history";
 import {
     MIN_SEARCH_EXPRESSION_LENGHT,
     MAX_SEARCH_EXPRESSION_LENGHT,
+    createEpisodesFromHistory,
     getEpisodesOrderParameter,
     getShowsFilterParameter,
-    getShowsOrderParameter,
-    createEpisodesFromHistory
+    getShowsOrderParameter
 } from "./content-tools";
 import {
+    createBean,
+    createBeans,
     createContentLoadError,
     createContentNotFound,
-    createVersionNotSupported,
-    createShows,
-    createShow,
-    createNewEpisodes,
-    createBeans,
-    createBean,
     createCredits,
+    createHistoryEpisodes,
+    createNewEpisodes,
     createOverview,
     createSearch,
     createSettings,
-    createHistoryEpisodes
+    createShow,
+    createShows,
+    createVersionNotSupported
 } from "./content-creator";
 import {
-    loadNewEpisodeList,
-    extendNewEpisodeList,
-    loadShowList,
-    extendShowList,
-    loadShowWithEpisodeList,
-    extendShowEpisodeList,
-    extendShowWithEpisodeList,
-    loadBeanWithEpisodeList,
+    cancelSearch,
     extendBeanEpisodeList,
+    extendNewEpisodeList,
+    extendShowEpisodeList,
+    extendShowList,
+    extendShowWithEpisodeList,
     loadBeans,
+    loadBeanWithEpisodeList,
+    loadNewEpisodeList,
     loadOverview,
-    performSearch,
-    cancelSearch
+    loadShowList,
+    loadShowWithEpisodeList,
+    performSearch
 } from "./backend";
 
 let searchDelay: tvx.TVXDelay = new tvx.Delay(1000);
@@ -106,6 +106,27 @@ function handleSearchControl(control: string): void {
 function handleHistoryClear(): void {
     clearHistory();
     reloadContent();
+}
+
+function handleHistoryAdd(id: string, data: any): void {
+    if (tvx.Tools.isFullStr(id) && data != null) {
+        //Note also handle item IDs: "episode0_1234" -> "1234"
+        let separator: number = id.indexOf("_");
+        if (expandHistory({
+            id: separator > 0 ? id.substring(separator + 1) : id,
+            title: data.title,
+            image: data.image,
+            token: data.token,
+            show: data.show,
+            release: data.release,
+            duration: data.duration,
+            timestamp: tvx.DateTools.getTimestamp()
+        })) {
+            tvx.InteractionPlugin.success("Video wurde zum Verlauf hinzugefügt.");
+        }
+    } else {
+        tvx.InteractionPlugin.warn("Empty history add action");
+    }
 }
 
 function handleHistoryRemove(id: string): void {
@@ -219,7 +240,7 @@ export function loadContent(contentId: string, callback: (data: any) => void): v
     });
 }
 
-export function executeContent(action: string): void {
+export function executeContent(action: string, data: any): void {
     if (tvx.Tools.isFullStr(action)) {
         if (action.indexOf("extend:") == 0) {
             tvx.InteractionPlugin.startLoading();
@@ -250,8 +271,10 @@ export function executeContent(action: string): void {
             let historyAction: string = action.substring(8);
             if (historyAction == "clear") {
                 handleHistoryClear();
+            } else if (historyAction.indexOf("add:") == 0) {
+                handleHistoryAdd(historyAction.substring(4), data);
             } else if (historyAction.indexOf("remove:") == 0) {
-                handleHistoryRemove(historyAction.substring(0));
+                handleHistoryRemove(historyAction.substring(7));
             } else {
                 tvx.InteractionPlugin.warn("Unknown history action: '" + historyAction + "'");
             }
