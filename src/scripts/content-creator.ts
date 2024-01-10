@@ -1263,10 +1263,11 @@ export function createCredits(): tvx.MSXContentRoot {
                     "{ico:msx-white:public} {txt:msx-white:https://msx.benzac.de/info/}{br}",
                     "{ico:msx-white:build} {txt:msx-white:https://github.com/benzac-de/rbtv-msx/}"
                 ],
-                image: "http://msx.benzac.de/info/img/bmc_qr.png",
+                image: tvx.Tools.getPrefixUrl("msx.benzac.de/info/img/bmc_qr.png"),
                 imageFiller: "height-right",
                 imageOverlay: 0,
-                imagePreload: true
+                imagePreload: true,
+                action: "panel:" + tvx.Tools.getPrefixUrl("msx.benzac.de/services/support.php?context=rbtv&platform={PLATFORM}")
             }]
         }]
     };
