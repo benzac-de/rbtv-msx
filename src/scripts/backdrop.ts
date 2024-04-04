@@ -217,12 +217,7 @@ export function loadImage(container: any, image: any, url: string, fallbackUrl: 
             image = defaultImage;
         }
         if (tvx.Tools.isHttpUrl(fallbackUrl)) {
-            tvx.ImageTools.setupFallback(image, fallbackUrl, function () {
-                setupImage(container, image);
-                if (typeof callback == "function") {
-                    callback();
-                }
-            });
+            tvx.ImageTools.setupFallback(image, fallbackUrl);
         }
         tvx.ImageTools.loadImage(image, url, false, null, function () {
             setupImage(container, image);

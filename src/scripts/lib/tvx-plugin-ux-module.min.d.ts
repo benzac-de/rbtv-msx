@@ -1,4 +1,4 @@
-// Type definitions for TVX Plugin UX v0.0.72 (Module)
+// Type definitions for TVX Plugin UX v0.0.74.4 (Module)
 // Project: https://msx.benzac.de/info/
 // Definitions by: Benjamin Zachey
 
@@ -117,6 +117,7 @@ declare interface MSXContentRoot extends AnyObject {
     pages?: MSXContentPage[];
     header?: MSXContentPage;
     footer?: MSXContentPage;
+    inserts?: MSXContentPage[];
     overlay?: MSXContentPage;
     underlay?: MSXContentPage;
     action?: string;
@@ -154,7 +155,10 @@ declare interface MSXContentPage extends AnyObject {
     transparent?: MSXTransparent | boolean;
     headline?: string;
     background?: string;
+    area?: string;
     offset?: string;
+    position?: string;
+    template?: MSXContentItem;
     items: MSXContentItem[];
     action?: string;
     data?: AnyObject;
@@ -179,7 +183,10 @@ declare interface MSXContentItem extends AnyObject {
     execute?: boolean;
     enumerate?: boolean;
     compress?: boolean;
+    decompress?: boolean;
     shortcut?: boolean;
+    round?: boolean;
+    break?: string;
     group?: string;
     color?: string;
     title?: string;
@@ -193,6 +200,7 @@ declare interface MSXContentItem extends AnyObject {
     alignment?: string;
     truncation?: string;
     centration?: string;
+    separation?: number;
     tag?: string;
     tagColor?: string;
     badge?: string;
@@ -502,6 +510,21 @@ declare interface MSXAttachedVideoVolumeInfo {
     muted: boolean;
 }
 
+/** MSX - Attached Resume Map
+ * @see: {@link https://msx.benzac.de/wiki/index.php?title=Attached_Data_Examples}
+*/
+declare interface MSXAttachedResumeMap extends MSXAttachedData {
+    resume?: MSXAttachedResumeMapContainer;
+}
+
+/** MSX - Attached Resume Map Container
+ * @see: {@link https://msx.benzac.de/wiki/index.php?title=Attached_Data_Examples}
+*/
+declare interface MSXAttachedResumeMapContainer {
+    size: number;
+    properties: MSXExtendedProperties;
+}
+
 /** MSX - Attached Slider
  * @see: {@link https://msx.benzac.de/wiki/index.php?title=Attached_Data_Examples}
 */
@@ -547,6 +570,7 @@ declare interface MSXAttachedApplicationSettings {
     slideshowInterval: number;
     hoverEffect: number;
     immersiveMode: number;
+    roundedStyle: number;
     menuButton: MSXAttachedApplicationMenuButton;
 }
 
@@ -778,6 +802,7 @@ declare interface MSXAttachedNotification extends MSXAttachedData {
 declare interface MSXAttachedGeneric extends MSXAttachedData {
     code?: string;
     video?: MSXAttachedVideoContainer;
+    resume?: MSXAttachedResumeMapContainer;
     slider?: MSXAttachedSliderContainer;
     info?: MSXAttachedInfoContainer;
     message?: string;
@@ -1062,6 +1087,7 @@ declare abstract class TVXStorage {
     foreach(callback: (name: string, value: any) => void | boolean): void;
     remove(name: string): void;
     clear(): void;
+    flush(): void;
     getType(): string;
     setType(type: string): void;
     isReady(): boolean;
@@ -1534,10 +1560,13 @@ declare interface TVXRenderer {
 }
 
 declare interface TVXImageTools {
+    getImageSource(control: any): string;
+    hasImageSource(control: any, url: string): boolean;
     setupFallback(control: any, url: string, callback?: () => void): void;
     controlImage(control: any, animate?: boolean, stateControl?: any, callback?: () => void): void;
     prepareImage(control: any, hide?: boolean, animate?: boolean, stateControl?: any): void;
     loadImage(control: any, url: string, animate?: boolean, stateControl?: any, callback?: () => void): void;
+    restoreImage(control: any, url: string, animate?: boolean, stateControl?: any, callback?: () => void): void;
     swapImage(control1: any, control2: any, url: string, animate?: boolean, stateControl?: any): void;
 }
 
@@ -1832,6 +1861,11 @@ declare interface TVXVideoPlugin {
     * @param label The label. If no label is set, the default label is used.
     */
     setupSpeedLabel(label?: string): void;
+    /**
+     * Sets up a player info headline (only available for extended players).
+     * @param headline The headline. If no headline is set, the headline is removed.
+     */
+    setupInfoHeadline(headline?: string): void;
     /**
      * Sets up a player info text (only available for extended players).
      * @param text The text. If no text is set, the text is removed.
@@ -2164,6 +2198,7 @@ declare interface TVXVideoPluginPlayer {
      * - "settings:slideshow_interval" (data.value property contains the new settings value)
      * - "settings:hover_effect" (data.value property contains the new settings value)
      * - "settings:immersive_mode" (data.value property contains the new settings value)
+     * - "settings:rounded_style" (data.value property contains the new settings value)
      * - "settings:menu_button" (data.action and data.keyCode properties contain the new button action and key code)
      * - "custom:{EVENT_ID}" (data.data property optionally contains the event-related data)
      * *Note: Video events are usually not handled by the player, since the corresponding player function is also called (e.g. play() -> "video:play").
@@ -2438,6 +2473,7 @@ declare interface TVXInteractionPluginHandler {
      * - "settings:slideshow_interval" (data.value property contains the new settings value)
      * - "settings:hover_effect" (data.value property contains the new settings value)
      * - "settings:immersive_mode" (data.value property contains the new settings value)
+     * - "settings:rounded_style" (data.value property contains the new settings value)
      * - "settings:menu_button" (data.action and data.keyCode properties contain the new button action and key code)
      * - "custom:{EVENT_ID}" (data.data property optionally contains the event-related data)
      * @param data The event data.

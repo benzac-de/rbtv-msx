@@ -610,6 +610,7 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
         offset: "0,0,0,-0.5",
         items: [{
             type: "space",
+            round: false,
             layout: "0,0,12,2",
             offset: "-1.25,-1,2,1",
             color: "msx-black",
@@ -619,6 +620,7 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
             imageOverlay: 4
         }, {
             type: "space",
+            round: false,
             layout: "0,2,12,1",
             offset: "-1.25,-0.166,2,-0.666",
             imagePreload: true,
@@ -630,6 +632,7 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
             text: getBeanRole(beanData, false)
         }, {
             type: "space",
+            round: false,
             layout: "6,0,6,2",
             offset: "0,-1,0,1",
             imagePreload: true,
