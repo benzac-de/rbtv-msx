@@ -1,4 +1,4 @@
-// Type definitions for TVX Plugin UX v0.0.74.4 (Module)
+// Type definitions for TVX Plugin UX v0.0.75 (Module)
 // Project: https://msx.benzac.de/info/
 // Definitions by: Benjamin Zachey
 
@@ -185,7 +185,7 @@ declare interface MSXContentItem extends AnyObject {
     compress?: boolean;
     decompress?: boolean;
     shortcut?: boolean;
-    round?: boolean;
+    round?: MSXRound | boolean;
     break?: string;
     group?: string;
     color?: string;
@@ -209,6 +209,7 @@ declare interface MSXContentItem extends AnyObject {
     stampColor?: string;
     progress?: number;
     progressColor?: string;
+    progressBackColor?: string;
     wrapperColor?: string;
     image?: string;
     imageFiller?: MSXContentItemImageFiller;
@@ -298,6 +299,13 @@ declare type MSXTransparent =
     1 |
     2;
 
+//** MSX - Round*/
+declare type MSXRound =
+    0 |
+    1 |
+    2 |
+    3;
+
 //** MSX - Ready*/
 declare interface MSXReady {
     action?: string;
@@ -368,6 +376,7 @@ declare interface MSXLiveProperties {
     stampColor?: string;
     progress?: number;
     progressColor?: string;
+    progressBackColor?: string;
     wrapperColor?: string;
     image?: string;
     extensionIcon?: string;
@@ -1886,6 +1895,14 @@ declare interface TVXVideoPlugin {
     * @param overlay The size of the image area. If no size is set, the default size is used.
     */
     setupInfoSize(overlay?: string): void;
+    /**
+    * Enables rounded corners of the info image if the rounded style is used (only available for extended players).
+    */
+    enableInfoRound(): void;
+    /**
+     * Disables rounded corners of the info image if the rounded style is used (only available for extended players).
+     */
+    disableInfoRound(): void;
     /**
     * Sets up a custom player control action (replacement for the action that is executed if the OK key is pressed while the video/audio is in foreground).
     * @param action The action. If no action is set, the default action is used.

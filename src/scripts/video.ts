@@ -10,6 +10,7 @@ import {
     getTokenOptionsAction,
     getTokenType,
     getTokenUrl,
+    getTokenColor,
     getVideoDescription,
     getVideoDuration,
     getVideoTitle
@@ -43,6 +44,7 @@ function createVideo(videoId: string, data: any): any {
                     "rbtv:duration": getVideoDuration(episode),
                     "resume:key": "url",
                     "resume:context": "rbtv",
+                    "progress:color": getTokenColor(episode),
                     "control:type": "extended",
                     "info:size": "large",
                     "info:overlay": "full",

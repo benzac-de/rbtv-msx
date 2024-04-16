@@ -239,6 +239,7 @@ function createEpisodeTemplate(context: string, data: any, pagination: any, hist
         truncation: "titleHeader|titleFooter",
         enumerate: false,
         stampColor: "rgba(0,0,0,0.8)",
+        progressBackColor: "rgba(255,255,255,0.25)",
         selection: createListSelection(context, getTotalItems(data, pagination)),
         options: historyItems ? createHistoryListOptions(true) : createListOptions(true),
         imageFiller: "height-center",
@@ -828,6 +829,7 @@ function createOverviewEpisode(item: any, index: number, timestamp: number): tvx
         stamp: getDuration(item),
         stampColor: "rgba(0,0,0,0.8)",
         progressColor: getTokenColor(item),
+        progressBackColor: "rgba(255,255,255,0.25)",
         action: createEpisodeAction(item, false),
         progress: -1,
         live: {
@@ -1125,6 +1127,7 @@ function createSearchResultsEpisode(item: any, listIndex: number, pageIndex: num
         stamp: getDuration(item),
         stampColor: "rgba(0,0,0,0.8)",
         progressColor: getTokenColor(item),
+        progressBackColor: "rgba(255,255,255,0.25)",
         selection: createItemSelection("Video", listIndex, total),
         action: createEpisodeAction(item, false),
         progress: -1,
