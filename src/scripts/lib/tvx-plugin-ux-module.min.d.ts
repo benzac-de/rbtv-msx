@@ -1,4 +1,4 @@
-// Type definitions for TVX Plugin UX v0.0.75 (Module)
+// Type definitions for TVX Plugin UX v0.0.75.2 (Module)
 // Project: https://msx.benzac.de/info/
 // Definitions by: Benjamin Zachey
 
@@ -326,6 +326,7 @@ declare interface MSXLive extends MSXLiveProperties, MSXLiveAction {
     running?: MSXLiveStateExtended;
     over?: MSXLiveState;
     execute?: MSXLiveAction;
+    preload?: boolean;
 }
 
 /** MSX - Live Type
@@ -857,6 +858,7 @@ declare interface TVXSettings {
     FULLSCREEN: number;
     SUSPEND: number;
     SECURE: number;
+    CAPTION: number;
     APP: any;
 }
 
