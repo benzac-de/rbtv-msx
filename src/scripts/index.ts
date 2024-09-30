@@ -23,6 +23,16 @@ class RbtvHandler implements tvx.TVXInteractionPluginHandler {
     private backdropImage1: any = null;
     private backdropImage2: any = null;
 
+    private hideBackdropImage(): void {
+        tvx.Renderer.fadeOut(this.backdropImage1);
+        tvx.Renderer.fadeOut(this.backdropImage2);
+    }
+
+    private showBackdropImage(): void {
+        tvx.Renderer.fadeIn(this.backdropImage1);
+        tvx.Renderer.fadeIn(this.backdropImage2);
+    }
+
     private hideBackdrop(): void {
         tvx.Renderer.fadeOut(this.backdropGround);
         tvx.Renderer.fadeOut(this.backdropContainer1);
@@ -65,6 +75,18 @@ class RbtvHandler implements tvx.TVXInteractionPluginHandler {
         }
     };
 
+    private executeBackdrop(action: string): void {
+        if (tvx.Tools.isFullStr(action)) {
+            if (action == "expand") {
+                this.showBackdropImage();
+            } else if (action == "reduce") {
+                this.hideBackdropImage();
+            } else {
+                this.swapBackdrop(action);
+            }
+        }
+    }
+
     private initBackdrop(): void {
         this.backdropGround = $("#backdropGround");
         this.backdropContainer1 = $("#backdropContainer1");
@@ -96,7 +118,7 @@ class RbtvHandler implements tvx.TVXInteractionPluginHandler {
     public handleData(data: tvx.AnyObject): void {
         if (tvx.Tools.isFullStr(data.message)) {
             if (data.message.indexOf("backdrop:") == 0) {
-                this.swapBackdrop(data.message.substr(9));
+                this.executeBackdrop(data.message.substr(9));
             } else if (data.message.indexOf("menu:") == 0) {
                 executeMenu(data.message.substr(5));
             } else if (data.message.indexOf("content:") == 0) {

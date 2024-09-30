@@ -124,13 +124,15 @@ function createHistoryListOptions(goToTopOption: boolean): tvx.MSXContentRoot {
 
 function createListSelection(context: string, total: number): tvx.MSXSelection {
     return {
-        headline: addTextPrefix(context, "{context:number}/" + total, " ")
+        headline: addTextPrefix(context, "{context:number}/" + total, " "),
+        action: "interaction:commit:message:backdrop:reduce"
     };
 }
 
 function createItemSelection(context: string, index: number, total: number): tvx.MSXSelection {
     return {
-        headline: addTextPrefix(context, (index + 1) + "/" + total, " ")
+        headline: addTextPrefix(context, (index + 1) + "/" + total, " "),
+        action: "interaction:commit:message:backdrop:reduce"
     };
 }
 
@@ -484,6 +486,9 @@ function createShowHeader(showData: any, seasonId: string, episodesOrder: string
             icon: "sort",
             label: "Sortierung",
             extensionLabel: getEpisodesOrderLabel(episodesOrder, true),
+            selection: {
+                action: "interaction:commit:message:backdrop:expand"
+            },
             action: "panel:data",
             data: createEpisodesOrderPanel("show", episodesOrder, "show:" + showData.id, seasonId, true)
         }, {
@@ -493,6 +498,9 @@ function createShowHeader(showData: any, seasonId: string, episodesOrder: string
             icon: "filter-list",
             label: "Folgenauswahl",
             extensionLabel: getEpisodesSeasonLabel(activeSeason, false),
+            selection: {
+                action: "interaction:commit:message:backdrop:expand"
+            },
             action: "panel:data",
             data: createEpisodesSeasonPanel("show", activeSeason, showData.seasons, "show:" + showData.id, episodesOrder)
         }, {
@@ -502,7 +510,8 @@ function createShowHeader(showData: any, seasonId: string, episodesOrder: string
             icon: getPinIcon(isShowPinned(showData.id)),
             iconSize: "small",
             selection: {
-                headline: getPinHint("Lieblingsshow", isShowPinned(showData.id))
+                headline: getPinHint("Lieblingsshow", isShowPinned(showData.id)),
+                action: "interaction:commit:message:backdrop:expand"
             },
             action: "interaction:commit:message:menu:pin:toggle:show:" + showData.id
         }, {
@@ -1327,6 +1336,7 @@ export function createShow(showData: any, seasonId: string, episodesOrder: strin
     return {
         flag: "show",
         type: "list",
+        preselect: true,
         preload: SETTINGS.preloadPages ? "next" : null,
         headline: getShowTitle(showData.data),
         header: createShowHeader(showData.data, seasonId, episodesOrder, episodesData.data, episodesData.pagination),
