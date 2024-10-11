@@ -1,4 +1,4 @@
-// Type definitions for TVX Plugin UX v0.0.76.2 (Module)
+// Type definitions for TVX Plugin UX v0.0.77.1 (Module)
 // Project: https://msx.benzac.de/info/
 // Definitions by: Benjamin Zachey
 
@@ -683,9 +683,11 @@ declare interface MSXAttachedContentInfo {
  * @see: {@link https://msx.benzac.de/wiki/index.php?title=Attached_Data_Examples}
 */
 declare interface MSXAttachedDictionaryInfo {
+    custom: boolean;
     url: string;
     name: string;
     version: string;
+    language: string;
     size: number;
 }
 
@@ -1250,6 +1252,7 @@ declare abstract class TVXDictionary {
     init(data: any): void;
     getName(): string;
     getVersion(): string;
+    getLanguage(): string;
     getSize(): number;
     isInitialized(): boolean;
     getValueForKey(key: string, defaultValue: string): string;
@@ -2226,6 +2229,8 @@ declare interface TVXVideoPluginPlayer {
      * - "settings:hover_effect" (data.value property contains the new settings value)
      * - "settings:immersive_mode" (data.value property contains the new settings value)
      * - "settings:rounded_style" (data.value property contains the new settings value)
+     * - "settings:sleep_timeout" (data.value property contains the new settings value)
+     * - "settings:eject_timeout" (data.value property contains the new settings value)
      * - "settings:menu_button" (data.action and data.keyCode properties contain the new button action and key code)
      * - "custom:{EVENT_ID}" (data.data property optionally contains the event-related data)
      * *Note: Video events are usually not handled by the player, since the corresponding player function is also called (e.g. play() -> "video:play").
@@ -2503,6 +2508,8 @@ declare interface TVXInteractionPluginHandler {
      * - "settings:hover_effect" (data.value property contains the new settings value)
      * - "settings:immersive_mode" (data.value property contains the new settings value)
      * - "settings:rounded_style" (data.value property contains the new settings value)
+     * - "settings:sleep_timeout" (data.value property contains the new settings value)
+     * - "settings:eject_timeout" (data.value property contains the new settings value)
      * - "settings:menu_button" (data.action and data.keyCode properties contain the new button action and key code)
      * - "custom:{EVENT_ID}" (data.data property optionally contains the event-related data)
      * @param data The event data.

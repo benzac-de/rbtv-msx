@@ -1282,7 +1282,7 @@ export function createCredits(): tvx.MSXContentRoot {
                 imageFiller: "height-right",
                 imageOverlay: 0,
                 imagePreload: true,
-                action: "panel:" + tvx.Tools.getPrefixUrl("msx.benzac.de/services/support.php?context=rbtv&platform={PLATFORM}")
+                action: "panel:" + tvx.Tools.getPrefixUrl("msx.benzac.de/services/support.php?context=rbtv&platform={PLATFORM}&lang={LANGUAGE}")
             }]
         }]
     };

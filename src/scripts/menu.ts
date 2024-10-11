@@ -1,5 +1,5 @@
 import * as tvx from "./lib/tvx-plugin-ux-module.min";
-import { NAME, VERSION, appendInteractionRefSuffix, callCallback } from "./tools";
+import { NAME, VERSION, DICTIONARY_URL, appendInteractionRefSuffix, callCallback } from "./tools";
 import { createLogoUrl, createBackgroundUrl, createContentRequest, getPinIcon, getPinHint, getBeansCount, getShowsCount } from "./content-tools";
 import { getPinnedBeans, getPinnedShows, isShowPinned, isBeanPinned, pinShow, pinBean, unpinShow, unpinBean, movePinnedShow, movePinnedBean } from "./pins";
 
@@ -297,6 +297,7 @@ function createMenu(pinnedShows: any, pinnedBeans: any): tvx.MSXMenuRoot {
         name: NAME,
         version: VERSION,
         headline: NAME,
+        dictionary: DICTIONARY_URL,
         logo: createLogoUrl(),
         logoSize: "small",
         background: createBackgroundUrl(),
