@@ -1,4 +1,4 @@
-// Type definitions for TVX Plugin UX v0.0.77.1 (Module)
+// Type definitions for TVX Plugin UX v0.0.78 (Module)
 // Project: https://msx.benzac.de/info/
 // Definitions by: Benjamin Zachey
 
@@ -584,6 +584,7 @@ declare interface MSXAttachedApplicationSettings {
     roundedStyle: number;
     sleepTimeout: number;
     ejectTimeout: number;
+    visualExecution: number;
     menuButton: MSXAttachedApplicationMenuButton;
 }
 
@@ -913,6 +914,7 @@ declare interface TVXTools {
     strToUrlStr(str: any): string;
     strContainsToken(str: any, token: string, start?: number, end?: number): boolean;
     strCountToken(str: any, token: string, start?: number, end?: number): number;
+    numToStr(num: number, thousandsSeparator?: string, decimalSeparator?: string, decimalDigits?: number, decimalTrimming?: number): string;
     htmlTrim(str: string): string;
     htmlEscape(str: string): string;
     htmlUnescape(str: string): string;
@@ -966,6 +968,7 @@ declare interface TVXDateTools {
     getFormattedDurationStr(timeInMs: number, format: string): string;
     getDurationStr(timeInMs: number, values?: string): string;
     getVideoStr(timeInMs: number, digits?: number): string;
+    getFormattedNumberStr(number: number, format?: string): string;
 }
 
 declare interface TVXDateFormatter {
@@ -975,13 +978,12 @@ declare interface TVXDateFormatter {
     toTimeDayLongStr(date: Date | number): string;
     toDayStr(date: Date | number): string;
     toDayLongStr(date: Date | number): string;
-    toDayFullStr(date: Date | number): string;
-    toDateStr(date: Date | number): string;
-    toDateLongStr(date: Date | number): string;
-    toRecordingStr(date: Date | number): string;
+    toDayFullStr(date: Date | number): string;    
     toDayTimeStr(date: Date | number): string;
     toDayTimeLongStr(date: Date | number): string;
     toDayTimeFullStr(date: Date | number): string;
+    toDateStr(date: Date | number): string;
+    toDateLongStr(date: Date | number): string;
     toDateTimeStr(date: Date | number): string;
     toDateTimeLongStr(date: Date | number): string;
 }
@@ -2231,6 +2233,7 @@ declare interface TVXVideoPluginPlayer {
      * - "settings:rounded_style" (data.value property contains the new settings value)
      * - "settings:sleep_timeout" (data.value property contains the new settings value)
      * - "settings:eject_timeout" (data.value property contains the new settings value)
+     * - "settings:visual_execution" (data.value property contains the new settings value)
      * - "settings:menu_button" (data.action and data.keyCode properties contain the new button action and key code)
      * - "custom:{EVENT_ID}" (data.data property optionally contains the event-related data)
      * *Note: Video events are usually not handled by the player, since the corresponding player function is also called (e.g. play() -> "video:play").
@@ -2510,6 +2513,7 @@ declare interface TVXInteractionPluginHandler {
      * - "settings:rounded_style" (data.value property contains the new settings value)
      * - "settings:sleep_timeout" (data.value property contains the new settings value)
      * - "settings:eject_timeout" (data.value property contains the new settings value)
+     * - "settings:visual_execution" (data.value property contains the new settings value)
      * - "settings:menu_button" (data.action and data.keyCode properties contain the new button action and key code)
      * - "custom:{EVENT_ID}" (data.data property optionally contains the event-related data)
      * @param data The event data.

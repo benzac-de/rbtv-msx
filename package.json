@@ -1,6 +1,6 @@
 {
   "name": "rbtv-msx",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "description": "Rocket Beans TV (RBTV) portal for the Media Station X (MSX) application",
   "scripts": {
     "clean": "rimraf dist/*.*",

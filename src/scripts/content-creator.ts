@@ -666,7 +666,7 @@ function createBeanHeader(beanData: any, episodesOrder: string, episodesData: an
             icon: "smart-display",
             iconSize: "small",
             action: showreelAction,
-            playerLabel: "Showreel - " + getBeanFullName(beanData),
+            playerLabel: "Showreel {chr:ndash} " + getBeanFullName(beanData),
             selection: {
                 headline: "Showreel ansehen"
             },
