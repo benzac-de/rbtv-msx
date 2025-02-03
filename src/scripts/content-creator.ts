@@ -738,7 +738,8 @@ function createOverviewHeader(): tvx.MSXContentPage {
             layout: "1,0,11,3",
             offset: "-1,0,1,0",
             imagePreload: true,
-            image: "https://rocketbeans.de/wordpress/wp-content/themes/rocketbeans/img/fotos/gruppenbild_2.jpg",
+            //image: "https://rocketbeans.de/wordpress/wp-content/themes/rocketbeans/img/fotos/gruppenbild_2.jpg",
+            image: tvx.Tools.getPrefixUrl("rbtv.msx.benzac.de/assets/header.jpg"),
             imageFiller: "width-center",
             title: "Willkommen bei Rocket Beans TV",
             titleFooter: "Rocket Beans ist Content Creator, Produktionsfirma, Plattform, Kreativschmiede und Publisher für verspielte, popkulturelle Bewegtbild-Inhalte.",
@@ -765,7 +766,8 @@ function createOverviewHeader(): tvx.MSXContentPage {
                         layout: "0,0,8,3",
                         imagePreload: true,
                         imageFiller: "width-center",
-                        image: "https://rocketbeans.de/wordpress/wp-content/themes/rocketbeans/img/fotos/BEANS_Gruppenbild_2.jpg"
+                        //image: "https://rocketbeans.de/wordpress/wp-content/themes/rocketbeans/img/fotos/BEANS_Gruppenbild_2.jpg"
+                        image: tvx.Tools.getPrefixUrl("rbtv.msx.benzac.de/assets/beans.jpg")
                     }, {
                         type: "space",
                         layout: "0,3,8,3",
