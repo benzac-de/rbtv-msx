@@ -1280,7 +1280,7 @@ export function createCredits(): tvx.MSXContentRoot {
                     "{ico:msx-white:public} {txt:msx-white:https://msx.benzac.de/info/}{br}",
                     "{ico:msx-white:build} {txt:msx-white:https://github.com/benzac-de/rbtv-msx/}"
                 ],
-                image: tvx.Tools.getPrefixUrl("msx.benzac.de/info/img/paypal_qr.png"),
+                image: tvx.Tools.getPrefixUrl("msx.benzac.de/info/img/support_qr.png"),
                 imageFiller: "height-right",
                 imageOverlay: 0,
                 imagePreload: true,

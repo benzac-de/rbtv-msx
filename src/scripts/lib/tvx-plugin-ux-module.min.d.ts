@@ -1,4 +1,4 @@
-// Type definitions for TVX Plugin UX v0.0.78 (Module)
+// Type definitions for TVX Plugin UX v0.0.78.1 (Module)
 // Project: https://msx.benzac.de/info/
 // Definitions by: Benjamin Zachey
 
@@ -725,9 +725,13 @@ declare interface MSXAttachedSystemInfo {
     country?: string;
     language?: string;
     ipAddress?: string;
+    ipAddress2?: string;
     macAddress?: string;
+    macAddress2?: string;
     networkType?: string;
+    networkType2?: string;
     networkName?: string;
+    networkName2?: string;
     deviceId?: string;
     deviceFamily?: string;
     deviceVersion?: string;
